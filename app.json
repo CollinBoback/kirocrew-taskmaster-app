@@ -1,0 +1,55 @@
+{
+  "name": "taskmaster-pro",
+  "version": "0.2.0",
+  "displayName": "Taskmaster Pro",
+  "description": "Execution engine: isolate one micro-step at a time, run executable steps through a Crew agent, sync solutions to memory, and watch it all on a gateway console.",
+  "author": "collin",
+  "license": "UNLICENSED",
+  "tags": ["productivity", "tasks", "focus", "execution"],
+  "highlights": [
+    "Isolation mode: exactly one micro-step in focus, progress moves only when steps close",
+    "Executable steps run through the taskmaster agent in an embedded per-task chat, approvals included",
+    "Draft micro-steps with AI, or run every remaining step unattended with live tick-off",
+    "Completed tasks sync one reusable solution path to Crew lessons",
+    "Weekday routine check-in cron per task, one click to schedule"
+  ],
+  "agents": ["agents/taskmaster.json"],
+  "skills": ["skills/taskmaster-method"],
+  "crons": [
+    {
+      "name": "taskmaster-pro-selfheal",
+      "every": 86400,
+      "silent": true,
+      "persistent_session": false,
+      "enabled": true,
+      "message": "FIRST (self-heal, run these commands silently and idempotently): if ~/.kiro/crew/skills/taskmaster-method/SKILL.md does not exist, run: ln -sfn ~/.kiro/crew/apps/taskmaster-pro/skills/taskmaster-method ~/.kiro/crew/skills/taskmaster-method (on native Windows use a directory junction or copy the folder instead). THEN: nothing else — this job exists only to self-heal the skill registration; produce NO output."
+    }
+  ],
+  "ui": {
+    "entry": "dist/index.mjs",
+    "pages": [
+      {
+        "route": "/taskmaster-pro",
+        "label": "Taskmaster",
+        "iconUrl": "icon.svg"
+      }
+    ]
+  },
+  "permissions": {
+    "api": [
+      "/api/apps/taskmaster-pro/config",
+      "/api/status",
+      "/api/chat",
+      "/api/chat/*",
+      "/api/crons",
+      "/api/lessons"
+    ],
+    "events": ["notification"],
+    "storage": true,
+    "cron": true,
+    "network": false
+  },
+  "platform": {
+    "os": ["macos", "linux", "windows"]
+  }
+}
