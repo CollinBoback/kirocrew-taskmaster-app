@@ -15,6 +15,10 @@ doctrine: one source of truth, in-repo. GitHub issues on
 surface — never the authority. If they disagree, `tasks.md` wins and the issue gets
 corrected.
 
+The plain-language companion `.kiro/specs/taskmaster-pro/issue-guide.md` exists to make
+the queue easy to scan. It may summarize priorities, dependencies, and code evidence, but
+it never overrides a task's canonical `Status:` line or acceptance criteria.
+
 ## Status vocabulary
 
 Each task section carries a `Status:` line with exactly one of:
@@ -37,6 +41,35 @@ any `Status:` line change.
 - An issue is closed only when its task section says `done` (or `closed (won't do)`)
   in a commit merged to `main` — close it in the same PR or immediately after merge,
   with a closing comment linking the merge commit.
+
+## Readability contract for mirrored issues
+
+A GitHub issue is the work surface, so it must make sense without forcing the reader to
+decode internal variable names first. Keep the technical detail, but put it after the
+plain-language explanation.
+
+For Task 2–6 mirrors, use this order:
+
+1. **In plain English** — one short paragraph explaining the user/developer problem.
+2. **Why it matters** — the failure or friction this issue prevents.
+3. **Current code to recognize** — the important files/functions/refs, only after the
+   reader understands the problem.
+4. **Agent change** — a bounded description of what should change; do not silently widen
+   scope.
+5. **Done when** — observable acceptance checks in bullets.
+6. **Priority / sequence** — P0/P1/P2 plus explicit upstream/downstream dependencies.
+
+Additional rules:
+
+- Keep one outcome per issue. If two issues are duplicates, close one instead of keeping
+  competing descriptions alive.
+- Lead with behavior, not implementation jargon. Prefer "old chat results could affect a
+  new run" before "watermark rebasing"; explain the term afterward.
+- A manual-only issue says **Manual** near the top and names why an agent cannot perform
+  it.
+- An already-merged issue is queue cleanup, not an AI implementation candidate.
+- If KiroCrew behavior is part of the premise, verify it against current public KiroCrew
+  source/guidance before prescribing a command or filesystem layout.
 
 ## Partial-progress protocol (the important part)
 
