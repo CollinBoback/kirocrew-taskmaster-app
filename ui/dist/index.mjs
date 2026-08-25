@@ -1,8 +1,8 @@
 import { jsx as r, jsxs as u, Fragment as me } from "react/jsx-runtime";
-import { useState as $, useRef as O, useCallback as E, useEffect as fe, useMemo as ot } from "react";
+import { useState as $, useRef as z, useCallback as E, useEffect as fe, useMemo as ot } from "react";
 import { useAppApi as it, useNotify as st, useNavBadge as at, useChatLauncher as lt, useAppEvents as dt, ChatEmbed as ct } from "@kirocrew/app-sdk";
 import { MarkdownRenderer as ut } from "@kirocrew/ui";
-function Q(i) {
+function Z(i) {
   return `taskmaster-${i.id}`;
 }
 let Be = 0;
@@ -13,15 +13,15 @@ function pt() {
   return { version: 1, settings: { memorySync: !0 }, activeTaskId: null, tasks: [] };
 }
 function mt(i) {
-  var w;
+  var I;
   const d = pt();
   if (typeof i != "object" || i === null) return d;
-  const a = i, y = Array.isArray(a.tasks) ? a.tasks.filter(Ke).map(ft) : d.tasks, S = typeof a.settings == "object" && a.settings !== null ? { memorySync: a.settings.memorySync !== !1 } : d.settings, A = typeof a.activeTaskId == "string" ? a.activeTaskId : null;
+  const a = i, k = Array.isArray(a.tasks) ? a.tasks.filter(Ke).map(ft) : d.tasks, S = typeof a.settings == "object" && a.settings !== null ? { memorySync: a.settings.memorySync !== !1 } : d.settings, A = typeof a.activeTaskId == "string" ? a.activeTaskId : null;
   return {
     version: 1,
     settings: S,
-    activeTaskId: y.some((N) => N.id === A) ? A : ((w = y[0]) == null ? void 0 : w.id) ?? null,
-    tasks: y
+    activeTaskId: k.some((N) => N.id === A) ? A : ((I = k[0]) == null ? void 0 : I.id) ?? null,
+    tasks: k
   };
 }
 function Ke(i) {
@@ -48,7 +48,7 @@ function ft(i) {
   };
 }
 function Oe(i) {
-  const d = i.subtasks.length, a = i.subtasks.filter((y) => y.done).length;
+  const d = i.subtasks.length, a = i.subtasks.filter((k) => k.done).length;
   return { done: a, total: d, pct: d === 0 ? 0 : Math.round(a / d * 100) };
 }
 function gt(i) {
@@ -58,23 +58,23 @@ function gt(i) {
 function ht(i) {
   const d = /```(?:json)?\s*([\s\S]*?)```/.exec(i), a = [];
   d != null && d[1] && a.push(d[1]);
-  const y = i.indexOf("["), S = i.lastIndexOf("]");
-  y !== -1 && S > y && a.push(i.slice(y, S + 1));
+  const k = i.indexOf("["), S = i.lastIndexOf("]");
+  k !== -1 && S > k && a.push(i.slice(k, S + 1));
   for (const A of a)
     try {
-      const w = JSON.parse(A);
-      if (!Array.isArray(w)) continue;
-      const N = w.filter((k) => typeof k == "object" && k !== null).map((k) => ({
-        title: typeof k.title == "string" ? k.title.trim() : "",
-        ...typeof k.command == "string" && k.command.trim() ? { command: k.command.trim() } : {}
-      })).filter((k) => k.title.length > 0).slice(0, 12);
+      const I = JSON.parse(A);
+      if (!Array.isArray(I)) continue;
+      const N = I.filter((x) => typeof x == "object" && x !== null).map((x) => ({
+        title: typeof x.title == "string" ? x.title.trim() : "",
+        ...typeof x.command == "string" && x.command.trim() ? { command: x.command.trim() } : {}
+      })).filter((x) => x.title.length > 0).slice(0, 12);
       if (N.length > 0) return N;
     } catch {
     }
   return null;
 }
 function bt(i) {
-  const d = i.subtasks.map((a, y) => `${y + 1}. ${a.title}${a.command ? ` [${a.command}]` : ""}`);
+  const d = i.subtasks.map((a, k) => `${k + 1}. ${a.title}${a.command ? ` [${a.command}]` : ""}`);
   return `Completed "${i.title}" via micro-steps: ${d.join(" ")}`;
 }
 const yt = 900 * 1e3;
@@ -96,20 +96,20 @@ function ze(i, d) {
 function We(i, d) {
   return Math.max(i ?? 0, Math.max(0, d));
 }
-function je(i, d, a = !1) {
+function Pe(i, d, a = !1) {
   return !a && i === d;
 }
 function St(i) {
   if (typeof i != "object" || i === null) return { messages: [], running: !1 };
   const d = i;
-  return { messages: Array.isArray(d.messages) ? d.messages.filter((y) => typeof y == "object" && y !== null) : [], running: d.running === !0 };
+  return { messages: Array.isArray(d.messages) ? d.messages.filter((k) => typeof k == "object" && k !== null) : [], running: d.running === !0 };
 }
-const Pe = /^\s*STEP RESULT \[(\d+)\]:\s*(done|failed)\s*(?:[—–:-]\s*)?(.*)$/gim;
+const je = /^\s*STEP RESULT \[(\d+)\]:\s*(done|failed)\s*(?:[—–:-]\s*)?(.*)$/gim;
 function Ct(i) {
   const d = [];
-  Pe.lastIndex = 0;
+  je.lastIndex = 0;
   let a;
-  for (; (a = Pe.exec(i)) !== null; )
+  for (; (a = je.exec(i)) !== null; )
     d.push({
       index: Number.parseInt(a[1], 10),
       ok: a[2].toLowerCase() === "done",
@@ -119,41 +119,41 @@ function Ct(i) {
 }
 const Fe = 4e3;
 function vt(i) {
-  const { work: d, data: a, seen: y, stepCount: S } = i, A = a.running ? Math.max(0, a.messages.length - 1) : a.messages.length, w = a.messages.slice(y, A), N = Math.max(y, A);
+  const { work: d, data: a, seen: k, stepCount: S } = i, A = a.running ? Math.max(0, a.messages.length - 1) : a.messages.length, I = a.messages.slice(k, A), N = Math.max(k, A);
   if (S === null)
     return { actions: [], nextSeen: N, sawReply: i.sawReply, settled: !0, stepSucceeded: !1 };
-  const k = [];
-  let U = i.sawReply, z = !1, K = !1;
-  for (const h of w) {
+  const x = [];
+  let U = i.sawReply, W = !1, K = !1;
+  for (const h of I) {
     if (h.role === "user" || !h.content) continue;
     U = !0;
     const B = h.content;
     if (d.kind === "draft") {
       const T = ht(B);
-      T && (k.push({ type: "append-draft", steps: T }), z = !0);
+      T && (x.push({ type: "append-draft", steps: T }), W = !0);
       continue;
     }
-    const W = Ct(B);
-    for (const T of W) {
+    const P = Ct(B);
+    for (const T of P) {
       if (T.index < 1 || T.index > S) {
-        k.push({ type: "unknown-step", result: T });
+        x.push({ type: "unknown-step", result: T });
         continue;
       }
-      const H = W.length === 1 ? B.slice(0, Fe) : `${T.ok ? "done" : "failed"} — ${T.summary || "(no summary)"}`;
-      k.push({ type: "step-result", result: T, output: H }), T.ok && (K = !0), d.kind === "step" && (z = !0);
+      const H = P.length === 1 ? B.slice(0, Fe) : `${T.ok ? "done" : "failed"} — ${T.summary || "(no summary)"}`;
+      x.push({ type: "step-result", result: T, output: H }), T.ok && (K = !0), d.kind === "step" && (W = !0);
     }
   }
-  if (z && d.kind !== "all")
-    return { actions: k, nextSeen: N, sawReply: U, settled: !0, stepSucceeded: K };
+  if (W && d.kind !== "all")
+    return { actions: x, nextSeen: N, sawReply: U, settled: !0, stepSucceeded: K };
   if (!a.running && U) {
-    const h = [...w].reverse().find((B) => B.role !== "user" && B.content);
-    k.push({
+    const h = [...I].reverse().find((B) => B.role !== "user" && B.content);
+    x.push({
       type: "turn-ended",
       kind: d.kind,
       ...d.kind === "step" && (h != null && h.content) ? { output: h.content.slice(0, Fe) } : {}
-    }), z = !0;
+    }), W = !0;
   }
-  return { actions: k, nextSeen: N, sawReply: U, settled: z, stepSucceeded: K };
+  return { actions: x, nextSeen: N, sawReply: U, settled: W, stepSucceeded: K };
 }
 const Ge = "/api/apps/taskmaster-pro/config", Tt = 200, Ue = "notification scope · slot polling", wt = 2500, t = {
   bg: "var(--bg, #030712)",
@@ -170,9 +170,9 @@ function It() {
   return (/* @__PURE__ */ new Date()).toTimeString().split(" ")[0];
 }
 function Lt() {
-  const i = it(), d = st(), a = at(), { openChat: y } = lt(), [S, A] = $(null), [w, N] = $("focus"), [k, U] = $({}), [z, K] = $([]), [h, B] = $(null), [W, T] = $(null), [H, ge] = $(""), [he, be] = $(""), [ye, ke] = $(""), [xe, Se] = $(""), [ee, te] = $(null), [ne, Ce] = $({}), j = O(null);
+  const i = it(), d = st(), a = at(), { openChat: k } = lt(), [S, A] = $(null), [I, N] = $("focus"), [x, U] = $({}), [W, K] = $([]), [h, B] = $(null), [P, T] = $(null), [H, ge] = $(""), [he, be] = $(""), [ye, ke] = $(""), [xe, Se] = $(""), [te, ne] = $(null), [re, Ce] = $({}), j = z(null);
   j.current = S;
-  const ve = O(Promise.resolve()), Te = O(0), re = O({}), I = O({}), M = O({}), L = O({}), V = O(/* @__PURE__ */ new Set()), oe = O({}), qe = E((e) => {
+  const ve = z(Promise.resolve()), Te = z(0), oe = z({}), R = z({}), M = z({}), L = z({}), V = z(/* @__PURE__ */ new Set()), ie = z({}), qe = E((e) => {
     M.current[e.taskId] = e, Ce((n) => ({ ...n, [e.taskId]: e }));
   }, []), _ = E((e) => M.current[e.taskId] !== e ? !1 : (delete M.current[e.taskId], Ce((n) => {
     const c = { ...n };
@@ -199,7 +199,7 @@ function Lt() {
       n && we(e(n));
     },
     [we]
-  ), ie = E(
+  ), se = E(
     (e) => {
       i.get(Ge).then((n) => {
         e != null && e() || (A(mt(n)), T(null), g("info", "Loaded task state from gateway app config."));
@@ -211,25 +211,25 @@ function Lt() {
   );
   fe(() => {
     let e = !1;
-    return ie(() => e), i.get("/api/status").then((n) => {
+    return se(() => e), i.get("/api/status").then((n) => {
       e || (B(typeof n == "object" && n !== null ? n : {}), g("ok", "Connected to Kiro Crew gateway."));
     }).catch(() => {
       e || g("warn", "Gateway status unavailable.");
     }), g("info", `Console mode: ${Ue} — gateway event forwarding to app pages is pending upstream.`), () => {
       e = !0;
     };
-  }, [ie]);
+  }, [se]);
   const Ie = E(
     (e) => {
       d(`Task complete: ${e.title}`), g("ok", `Task "${e.title}" fully completed.`);
       const n = j.current;
-      !(n != null && n.settings.memorySync) || e.lessonPosted || re.current[e.id] || (re.current[e.id] = !0, i.post("/api/lessons", { rule: bt(e), category: "knowledge" }).then(() => {
+      !(n != null && n.settings.memorySync) || e.lessonPosted || oe.current[e.id] || (oe.current[e.id] = !0, i.post("/api/lessons", { rule: bt(e), category: "knowledge" }).then(() => {
         v((c) => ({
           ...c,
           tasks: c.tasks.map((s) => s.id === e.id ? { ...s, lessonPosted: !0 } : s)
         })), g("ok", "Kiro Memory: appended solution path to lessons (category: knowledge).");
       }).catch((c) => g("warn", `Memory sync failed: ${String(c)}`)).finally(() => {
-        delete re.current[e.id];
+        delete oe.current[e.id];
       }));
     },
     [i, d, g, v]
@@ -237,14 +237,14 @@ function Lt() {
     (e, n, c, s, l) => {
       let m = null;
       v((p) => {
-        const f = p.tasks.map((x) => {
-          if (x.id !== e) return x;
-          const R = x.subtasks.map((G) => {
+        const f = p.tasks.map((y) => {
+          if (y.id !== e) return y;
+          const w = y.subtasks.map((G) => {
             if (G.id !== n) return G;
             const pe = { ...G, done: c, ...s !== void 0 ? { output: s } : {} };
             return l ? pe.runState = l : delete pe.runState, pe;
-          }), F = { ...x, subtasks: R }, ue = x.subtasks.length > 0 && x.subtasks.every((G) => G.done);
-          return R.length > 0 && R.every((G) => G.done) && !ue && (m = F), F;
+          }), O = { ...y, subtasks: w }, ue = y.subtasks.length > 0 && y.subtasks.every((G) => G.done);
+          return w.length > 0 && w.every((G) => G.done) && !ue && (m = O), O;
         });
         return { ...p, tasks: f };
       }), m && Ie(m);
@@ -267,10 +267,10 @@ function Lt() {
       })), g("ok", `Taskmaster agent drafted ${n.length} micro-step(s).`), d(`Added ${n.length} drafted micro-steps`);
     },
     [g, v, d]
-  ), se = E(
+  ), ae = E(
     async (e) => St(await i.get(`/api/chat/slots/${encodeURIComponent(e)}`)),
     [i]
-  ), ae = E(
+  ), le = E(
     (e, n, c, s) => {
       v((l) => ({
         ...l,
@@ -286,45 +286,45 @@ function Lt() {
     },
     [v]
   );
-  async function le(e, n, c) {
-    if (M.current[e.id] || I.current[e.id]) return;
-    I.current[e.id] = !0;
-    const s = Q(e), l = V.current.has(s);
+  async function de(e, n, c) {
+    if (M.current[e.id] || R.current[e.id]) return;
+    R.current[e.id] = !0;
+    const s = Z(e), l = V.current.has(s);
     if (L.current[s] === void 0 || l)
       try {
-        const p = await se(s);
+        const p = await ae(s);
         if (l && p.running) {
-          I.current[e.id] = !1, g("info", "The stopped agent turn is still running in chat; request was not sent."), d("The previous agent turn is still finishing — retry after it ends");
+          R.current[e.id] = !1, g("info", "The stopped agent turn is still running in chat; request was not sent."), d("The previous agent turn is still finishing — retry after it ends");
           return;
         }
-        const f = p.messages.length, x = l ? We(L.current[s], f) : ze(L.current[s], {
+        const f = p.messages.length, y = l ? We(L.current[s], f) : ze(L.current[s], {
           status: "loaded",
           messageCount: f
         });
-        if (x === null) {
-          I.current[e.id] = !1;
+        if (y === null) {
+          R.current[e.id] = !1;
           return;
         }
-        L.current[s] = x, V.current.delete(s);
+        L.current[s] = y, V.current.delete(s);
       } catch (p) {
         const f = xt(p);
         if (l && !f) {
-          I.current[e.id] = !1, g("info", `Could not verify that the stopped agent turn ended: ${String(p)}`), d("Could not verify the previous agent turn — retry after it ends", { type: "error" });
+          R.current[e.id] = !1, g("info", `Could not verify that the stopped agent turn ended: ${String(p)}`), d("Could not verify the previous agent turn — retry after it ends", { type: "error" });
           return;
         }
-        const x = ze(
+        const y = ze(
           L.current[s],
           f ? { status: "missing" } : { status: "failed" }
         );
-        if (x === null) {
-          I.current[e.id] = !1, g("warn", `Could not safely read task chat history; request was not sent: ${String(p)}`), d("Could not verify task chat history — retry the run", { type: "error" });
+        if (y === null) {
+          R.current[e.id] = !1, g("warn", `Could not safely read task chat history; request was not sent: ${String(p)}`), d("Could not verify task chat history — retry the run", { type: "error" });
           return;
         }
-        L.current[s] = x, V.current.delete(s);
+        L.current[s] = y, V.current.delete(s);
       }
-    oe.current[e.id] = !1;
+    ie.current[e.id] = !1;
     const m = { ...c, sentAt: Date.now() };
-    I.current[e.id] = !1, qe(m), e.slotStarted || v((p) => ({
+    R.current[e.id] = !1, qe(m), e.slotStarted || v((p) => ({
       ...p,
       tasks: p.tasks.map((f) => f.id === e.id ? { ...f, slotStarted: !0 } : f)
     })), i.post("/api/chat", { message: n, slot: s, agent: "taskmaster" }).catch((p) => {
@@ -335,14 +335,14 @@ function Lt() {
   async function He(e) {
     const n = M.current[e.id];
     if (!n || n.taskId !== e.id || !_(n)) return;
-    const c = Q(e);
-    V.current.add(c), I.current[e.id] = !0, g("warn", "Stopped waiting for the agent; its turn may continue in the task chat."), d("Stopped waiting — the agent may continue in the task chat");
+    const c = Z(e);
+    V.current.add(c), R.current[e.id] = !0, g("warn", "Stopped waiting for the agent; its turn may continue in the task chat."), d("Stopped waiting — the agent may continue in the task chat");
     try {
-      const s = await se(c);
+      const s = await ae(c);
       L.current[c] = We(L.current[c], s.messages.length);
     } catch {
     } finally {
-      I.current[e.id] = !1;
+      R.current[e.id] = !1;
     }
   }
   const Ve = E(
@@ -360,7 +360,7 @@ function Lt() {
         if (l.type === "step-result") {
           const m = (c = j.current) == null ? void 0 : c.tasks.find((f) => f.id === e.taskId), p = m == null ? void 0 : m.subtasks[l.result.index - 1];
           if (!p) continue;
-          l.result.ok ? (Y(e.taskId, p.id, !0, l.output, "done"), g("ok", `Step ${l.result.index} completed by agent: ${l.result.summary || p.title}`)) : (ae(e.taskId, p.id, l.output, "failed"), g("warn", `Step ${l.result.index} failed: ${l.result.summary || "(no summary)"}`));
+          l.result.ok ? (Y(e.taskId, p.id, !0, l.output, "done"), g("ok", `Step ${l.result.index} completed by agent: ${l.result.summary || p.title}`)) : (le(e.taskId, p.id, l.output, "failed"), g("warn", `Step ${l.result.index} failed: ${l.result.summary || "(no summary)"}`));
           continue;
         }
         if (l.kind === "all")
@@ -369,12 +369,12 @@ function Lt() {
           g("warn", "Draft reply had no parseable json block — see the task chat."), d("Agent reply was not parseable — see the task chat");
         else {
           const m = (s = j.current) == null ? void 0 : s.tasks.find((f) => f.id === e.taskId), p = e.stepIndex != null ? m == null ? void 0 : m.subtasks[e.stepIndex] : void 0;
-          p && l.output && ae(e.taskId, p.id, l.output), g("warn", "Agent reply had no STEP RESULT marker — step left for manual toggle.");
+          p && l.output && le(e.taskId, p.id, l.output), g("warn", "Agent reply had no STEP RESULT marker — step left for manual toggle.");
         }
       }
     },
-    [g, Re, d, ae, Y]
-  ), $e = Object.keys(ne).length > 0;
+    [g, Re, d, le, Y]
+  ), $e = Object.keys(re).length > 0;
   fe(() => {
     if (!$e) return;
     let e = !1;
@@ -382,29 +382,29 @@ function Lt() {
       const s = Object.values(M.current);
       s.length !== 0 && await Promise.all(
         s.map(async (l) => {
-          var F;
+          var O;
           if (e) return;
-          const m = Q({ id: l.taskId });
-          if (!je(M.current[l.taskId] ?? null, l, e)) return;
+          const m = Z({ id: l.taskId });
+          if (!Pe(M.current[l.taskId] ?? null, l, e)) return;
           if (kt(l, Date.now())) {
             g("warn", "Agent request timed out — check the task chat."), _(l);
             return;
           }
           let p;
           try {
-            p = await se(m);
+            p = await ae(m);
           } catch {
             return;
           }
-          if (!je(M.current[l.taskId] ?? null, l, e)) return;
-          const f = L.current[m] ?? 0, x = (F = j.current) == null ? void 0 : F.tasks.find((ue) => ue.id === l.taskId), R = vt({
+          if (!Pe(M.current[l.taskId] ?? null, l, e)) return;
+          const f = L.current[m] ?? 0, y = (O = j.current) == null ? void 0 : O.tasks.find((ue) => ue.id === l.taskId), w = vt({
             work: l,
             data: p,
             seen: f,
-            sawReply: oe.current[l.taskId] ?? !1,
-            stepCount: (x == null ? void 0 : x.subtasks.length) ?? null
+            sawReply: ie.current[l.taskId] ?? !1,
+            stepCount: (y == null ? void 0 : y.subtasks.length) ?? null
           });
-          L.current[m] = R.nextSeen, oe.current[l.taskId] = R.sawReply, Ve(l, R.actions), R.settled && (l.kind === "step" && R.stepSucceeded && d("Step completed via taskmaster agent", { type: "success" }), _(l));
+          L.current[m] = w.nextSeen, ie.current[l.taskId] = w.sawReply, Ve(l, w.actions), w.settled && (l.kind === "step" && w.stepSucceeded && d("Step completed via taskmaster agent", { type: "success" }), _(l));
         })
       );
     }, c = setInterval(() => void n(), wt);
@@ -413,7 +413,7 @@ function Lt() {
     };
   }, [$e]);
   function _e(e, n, c) {
-    !n.command || M.current[e.id] || I.current[e.id] || (g("info", `Kiro terminal execute (step ${c + 1}): ${n.command}`), le(
+    !n.command || M.current[e.id] || R.current[e.id] || (g("info", `Kiro terminal execute (step ${c + 1}): ${n.command}`), de(
       e,
       `Run micro-step [${c + 1}] of task "${e.title}": ${n.title}
 Execute this terminal command and report concise output:
@@ -423,9 +423,9 @@ End your reply with exactly one line: STEP RESULT [${c + 1}]: done|failed — <s
     ));
   }
   function Ee(e) {
-    if (M.current[e.id] || I.current[e.id]) return;
+    if (M.current[e.id] || R.current[e.id]) return;
     const n = e.subtasks.map((c) => c.title).join("; ") || "none";
-    g("info", `Requesting micro-step breakdown for "${e.title}".`), d("Taskmaster agent is drafting micro-steps…"), le(
+    g("info", `Requesting micro-step breakdown for "${e.title}".`), d("Taskmaster agent is drafting micro-steps…"), de(
       e,
       `Break the task "${e.title}"${e.estimateMinutes ? ` (~${e.estimateMinutes}m)` : ""} into micro-steps per the taskmaster-method skill. Reply with ONE fenced json code block containing an array of {"title", "command"?} objects and no prose outside it.
 Existing steps (do not duplicate): ${n}`,
@@ -433,12 +433,12 @@ Existing steps (do not duplicate): ${n}`,
     );
   }
   function Ye(e) {
-    if (M.current[e.id] || I.current[e.id]) return;
+    if (M.current[e.id] || R.current[e.id]) return;
     const n = e.subtasks.map((s, l) => ({ sub: s, index: l })).filter(({ sub: s }) => !s.done);
     if (n.length === 0) return;
     const c = n.map(({ sub: s, index: l }) => `[${l + 1}] ${s.title}${s.command ? ` — command: ${s.command}` : ""}`).join(`
 `);
-    g("info", `Running ${n.length} remaining step(s) unattended via taskmaster agent.`), d(`Agent is running ${n.length} remaining step(s)…`), le(
+    g("info", `Running ${n.length} remaining step(s) unattended via taskmaster agent.`), d(`Agent is running ${n.length} remaining step(s)…`), de(
       e,
       `Execute the remaining micro-steps of task "${e.title}" in order, autonomously:
 ${c}
@@ -448,7 +448,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
   }
   function Ae(e) {
     const n = e.subtasks.filter((c) => !c.done).map((c) => c.title);
-    y({
+    k({
       agent: "taskmaster",
       message: `Check in on task "${e.title}". Remaining micro-steps: ${n.join("; ") || "none"}. Help me with the next one.`
     });
@@ -477,7 +477,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
     };
     v((s) => ({ ...s, tasks: [...s.tasks, c], activeTaskId: s.activeTaskId ?? c.id })), ge(""), be(""), g("info", `Task added to backlog: "${e}"`);
   }
-  function de(e) {
+  function ce(e) {
     const n = ye.trim();
     if (!n) return;
     const c = xe.trim(), s = { id: q("sub"), title: n, done: !1, source: "manual", ...c ? { command: c } : {} };
@@ -491,43 +491,43 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
       var s;
       const c = n.tasks.filter((l) => l.id !== e);
       return { ...n, tasks: c, activeTaskId: n.activeTaskId === e ? ((s = c[0]) == null ? void 0 : s.id) ?? null : n.activeTaskId };
-    }), te(null), g("info", "Task removed from backlog.");
+    }), ne(null), g("info", "Task removed from backlog.");
   }
   function Qe(e) {
     v((n) => ({ ...n, activeTaskId: e })), N("focus");
   }
-  const C = ot(() => S ? S.tasks.find((e) => e.id === S.activeTaskId) ?? S.tasks[0] ?? null : null, [S]), P = C ? Math.max(
+  const C = ot(() => S ? S.tasks.find((e) => e.id === S.activeTaskId) ?? S.tasks[0] ?? null : null, [S]), F = C ? Math.max(
     0,
-    Math.min(k[C.id] ?? gt(C), Math.max(0, C.subtasks.length - 1))
-  ) : 0, b = (C == null ? void 0 : C.subtasks[P]) ?? null, Ze = C ? Oe(C) : null, X = C ? C.subtasks.filter((e) => !e.done).length : 0;
+    Math.min(x[C.id] ?? gt(C), Math.max(0, C.subtasks.length - 1))
+  ) : 0, b = (C == null ? void 0 : C.subtasks[F]) ?? null, Ze = C ? Oe(C) : null, X = C ? C.subtasks.filter((e) => !e.done).length : 0;
   fe(() => {
     try {
       a(X);
     } catch {
     }
   }, [X, a]);
-  function ce(e, n) {
+  function J(e, n) {
     U((c) => ({ ...c, [e]: n }));
   }
   if (!S)
     return /* @__PURE__ */ r("div", { style: { ...o.root, alignItems: "center", justifyContent: "center" }, children: /* @__PURE__ */ u("div", { style: { display: "grid", gap: 10, justifyItems: "center" }, children: [
-      /* @__PURE__ */ r("span", { style: { color: t.muted, fontSize: 13 }, children: W ?? "Loading Taskmaster Pro…" }),
-      W ? /* @__PURE__ */ r("button", { className: "tm-btn", style: o.primaryBtn, onClick: () => ie(), children: "Retry load" }) : null
+      /* @__PURE__ */ r("span", { style: { color: t.muted, fontSize: 13 }, children: P ?? "Loading Taskmaster Pro…" }),
+      P ? /* @__PURE__ */ r("button", { className: "tm-btn", style: o.primaryBtn, onClick: () => se(), children: "Retry load" }) : null
     ] }) });
   const Me = S.tasks.length, Le = S.settings.memorySync;
-  let J;
-  switch (w) {
+  let Q;
+  switch (I) {
     case "focus":
-      J = tt();
+      Q = tt();
       break;
     case "backlog":
-      J = nt();
+      Q = nt();
       break;
     case "console":
-      J = rt();
+      Q = rt();
       break;
     default: {
-      const e = w;
+      const e = I;
       throw new Error(`Unhandled view: ${String(e)}`);
     }
   }
@@ -541,7 +541,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
       "button",
       {
         className: "tm-btn",
-        style: { ...o.tab, ...w === n.id ? o.tabActive : {} },
+        style: { ...o.tab, ...I === n.id ? o.tabActive : {} },
         onClick: () => N(n.id),
         children: n.label
       },
@@ -583,7 +583,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
         /* @__PURE__ */ r("p", { style: { color: t.muted, fontSize: 12, margin: "6px 0 14px" }, children: "Add your first task — the taskmaster agent can draft its micro-steps." }),
         De()
       ] });
-    const e = C, n = Ze ?? { done: 0, total: 0, pct: 0 }, c = Q(e), s = ne[e.id] ?? null, l = !!(b && (s == null ? void 0 : s.kind) === "step" && s.stepIndex === P), m = (s == null ? void 0 : s.kind) === "draft", p = (s == null ? void 0 : s.kind) === "all";
+    const e = C, n = Ze ?? { done: 0, total: 0, pct: 0 }, c = Z(e), s = re[e.id] ?? null, l = !!(b && (s == null ? void 0 : s.kind) === "step" && s.stepIndex === F), m = (s == null ? void 0 : s.kind) === "draft", p = (s == null ? void 0 : s.kind) === "all";
     return /* @__PURE__ */ u(me, { children: [
       /* @__PURE__ */ u("section", { className: "tm-card", style: { ...o.card, paddingTop: 20, position: "relative", overflow: "hidden" }, children: [
         /* @__PURE__ */ r("div", { style: o.gradientStrip }),
@@ -634,7 +634,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
         /* @__PURE__ */ u("div", { style: o.stepHeader, children: [
           /* @__PURE__ */ u("span", { style: { ...o.stepCounter, color: t.focus }, children: [
             /* @__PURE__ */ r("span", { className: "tm-pulse", style: o.pulseDot }),
-            e.subtasks.length === 0 ? "NO MICRO-STEPS YET" : `ACTIVE MICRO-STEP ${P + 1} OF ${e.subtasks.length}`
+            e.subtasks.length === 0 ? "NO MICRO-STEPS YET" : `ACTIVE MICRO-STEP ${F + 1} OF ${e.subtasks.length}`
           ] }),
           /* @__PURE__ */ u("span", { style: { display: "flex", gap: 6, alignItems: "center" }, children: [
             s && /* @__PURE__ */ r(
@@ -648,13 +648,13 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                 children: "STOP WAITING"
               }
             ),
-            /* @__PURE__ */ r("button", { className: "tm-btn", style: o.navBtn, onClick: () => ce(e.id, Math.max(0, P - 1)), children: "◄" }),
+            /* @__PURE__ */ r("button", { className: "tm-btn", style: o.navBtn, onClick: () => J(e.id, Math.max(0, F - 1)), children: "◄" }),
             /* @__PURE__ */ r(
               "button",
               {
                 className: "tm-btn",
                 style: o.navBtn,
-                onClick: () => ce(e.id, Math.min(e.subtasks.length - 1, P + 1)),
+                onClick: () => J(e.id, Math.min(e.subtasks.length - 1, F + 1)),
                 children: "►"
               }
             )
@@ -703,7 +703,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                     ...l ? { background: "rgba(129,140,248,0.25)", color: t.kiro } : {}
                   },
                   disabled: b.done || !!s,
-                  onClick: () => _e(e, b, P),
+                  onClick: () => _e(e, b, F),
                   children: l ? "⚙ EXECUTING VIA AGENT…" : b.done ? "✓ COMPLETED" : b.runState === "failed" ? "↻ RETRY VIA AGENT" : "▶ RUN COMMAND NATIVELY"
                 }
               ) }),
@@ -756,13 +756,13 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
               )
             ] })
           ] }),
-          /* @__PURE__ */ r("div", { style: { display: "flex", flexDirection: "column", gap: 6 }, children: e.subtasks.map((f, x) => {
-            const R = x === P;
+          /* @__PURE__ */ r("div", { style: { display: "flex", flexDirection: "column", gap: 6 }, children: e.subtasks.map((f, y) => {
+            const w = y === F;
             return /* @__PURE__ */ u(
               "div",
               {
-                style: { ...o.queueRow, ...R ? o.queueRowActive : {} },
-                onClick: () => ce(e.id, x),
+                style: { ...o.queueRow, ...w ? o.queueRowActive : {} },
+                onClick: () => J(e.id, y),
                 children: [
                   /* @__PURE__ */ u("span", { style: { display: "flex", alignItems: "center", gap: 10, minWidth: 0 }, children: [
                     /* @__PURE__ */ r(
@@ -771,22 +771,33 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                         className: "tm-btn",
                         style: o.queueCheck,
                         "aria-label": f.done ? "Mark incomplete" : "Mark complete",
-                        onClick: (F) => {
-                          F.stopPropagation(), Y(e.id, f.id, !f.done);
+                        onClick: (O) => {
+                          O.stopPropagation(), Y(e.id, f.id, !f.done);
                         },
                         children: f.done ? /* @__PURE__ */ r("span", { style: { color: t.focus, fontWeight: 700 }, children: "✓" }) : /* @__PURE__ */ r("span", { style: { color: "#475569" }, children: "○" })
                       }
                     ),
-                    /* @__PURE__ */ u("span", { style: { minWidth: 0 }, children: [
-                      /* @__PURE__ */ r("span", { style: { fontSize: 12, ...f.done ? { textDecoration: "line-through", color: t.muted } : {} }, children: f.title }),
-                      /* @__PURE__ */ u("span", { style: { display: "flex", gap: 6, marginTop: 2 }, children: [
-                        f.runState === "failed" && !f.done && /* @__PURE__ */ r("span", { style: { ...o.execChip, ...o.failedChip }, children: "FAILED" }),
-                        f.command && !f.done && /* @__PURE__ */ r("span", { style: o.execChip, children: "EXECUTABLE" }),
-                        f.source === "agent" && /* @__PURE__ */ r("span", { style: { ...o.execChip, color: t.kiro, borderColor: "rgba(129,140,248,0.3)", background: "rgba(129,140,248,0.08)" }, children: "AGENT-DRAFTED" })
-                      ] })
-                    ] })
+                    /* @__PURE__ */ u(
+                      "button",
+                      {
+                        className: "tm-btn",
+                        style: o.queueSelect,
+                        "aria-current": w || void 0,
+                        onClick: (O) => {
+                          O.stopPropagation(), J(e.id, y);
+                        },
+                        children: [
+                          /* @__PURE__ */ r("span", { style: { fontSize: 12, ...f.done ? { textDecoration: "line-through", color: t.muted } : {} }, children: f.title }),
+                          /* @__PURE__ */ u("span", { style: { display: "flex", gap: 6, marginTop: 2 }, children: [
+                            f.runState === "failed" && !f.done && /* @__PURE__ */ r("span", { style: { ...o.execChip, ...o.failedChip }, children: "FAILED" }),
+                            f.command && !f.done && /* @__PURE__ */ r("span", { style: o.execChip, children: "EXECUTABLE" }),
+                            f.source === "agent" && /* @__PURE__ */ r("span", { style: { ...o.execChip, color: t.kiro, borderColor: "rgba(129,140,248,0.3)", background: "rgba(129,140,248,0.08)" }, children: "AGENT-DRAFTED" })
+                          ] })
+                        ]
+                      }
+                    )
                   ] }),
-                  R && /* @__PURE__ */ r("span", { style: o.activeChip, children: "ACTIVE" })
+                  w && /* @__PURE__ */ r("span", { style: o.activeChip, children: "ACTIVE" })
                 ]
               },
               f.id
@@ -801,7 +812,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                 value: ye,
                 onChange: (f) => ke(f.target.value),
                 onKeyDown: (f) => {
-                  f.key === "Enter" && de(e);
+                  f.key === "Enter" && ce(e);
                 }
               }
             ),
@@ -813,11 +824,11 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                 value: xe,
                 onChange: (f) => Se(f.target.value),
                 onKeyDown: (f) => {
-                  f.key === "Enter" && de(e);
+                  f.key === "Enter" && ce(e);
                 }
               }
             ),
-            /* @__PURE__ */ r("button", { className: "tm-btn", style: o.btnGhost, onClick: () => de(e), children: "ADD" })
+            /* @__PURE__ */ r("button", { className: "tm-btn", style: o.btnGhost, onClick: () => ce(e), children: "ADD" })
           ] })
         ] })
       ] }),
@@ -866,7 +877,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
         De()
       ] }),
       S.tasks.map((e) => {
-        const n = Oe(e), c = e.id === (C == null ? void 0 : C.id), s = ne[e.id] ?? null, l = (s == null ? void 0 : s.kind) === "draft";
+        const n = Oe(e), c = e.id === (C == null ? void 0 : C.id), s = re[e.id] ?? null, l = (s == null ? void 0 : s.kind) === "draft";
         return /* @__PURE__ */ u(
           "section",
           {
@@ -897,10 +908,10 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                     "button",
                     {
                       className: "tm-btn",
-                      style: { ...o.btnGhost, ...ee === e.id ? { color: t.danger, borderColor: t.danger } : {} },
-                      onClick: () => ee === e.id ? Je(e.id) : te(e.id),
-                      onBlur: () => te(null),
-                      children: ee === e.id ? "SURE?" : "DELETE"
+                      style: { ...o.btnGhost, ...te === e.id ? { color: t.danger, borderColor: t.danger } : {} },
+                      onClick: () => te === e.id ? Je(e.id) : ne(e.id),
+                      onBlur: () => ne(null),
+                      children: te === e.id ? "SURE?" : "DELETE"
                     }
                   )
                 ] })
@@ -944,10 +955,10 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
           )
         ] }),
         /* @__PURE__ */ u("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" }, children: [
-          /* @__PURE__ */ r(Z, { label: "STATUS", value: h ? "ONLINE" : "UNKNOWN", accent: h ? t.focus : t.warn }),
-          /* @__PURE__ */ r(Z, { label: "VERSION", value: String((h == null ? void 0 : h.version) ?? "—"), accent: t.kiro }),
-          /* @__PURE__ */ r(Z, { label: "UPTIME", value: String((h == null ? void 0 : h.uptime) ?? "—"), accent: t.text }),
-          /* @__PURE__ */ r(Z, { label: "PROVIDER", value: String((h == null ? void 0 : h.provider) ?? "—"), accent: t.text })
+          /* @__PURE__ */ r(ee, { label: "STATUS", value: h ? "ONLINE" : "UNKNOWN", accent: h ? t.focus : t.warn }),
+          /* @__PURE__ */ r(ee, { label: "VERSION", value: String((h == null ? void 0 : h.version) ?? "—"), accent: t.kiro }),
+          /* @__PURE__ */ r(ee, { label: "UPTIME", value: String((h == null ? void 0 : h.uptime) ?? "—"), accent: t.text }),
+          /* @__PURE__ */ r(ee, { label: "PROVIDER", value: String((h == null ? void 0 : h.provider) ?? "—"), accent: t.text })
         ] })
       ] }),
       /* @__PURE__ */ u("section", { className: "tm-card", style: { ...o.card, fontFamily: D }, children: [
@@ -956,8 +967,8 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
           /* @__PURE__ */ r("span", { style: { ...o.execChip, color: t.muted }, children: Ue })
         ] }),
         /* @__PURE__ */ u("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 380, overflowY: "auto" }, children: [
-          z.length === 0 && /* @__PURE__ */ r("span", { style: { color: t.muted, fontSize: 11 }, children: "No events yet." }),
-          z.map((e, n) => /* @__PURE__ */ u("div", { style: { display: "flex", gap: 10, alignItems: "flex-start" }, children: [
+          W.length === 0 && /* @__PURE__ */ r("span", { style: { color: t.muted, fontSize: 11 }, children: "No events yet." }),
+          W.map((e, n) => /* @__PURE__ */ u("div", { style: { display: "flex", gap: 10, alignItems: "flex-start" }, children: [
             /* @__PURE__ */ r("span", { style: { color: "#475569", fontSize: 10, flexShrink: 0, paddingTop: 1 }, children: e.ts }),
             /* @__PURE__ */ r(
               "span",
@@ -988,11 +999,11 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
       ] }),
       et()
     ] }),
-    W && /* @__PURE__ */ r("div", { style: o.errorBanner, children: W }),
-    J
+    P && /* @__PURE__ */ r("div", { style: o.errorBanner, children: P }),
+    Q
   ] });
 }
-function Z({ label: i, value: d, accent: a }) {
+function ee({ label: i, value: d, accent: a }) {
   return /* @__PURE__ */ u("div", { style: o.statBox, children: [
     /* @__PURE__ */ r("div", { style: { color: t.muted, fontSize: 9, letterSpacing: "0.1em", marginBottom: 4 }, children: i }),
     /* @__PURE__ */ r("div", { style: { color: a, fontSize: 13, fontWeight: 700, fontFamily: D, wordBreak: "break-all" }, children: d })
@@ -1002,6 +1013,7 @@ const Rt = `
   .tm-btn { cursor: pointer; transition: filter 120ms ease, background 120ms ease; }
   .tm-btn:hover:not(:disabled) { filter: brightness(1.25); }
   .tm-btn:disabled { cursor: default; }
+  .tm-btn:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
   .tm-card { box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
   @keyframes tm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
   .tm-pulse { animation: tm-pulse 1.6s ease-in-out infinite; }
@@ -1199,6 +1211,17 @@ const Rt = `
   },
   queueRowActive: { borderColor: "rgba(52,211,153,0.45)", background: "rgba(52,211,153,0.08)" },
   queueCheck: { background: "transparent", border: "none", padding: 0, fontSize: 13, flexShrink: 0 },
+  queueSelect: {
+    background: "transparent",
+    border: "none",
+    padding: 0,
+    margin: 0,
+    minWidth: 0,
+    textAlign: "left",
+    color: "inherit",
+    font: "inherit",
+    borderRadius: 6
+  },
   execChip: {
     display: "inline-block",
     padding: "1px 5px",
