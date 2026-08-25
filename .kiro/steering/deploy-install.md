@@ -32,9 +32,8 @@ constraints every change in this repo must respect. Human-facing step-by-step li
    Node/npm; the gateway serves the committed bundle directly. Any change under
    `ui/src/` MUST be followed by `cd ui && npm run build` and a commit of the rebuilt
    `dist/index.mjs`, or the installed app silently keeps running the old UI — no error,
-   no symptom. CI enforcement is spec Task 1 in
-   `.kiro/specs/taskmaster-pro/tasks.md`; until it lands, this rule is manual.
-   Docs-only or spec-only changes need no rebuild.
+   no symptom. CI enforces this on every push and PR (`.github/workflows/ci.yml`,
+   spec Task 1, landed 2026-08-25). Docs-only or spec-only changes need no rebuild.
 2. **Never run install, gateway, or `kirocrew` CLI commands from this dev
    environment.** There is no gateway here, and deployment crosses to the work machine
    by Collin's hand only (see `README.md` Doctrine). Document commands; do not execute

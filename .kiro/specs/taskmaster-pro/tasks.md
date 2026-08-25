@@ -18,7 +18,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 | Task | Status | Issue | Sequencing |
 |---|---|---|---|
 | 0 — Bring the spec into the repository | closed (won't do) — copy not needed; in-repo spec made authoritative instead | — | — |
-| 1 — CI that guards the committed build artifact | not started | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
+| 1 — CI that guards the committed build artifact | done — merged 2026-08-25 ([#10](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/10)) | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
 | 2 — Extract the slot engine and test it | not started | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
 | 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
 | 4 — Cancel an in-flight agent run | not started | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
@@ -47,7 +47,7 @@ parallel document — one source of truth, in-repo.
 
 ## Task 1 — CI that guards the committed build artifact
 
-Status: not started
+Status: done — merged 2026-08-25 via PR #10 (commit `4b67391`)
 Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12
 
 **Why this is first.** There is no `.github/` directory at all. Nothing runs `typecheck`,
