@@ -4,8 +4,9 @@ Status: **v0.2.0 shipped.** This file records the requirements the shipped app a
 satisfies plus the ones it does not, so `tasks.md` can be read as a delta rather than a
 wish list. Everything marked *met* was verified against the source on 2026-08-25.
 
-The authoritative narrative spec is Collin's `memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md`,
-which lives outside this repository. That is a gap in itself — see `tasks.md` task 0.
+This file, together with `design.md`, is the authoritative spec as of 2026-08-25
+(`tasks.md` task 0, closed). It supersedes the original external narrative spec,
+which remains on Collin's machine as a historical artifact.
 
 ## Product mandate
 

@@ -10,21 +10,19 @@ app frustrating in daily use.
 
 ---
 
-## Task 0 — Bring the spec into the repository
+## Task 0 — Bring the spec into the repository (closed 2026-08-25)
 
-**Why:** `README.md` names `memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md` as the
-spec, and that file is not in this repository. The single source of truth for what this app
-is supposed to be lives only on one machine. Anyone — human or agent — who picks the project
-up has to reconstruct intent from source, which is exactly what produced this directory.
+**Resolution:** Closed without the copy, per Collin. The in-repo spec in this directory
+(`requirements.md` + `design.md`) has since been polished and improved and is now the
+authoritative spec for Taskmaster Pro. The original narrative file,
+`memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md` (external workspace, includes the
+v0.2 revision), remains on Collin's machine as a historical artifact; nothing in this
+repository depends on it any longer. The `README.md` spec pointer and the authority note in
+`requirements.md` were updated as part of this closure.
 
-**Do:** Copy the narrative spec (including the v0.2 revision) into
-`.kiro/specs/taskmaster-pro/`, and update the `README.md` spec pointer to the in-repo path.
-This directory is the landing site; `requirements.md` and `design.md` already capture what
-was reconstructable from source and should be reconciled against the real spec, not
-replace it.
-
-**Size:** Small, but it is a copy Collin has to make — the source file is not reachable
-from here.
+**If the external file ever resurfaces material not captured here** (rationale, cut scope,
+deferred ideas), fold it into `requirements.md`/`design.md` rather than committing it as a
+parallel document — one source of truth, in-repo.
 
 ---
 
