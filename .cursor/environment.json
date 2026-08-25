@@ -1,0 +1,17 @@
+{
+  "name": "Taskmaster Pro",
+  "install": "cd ui && npm ci",
+  "terminals": [
+    {
+      "name": "ui-dev",
+      "command": "cd ui && npm run dev",
+      "description": "Vite dev harness for the Taskmaster Pro UI (mock KiroCrew SDK, no gateway needed). Serves http://localhost:5174."
+    }
+  ],
+  "ports": [
+    {
+      "name": "ui-dev",
+      "port": 5174
+    }
+  ]
+}

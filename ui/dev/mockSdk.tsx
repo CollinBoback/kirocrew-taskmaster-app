@@ -153,14 +153,20 @@ async function route(method: string, path: string, body?: unknown): Promise<unkn
   throw new Error(`mock: no route for ${method} ${path}`)
 }
 
+// Stable singleton — the real @kirocrew/app-sdk returns a stable api handle, so
+// the mock must too. Returning a fresh object each render would make every
+// consumer's useCallback/useEffect deps churn (App's load effect calls addLog →
+// setLog → re-render → new api → effect re-runs → "Maximum update depth").
+const mockApi = {
+  get: (path: string) => route('GET', path),
+  post: (path: string, body?: unknown) => route('POST', path, body),
+  put: (path: string, body?: unknown) => route('PUT', path, body),
+  patch: (path: string, body?: unknown) => route('PATCH', path, body),
+  del: (path: string) => route('DELETE', path),
+}
+
 export function useAppApi() {
-  return useMemo(() => ({
-    get: (path: string) => route('GET', path),
-    post: (path: string, body?: unknown) => route('POST', path, body),
-    put: (path: string, body?: unknown) => route('PUT', path, body),
-    patch: (path: string, body?: unknown) => route('PATCH', path, body),
-    del: (path: string) => route('DELETE', path),
-  }), [])
+  return mockApi
 }
 
 const SCRIPTED_NOTIFICATION = {
@@ -187,19 +193,28 @@ export function useAppEvents(event: string, cb: (payload: unknown) => void): voi
   }, [event])
 }
 
+// These hooks also return stable references, matching the real SDK. App keeps
+// them in useCallback/useEffect deps, so unstable identities would re-run those
+// effects on every render.
+function notifyToast(text: string, _opts?: { type?: 'info' | 'success' | 'error' }) {
+  const toast = document.createElement('div')
+  toast.textContent = text
+  Object.assign(toast.style, {
+    position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+    background: '#052e22', color: '#34d399', border: '1px solid #10b981',
+    borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: '700',
+    zIndex: '100', fontFamily: 'sans-serif',
+  })
+  document.body.appendChild(toast)
+  setTimeout(() => toast.remove(), 3000)
+}
+
 export function useNotify() {
-  return (text: string, _opts?: Record<string, unknown>) => {
-    const toast = document.createElement('div')
-    toast.textContent = text
-    Object.assign(toast.style, {
-      position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
-      background: '#052e22', color: '#34d399', border: '1px solid #10b981',
-      borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: '700',
-      zIndex: '100', fontFamily: 'sans-serif',
-    })
-    document.body.appendChild(toast)
-    setTimeout(() => toast.remove(), 3000)
-  }
+  return notifyToast
+}
+
+function setNavBadge(count: number) {
+  document.title = count > 0 ? `(${count}) Taskmaster Pro — dev harness` : 'Taskmaster Pro — dev harness'
 }
 
 export function useNavBadge() {
@@ -209,12 +224,7 @@ export function useNavBadge() {
 }
 
 export function useChatLauncher() {
-  const notify = useNotify()
-  return {
-    openChat: (opts?: { agent?: string; message?: string }) => {
-      notify(`Would open /chat with agent "${opts?.agent ?? 'default'}" (dev harness)`)
-    },
-  }
+  return chatLauncher
 }
 
 // ---------------------------------------------------------------------------
