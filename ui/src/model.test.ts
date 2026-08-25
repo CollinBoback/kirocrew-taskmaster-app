@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type { Task } from './model'
+import type { PendingWork, Task } from './model'
 import {
+  baselineSlotWatermark,
+  evaluateSlotPoll,
   firstIncompleteIndex,
+  isPendingTimedOut,
   lessonFor,
   normalizeConfig,
   normalizeSlotData,
@@ -19,6 +22,10 @@ function makeTask(overrides: Partial<Task> = {}): Task {
     subtasks: [],
     ...overrides,
   }
+}
+
+function makePending(overrides: Partial<PendingWork> = {}): PendingWork {
+  return { taskId: 'task-1', kind: 'step', stepIndex: 0, sentAt: 1_000, ...overrides }
 }
 
 describe('parseStepResults (STEP RESULT contract)', () => {
@@ -119,6 +126,158 @@ describe('parseBreakdown (fenced-JSON contract)', () => {
   it('prefers the fenced block over a wider bare-bracket span', () => {
     const text = 'Context [irrelevant]\n```json\n[{"title": "Fenced step"}]\n```'
     expect(parseBreakdown(text)).toEqual([{ title: 'Fenced step' }])
+  })
+})
+
+describe('evaluateSlotPoll (pure chat-slot engine)', () => {
+  it('baselines a new slot to its current history and preserves an existing watermark', () => {
+    expect(baselineSlotWatermark(undefined, 7)).toBe(7)
+    expect(baselineSlotWatermark(3, 7)).toBe(3)
+  })
+
+  it('does not re-apply transcript messages before the watermark', () => {
+    const decision = evaluateSlotPoll({
+      work: makePending(),
+      data: { messages: [{ role: 'assistant', content: 'STEP RESULT [1]: done — stale' }], running: false },
+      seen: 1,
+      sawReply: false,
+      stepCount: 1,
+    })
+    expect(decision).toMatchObject({ actions: [], nextSeen: 1, sawReply: false, settled: false })
+  })
+
+  it('hides the still-streaming final message without advancing past it', () => {
+    const decision = evaluateSlotPoll({
+      work: makePending(),
+      data: {
+        messages: [
+          { role: 'user', content: 'run it' },
+          { role: 'assistant', content: 'STEP RESULT [1]: done — still streaming' },
+        ],
+        running: true,
+      },
+      seen: 1,
+      sawReply: false,
+      stepCount: 1,
+    })
+    expect(decision).toMatchObject({ actions: [], nextSeen: 1, sawReply: false, settled: false })
+  })
+
+  it('settles a single-step request on the first valid marker', () => {
+    const content = 'Command output\nSTEP RESULT [1]: done — completed safely'
+    const decision = evaluateSlotPoll({
+      work: makePending(),
+      data: { messages: [{ role: 'assistant', content }], running: false },
+      seen: 0,
+      sawReply: false,
+      stepCount: 1,
+    })
+    expect(decision).toMatchObject({ nextSeen: 1, sawReply: true, settled: true, stepSucceeded: true })
+    expect(decision.actions).toEqual([
+      {
+        type: 'step-result',
+        result: { index: 1, ok: true, summary: 'completed safely' },
+        output: content,
+      },
+    ])
+  })
+
+  it('does not settle early on an out-of-range step marker', () => {
+    const decision = evaluateSlotPoll({
+      work: makePending(),
+      data: {
+        messages: [
+          { role: 'assistant', content: 'STEP RESULT [9]: done — wrong task shape' },
+          { role: 'assistant', content: 'still running' },
+        ],
+        running: true,
+      },
+      seen: 0,
+      sawReply: false,
+      stepCount: 1,
+    })
+    expect(decision.settled).toBe(false)
+    expect(decision.actions).toEqual([
+      { type: 'unknown-step', result: { index: 9, ok: true, summary: 'wrong task shape' } },
+    ])
+  })
+
+  it('settles a draft request on parseable breakdown JSON', () => {
+    const decision = evaluateSlotPoll({
+      work: makePending({ kind: 'draft', stepIndex: undefined }),
+      data: {
+        messages: [
+          { role: 'assistant', content: '```json\n[{"title":"First safe step"}]\n```' },
+          { role: 'assistant', content: 'still streaming' },
+        ],
+        running: true,
+      },
+      seen: 0,
+      sawReply: false,
+      stepCount: 0,
+    })
+    expect(decision).toMatchObject({ settled: true, sawReply: true })
+    expect(decision.actions).toEqual([{ type: 'append-draft', steps: [{ title: 'First safe step' }] }])
+  })
+
+  it('applies run-all markers but waits for the turn to end before settling', () => {
+    const running = evaluateSlotPoll({
+      work: makePending({ kind: 'all', stepIndex: undefined }),
+      data: {
+        messages: [
+          { role: 'assistant', content: 'STEP RESULT [1]: done — first complete' },
+          { role: 'assistant', content: 'working on the second step' },
+        ],
+        running: true,
+      },
+      seen: 0,
+      sawReply: false,
+      stepCount: 2,
+    })
+    expect(running).toMatchObject({ nextSeen: 1, sawReply: true, settled: false })
+    expect(running.actions[0]).toMatchObject({ type: 'step-result', result: { index: 1, ok: true } })
+
+    const finished = evaluateSlotPoll({
+      work: makePending({ kind: 'all', stepIndex: undefined }),
+      data: {
+        messages: [
+          { role: 'assistant', content: 'STEP RESULT [1]: done — first complete' },
+          { role: 'assistant', content: 'STEP RESULT [2]: failed — needs input' },
+        ],
+        running: false,
+      },
+      seen: running.nextSeen,
+      sawReply: running.sawReply,
+      stepCount: 2,
+    })
+    expect(finished).toMatchObject({ nextSeen: 2, sawReply: true, settled: true })
+    expect(finished.actions).toEqual([
+      {
+        type: 'step-result',
+        result: { index: 2, ok: false, summary: 'needs input' },
+        output: 'STEP RESULT [2]: failed — needs input',
+      },
+      { type: 'turn-ended', kind: 'all' },
+    ])
+  })
+
+  it('settles with the raw reply fallback when a step reply has no marker', () => {
+    const content = 'I ran the command, but omitted the required marker.'
+    const decision = evaluateSlotPoll({
+      work: makePending(),
+      data: { messages: [{ role: 'assistant', content }], running: false },
+      seen: 0,
+      sawReply: false,
+      stepCount: 1,
+    })
+    expect(decision).toMatchObject({ settled: true, stepSucceeded: false, sawReply: true })
+    expect(decision.actions).toEqual([{ type: 'turn-ended', kind: 'step', output: content }])
+  })
+
+  it('times out only after the configured window has elapsed', () => {
+    const work = makePending({ sentAt: 1_000 })
+    expect(isPendingTimedOut(work, 1_999, 1_000)).toBe(false)
+    expect(isPendingTimedOut(work, 2_001, 1_000)).toBe(true)
   })
 })
 

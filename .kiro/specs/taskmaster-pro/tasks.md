@@ -19,7 +19,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 |---|---|---|---|
 | 0 — Bring the spec into the repository | closed (won't do) — copy not needed; in-repo spec made authoritative instead | — | — |
 | 1 — CI that guards the committed build artifact | done — merged 2026-08-25 ([#10](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/10)) | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
-| 2 — Extract the slot engine and test it | not started | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
+| 2 — Extract the slot engine and test it | in progress — implementation PR under review | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
 | 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
 | 4 — Cancel an in-flight agent run | not started | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
 | 5 — Per-task `pending` | not started | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
@@ -94,7 +94,7 @@ rebuild. Add a one-line note to `README.md` telling contributors CI enforces the
 
 ## Task 2 — Extract the slot engine into the pure model and test it
 
-Status: not started
+Status: in progress
 Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13
 (Note: that issue body's Sequencing line mispredicts the downstream numbers — the
 correct ones are #15 for task 4 and #16 for task 5, as in the status index here.)

@@ -2,14 +2,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, ReactElement } from 'react'
 import { ChatEmbed, useAppApi, useAppEvents, useChatLauncher, useNavBadge, useNotify } from '@kirocrew/app-sdk'
 import { MarkdownRenderer } from '@kirocrew/ui'
-import type { DraftStep, SlotMessage, Subtask, Task, TaskmasterConfig } from './model'
+import type { DraftStep, PendingWork, SlotMessage, SlotPollAction, Subtask, Task, TaskmasterConfig } from './model'
 import {
+  baselineSlotWatermark,
+  evaluateSlotPoll,
   firstIncompleteIndex,
+  isPendingTimedOut,
   lessonFor,
   normalizeConfig,
   normalizeSlotData,
-  parseBreakdown,
-  parseStepResults,
   progress,
   taskSlotKey,
   uid,
@@ -22,8 +23,6 @@ const LOG_CAP = 200
 // polling of the task's chat slot — the same mechanism ChatEmbed uses.
 const CONSOLE_MODE = 'notification scope · slot polling'
 const POLL_MS = 2500
-const PENDING_TIMEOUT_MS = 15 * 60 * 1000
-const OUTPUT_CAP = 4000
 
 type View = 'focus' | 'backlog' | 'console'
 
@@ -38,18 +37,6 @@ interface GatewayStatus {
   uptime?: string | number
   provider?: string
   [key: string]: unknown
-}
-
-/**
- * One in-flight agent request against a task's chat slot. `step` waits for a
- * single STEP RESULT marker, `all` collects markers until the turn ends,
- * `draft` waits for a fenced-JSON breakdown.
- */
-interface PendingWork {
-  taskId: string
-  kind: 'step' | 'draft' | 'all'
-  stepIndex?: number
-  sentAt: number
 }
 
 // Dashboard theme tokens with the mockup's dark slate palette as fallbacks.
@@ -238,21 +225,24 @@ export default function App() {
     addLog('info', `Gateway notification [${title}]: ${text.slice(0, 200)}`)
   })
 
-  function appendDraftSteps(taskId: string, steps: DraftStep[]) {
-    mutate((cfg) => ({
-      ...cfg,
-      tasks: cfg.tasks.map((task) => {
-        if (task.id !== taskId) return task
-        const existing = new Set(task.subtasks.map((sub) => sub.title.toLowerCase()))
-        const fresh: Subtask[] = steps
-          .filter((step) => !existing.has(step.title.toLowerCase()))
-          .map((step) => ({ id: uid('sub'), title: step.title, done: false, source: 'agent' as const, ...(step.command ? { command: step.command } : {}) }))
-        return { ...task, subtasks: [...task.subtasks, ...fresh] }
-      }),
-    }))
-    addLog('ok', `Taskmaster agent drafted ${steps.length} micro-step(s).`)
-    notify(`Added ${steps.length} drafted micro-steps`)
-  }
+  const appendDraftSteps = useCallback(
+    (taskId: string, steps: DraftStep[]) => {
+      mutate((cfg) => ({
+        ...cfg,
+        tasks: cfg.tasks.map((task) => {
+          if (task.id !== taskId) return task
+          const existing = new Set(task.subtasks.map((sub) => sub.title.toLowerCase()))
+          const fresh: Subtask[] = steps
+            .filter((step) => !existing.has(step.title.toLowerCase()))
+            .map((step) => ({ id: uid('sub'), title: step.title, done: false, source: 'agent' as const, ...(step.command ? { command: step.command } : {}) }))
+          return { ...task, subtasks: [...task.subtasks, ...fresh] }
+        }),
+      }))
+      addLog('ok', `Taskmaster agent drafted ${steps.length} micro-step(s).`)
+      notify(`Added ${steps.length} drafted micro-steps`)
+    },
+    [addLog, mutate, notify],
+  )
 
   // -------------------------------------------------------------------------
   // Chat-slot engine (spec-builder pattern): every agent request is a message
@@ -290,11 +280,12 @@ export default function App() {
     const slot = taskSlotKey(task)
     // Baseline the watermark BEFORE sending so pre-existing transcript
     // history (old STEP RESULT lines included) is never re-parsed.
-    if (!(slot in seenRef.current)) {
+    if (seenRef.current[slot] === undefined) {
       try {
-        seenRef.current[slot] = (await fetchSlot(slot)).messages.length
+        const historyLength = (await fetchSlot(slot)).messages.length
+        seenRef.current[slot] = baselineSlotWatermark(seenRef.current[slot], historyLength)
       } catch {
-        seenRef.current[slot] = 0
+        seenRef.current[slot] = baselineSlotWatermark(seenRef.current[slot], 0)
       }
     }
     sawReplyRef.current = false
@@ -317,50 +308,45 @@ export default function App() {
     addLog('info', `Sent to task slot ${slot}: ${message.split('\n')[0].slice(0, 120)}`)
   }
 
-  /** Apply STEP RESULT markers / breakdown JSON from new agent messages. */
-  const processAgentMessages = useCallback(
-    (work: PendingWork, fresh: SlotMessage[]): { settled: boolean; stepSucceeded: boolean } => {
-      const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
-      if (!task) return { settled: true, stepSucceeded: false }
-      let settled = false
-      let stepSucceeded = false
-      for (const message of fresh) {
-        if (message.role === 'user' || !message.content) continue
-        sawReplyRef.current = true
-        const content = message.content
-        if (work.kind === 'draft') {
-          const steps = parseBreakdown(content)
-          if (steps) {
-            appendDraftSteps(work.taskId, steps)
-            settled = true
+  /** Translate pure slot-engine actions into React state, logs, and notices. */
+  const applySlotActions = useCallback(
+    (work: PendingWork, actions: SlotPollAction[]) => {
+      for (const action of actions) {
+        if (action.type === 'append-draft') {
+          appendDraftSteps(work.taskId, action.steps)
+          continue
+        }
+        if (action.type === 'unknown-step') {
+          addLog('warn', `Agent reported STEP RESULT [${action.result.index}] but the task has no such step.`)
+          continue
+        }
+        if (action.type === 'step-result') {
+          const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
+          const sub = task?.subtasks[action.result.index - 1]
+          if (!sub) continue
+          if (action.result.ok) {
+            setStepState(work.taskId, sub.id, true, action.output, 'done')
+            addLog('ok', `Step ${action.result.index} completed by agent: ${action.result.summary || sub.title}`)
+          } else {
+            setStepOutput(work.taskId, sub.id, action.output, 'failed')
+            addLog('warn', `Step ${action.result.index} failed: ${action.result.summary || '(no summary)'}`)
           }
           continue
         }
-        const results = parseStepResults(content)
-        for (const result of results) {
-          const sub = task.subtasks[result.index - 1]
-          if (!sub) {
-            addLog('warn', `Agent reported STEP RESULT [${result.index}] but the task has no such step.`)
-            continue
-          }
-          const output =
-            results.length === 1
-              ? content.slice(0, OUTPUT_CAP)
-              : `${result.ok ? 'done' : 'failed'} — ${result.summary || '(no summary)'}`
-          if (result.ok) {
-            setStepState(work.taskId, sub.id, true, output, 'done')
-            addLog('ok', `Step ${result.index} completed by agent: ${result.summary || sub.title}`)
-            stepSucceeded = true
-          } else {
-            setStepOutput(work.taskId, sub.id, output, 'failed')
-            addLog('warn', `Step ${result.index} failed: ${result.summary || '(no summary)'}`)
-          }
-          if (work.kind === 'step') settled = true
+        if (action.kind === 'all') {
+          addLog('ok', 'Agent finished the run — see per-step results above and the task chat.')
+        } else if (action.kind === 'draft') {
+          addLog('warn', 'Draft reply had no parseable json block — see the task chat.')
+          notify('Agent reply was not parseable — see the task chat')
+        } else {
+          const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
+          const sub = work.stepIndex != null ? task?.subtasks[work.stepIndex] : undefined
+          if (sub && action.output) setStepOutput(work.taskId, sub.id, action.output)
+          addLog('warn', 'Agent reply had no STEP RESULT marker — step left for manual toggle.')
         }
       }
-      return { settled, stepSucceeded }
     },
-    [addLog, setStepState, setStepOutput],
+    [addLog, appendDraftSteps, notify, setStepOutput, setStepState],
   )
 
   // Poll the pending task's slot until the request settles, the agent turn
@@ -372,7 +358,7 @@ export default function App() {
     const tick = async () => {
       const work = pendingRef.current
       if (stopped || !work) return
-      if (Date.now() - work.sentAt > PENDING_TIMEOUT_MS) {
+      if (isPendingTimedOut(work, Date.now())) {
         addLog('warn', 'Agent request timed out — check the task chat.')
         setPending(null)
         return
@@ -384,28 +370,20 @@ export default function App() {
         return // slot not created yet, or transient error — next tick retries
       }
       const seen = seenRef.current[slot] ?? 0
-      const visible = data.running ? Math.max(0, data.messages.length - 1) : data.messages.length
-      const fresh = data.messages.slice(seen, visible)
-      seenRef.current[slot] = Math.max(seen, visible)
-      const parsed = fresh.length > 0 ? processAgentMessages(work, fresh) : { settled: false, stepSucceeded: false }
-      if (parsed.settled && work.kind !== 'all') {
-        if (work.kind === 'step' && parsed.stepSucceeded) notify('Step completed via taskmaster agent', { type: 'success' })
-        setPending(null)
-        return
-      }
-      // Turn over without the expected marker/JSON: surface what came back.
-      if (!data.running && sawReplyRef.current) {
-        if (work.kind === 'all') {
-          addLog('ok', 'Agent finished the run — see per-step results above and the task chat.')
-        } else if (work.kind === 'draft') {
-          addLog('warn', 'Draft reply had no parseable json block — see the task chat.')
-          notify('Agent reply was not parseable — see the task chat')
-        } else {
-          const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
-          const sub = work.stepIndex != null ? task?.subtasks[work.stepIndex] : undefined
-          const last = [...fresh].reverse().find((m) => m.role !== 'user' && m.content)
-          if (sub && last?.content) setStepOutput(work.taskId, sub.id, last.content.slice(0, OUTPUT_CAP))
-          addLog('warn', 'Agent reply had no STEP RESULT marker — step left for manual toggle.')
+      const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
+      const decision = evaluateSlotPoll({
+        work,
+        data,
+        seen,
+        sawReply: sawReplyRef.current,
+        stepCount: task?.subtasks.length ?? null,
+      })
+      seenRef.current[slot] = decision.nextSeen
+      sawReplyRef.current = decision.sawReply
+      applySlotActions(work, decision.actions)
+      if (decision.settled) {
+        if (work.kind === 'step' && decision.stepSucceeded) {
+          notify('Step completed via taskmaster agent', { type: 'success' })
         }
         setPending(null)
       }
