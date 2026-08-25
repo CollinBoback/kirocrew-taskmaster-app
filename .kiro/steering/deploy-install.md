@@ -39,8 +39,8 @@ constraints every change in this repo must respect. Human-facing step-by-step li
    environment.** There is no gateway here, and deployment crosses to the work machine
    by Collin's hand only (see `README.md` Doctrine). Document commands; do not execute
    them.
-3. **No Boeing names, servers, or data anywhere in the repo** — sample data stays the
-   fictional migration task.
+3. **No real employer, customer, or internal server names, and no proprietary data
+   anywhere in the repo** — sample data stays the fictional migration task.
 4. Keep `app.json` on the default gateway-managed lifecycle (`resources`/`lifecycle`
    omitted). The install flow assumes Crew wires up agents, skills, crons, and UI from
    the manifest; do not add self-managed lifecycle fields.

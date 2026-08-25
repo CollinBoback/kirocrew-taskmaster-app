@@ -17,7 +17,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 
 | Task | Status | Issue | Sequencing |
 |---|---|---|---|
-| 0 — Bring the spec into the repository | closed (won't do) — resolved in-repo | — | — |
+| 0 — Bring the spec into the repository | closed (won't do) — copy not needed; in-repo spec made authoritative instead | — | — |
 | 1 — CI that guards the committed build artifact | not started | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
 | 2 — Extract the slot engine and test it | not started | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
 | 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
