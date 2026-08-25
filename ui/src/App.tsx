@@ -952,14 +952,22 @@ export default function App() {
                       >
                         {sub.done ? <span style={{ color: T.focus, fontWeight: 700 }}>✓</span> : <span style={{ color: '#475569' }}>○</span>}
                       </button>
-                      <span style={{ minWidth: 0 }}>
+                      <button
+                        className="tm-btn"
+                        style={styles.queueSelect}
+                        aria-current={isActive || undefined}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          jumpStep(task.id, index)
+                        }}
+                      >
                         <span style={{ fontSize: 12, ...(sub.done ? { textDecoration: 'line-through', color: T.muted } : {}) }}>{sub.title}</span>
                         <span style={{ display: 'flex', gap: 6, marginTop: 2 }}>
                           {sub.runState === 'failed' && !sub.done && <span style={{ ...styles.execChip, ...styles.failedChip }}>FAILED</span>}
                           {sub.command && !sub.done && <span style={styles.execChip}>EXECUTABLE</span>}
                           {sub.source === 'agent' && <span style={{ ...styles.execChip, color: T.kiro, borderColor: 'rgba(129,140,248,0.3)', background: 'rgba(129,140,248,0.08)' }}>AGENT-DRAFTED</span>}
                         </span>
-                      </span>
+                      </button>
                     </span>
                     {isActive && <span style={styles.activeChip}>ACTIVE</span>}
                   </div>
@@ -1196,6 +1204,7 @@ const globalCss = `
   .tm-btn { cursor: pointer; transition: filter 120ms ease, background 120ms ease; }
   .tm-btn:hover:not(:disabled) { filter: brightness(1.25); }
   .tm-btn:disabled { cursor: default; }
+  .tm-btn:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
   .tm-card { box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
   @keyframes tm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
   .tm-pulse { animation: tm-pulse 1.6s ease-in-out infinite; }
@@ -1395,6 +1404,17 @@ const styles: Record<string, CSSProperties> = {
   },
   queueRowActive: { borderColor: 'rgba(52,211,153,0.45)', background: 'rgba(52,211,153,0.08)' },
   queueCheck: { background: 'transparent', border: 'none', padding: 0, fontSize: 13, flexShrink: 0 },
+  queueSelect: {
+    background: 'transparent',
+    border: 'none',
+    padding: 0,
+    margin: 0,
+    minWidth: 0,
+    textAlign: 'left',
+    color: 'inherit',
+    font: 'inherit',
+    borderRadius: 6,
+  },
   execChip: {
     display: 'inline-block',
     padding: '1px 5px',
