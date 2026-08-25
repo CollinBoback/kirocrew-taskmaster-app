@@ -9,7 +9,7 @@
 // - ChatEmbed: minimal stand-in for the host component (same props surface).
 // - useNotify(): DOM toast. useNavBadge(): tab title. useChatLauncher(): toast.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 
 type Listener = (payload: unknown) => void
@@ -218,9 +218,13 @@ function setNavBadge(count: number) {
 }
 
 export function useNavBadge() {
-  return useCallback((count: number) => {
-    document.title = count > 0 ? `(${count}) Taskmaster Pro — dev harness` : 'Taskmaster Pro — dev harness'
-  }, [])
+  return setNavBadge
+}
+
+const chatLauncher = {
+  openChat: (opts?: { agent?: string; message?: string }) => {
+    notifyToast(`Would open /chat with agent "${opts?.agent ?? 'default'}" (dev harness)`)
+  },
 }
 
 export function useChatLauncher() {
