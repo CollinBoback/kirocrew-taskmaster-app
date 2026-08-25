@@ -28,7 +28,7 @@ function makeTask(overrides: Partial<Task> = {}): Task {
 }
 
 function makePending(overrides: Partial<PendingWork> = {}): PendingWork {
-  return { taskId: 'task-1', kind: 'step', stepIndex: 0, sentAt: 1_000, ...overrides }
+  return { id: 'test-work', taskId: 'task-1', kind: 'step', stepIndex: 0, sentAt: 1_000, ...overrides }
 }
 
 describe('parseStepResults (STEP RESULT contract)', () => {
@@ -151,7 +151,7 @@ describe('evaluateSlotPoll (pure chat-slot engine)', () => {
   it('accepts poll results only for the exact active request', () => {
     const work = makePending()
     expect(isActivePendingWork(work, work)).toBe(true)
-    expect(isActivePendingWork(work, { ...work })).toBe(false)
+    expect(isActivePendingWork(work, { ...work, id: 'different' })).toBe(false)
     expect(isActivePendingWork(null, work)).toBe(false)
     expect(isActivePendingWork(work, work, true)).toBe(false)
   })

@@ -296,7 +296,7 @@ export default function App() {
     [mutate],
   )
 
-  async function sendToTaskSlot(task: Task, message: string, work: Omit<PendingWork, 'sentAt'>) {
+  async function sendToTaskSlot(task: Task, message: string, work: Omit<PendingWork, 'id' | 'sentAt'>) {
     if (pendingRef.current || sendLockRef.current) return
     sendLockRef.current = true
     const slot = taskSlotKey(task)
@@ -353,7 +353,7 @@ export default function App() {
       }
     }
     sawReplyRef.current = false
-    const nextWork = { ...work, sentAt: Date.now() }
+    const nextWork = { ...work, id: uid('work'), sentAt: Date.now() }
     sendLockRef.current = false
     beginPending(nextWork)
     if (!task.slotStarted) {
@@ -486,7 +486,7 @@ export default function App() {
       clearInterval(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending?.sentAt])
+  }, [pending?.id])
 
   function runCommand(task: Task, sub: Subtask, index: number) {
     if (!sub.command || pendingRef.current || sendLockRef.current) return

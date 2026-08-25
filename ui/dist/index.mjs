@@ -6,7 +6,7 @@ function Z(s) {
   return `taskmaster-${s.id}`;
 }
 let Le = 0;
-function H(s) {
+function q(s) {
   return Le += 1, `${s}-${Date.now().toString(36)}-${Le.toString(36)}`;
 }
 function ut() {
@@ -29,7 +29,7 @@ function Ge(s) {
 }
 function mt(s) {
   const l = Array.isArray(s.subtasks) ? s.subtasks.filter(Ge).map((a) => ({
-    id: typeof a.id == "string" ? a.id : H("sub"),
+    id: typeof a.id == "string" ? a.id : q("sub"),
     title: String(a.title),
     done: a.done === !0,
     ...typeof a.command == "string" && a.command.trim() ? { command: a.command } : {},
@@ -38,7 +38,7 @@ function mt(s) {
     ...a.source === "agent" || a.source === "manual" ? { source: a.source } : {}
   })) : [];
   return {
-    id: typeof s.id == "string" ? s.id : H("task"),
+    id: typeof s.id == "string" ? s.id : q("task"),
     title: String(s.title),
     ...typeof s.estimateMinutes == "number" && s.estimateMinutes > 0 ? { estimateMinutes: Math.round(s.estimateMinutes) } : {},
     createdAt: typeof s.createdAt == "string" ? s.createdAt : (/* @__PURE__ */ new Date()).toISOString(),
@@ -97,7 +97,7 @@ function ze(s, l) {
   return Math.max(s ?? 0, Math.max(0, l));
 }
 function Oe(s, l, a = !1) {
-  return !a && s === l;
+  return !a && (s == null ? void 0 : s.id) === l.id;
 }
 function xt(s) {
   if (typeof s != "object" || s === null) return { messages: [], running: !1 };
@@ -123,7 +123,7 @@ function Ct(s) {
   if (S === null)
     return { actions: [], nextSeen: N, sawReply: s.sawReply, settled: !0, stepSucceeded: !1 };
   const x = [];
-  let U = s.sawReply, W = !1, q = !1;
+  let U = s.sawReply, W = !1, H = !1;
   for (const b of I) {
     if (b.role === "user" || !b.content) continue;
     U = !0;
@@ -140,11 +140,11 @@ function Ct(s) {
         continue;
       }
       const V = F.length === 1 ? B.slice(0, Fe) : `${w.ok ? "done" : "failed"} — ${w.summary || "(no summary)"}`;
-      x.push({ type: "step-result", result: w, output: V }), w.ok && (q = !0), l.kind === "step" && (W = !0);
+      x.push({ type: "step-result", result: w, output: V }), w.ok && (H = !0), l.kind === "step" && (W = !0);
     }
   }
   if (W && l.kind !== "all")
-    return { actions: x, nextSeen: N, sawReply: U, settled: !0, stepSucceeded: q };
+    return { actions: x, nextSeen: N, sawReply: U, settled: !0, stepSucceeded: H };
   if (!a.running && U) {
     const b = [...I].reverse().find((B) => B.role !== "user" && B.content);
     x.push({
@@ -153,7 +153,7 @@ function Ct(s) {
       ...l.kind === "step" && (b != null && b.content) ? { output: b.content.slice(0, Fe) } : {}
     }), W = !0;
   }
-  return { actions: x, nextSeen: N, sawReply: U, settled: W, stepSucceeded: q };
+  return { actions: x, nextSeen: N, sawReply: U, settled: W, stepSucceeded: H };
 }
 const je = "/api/apps/taskmaster-pro/config", vt = 200, Pe = "notification scope · slot polling", wt = 2500, t = {
   bg: "var(--bg, #030712)",
@@ -170,12 +170,12 @@ function Tt() {
   return (/* @__PURE__ */ new Date()).toTimeString().split(" ")[0];
 }
 function Mt() {
-  const s = ot(), l = st(), a = it(), { openChat: k } = at(), [S, A] = $(null), [I, N] = $("focus"), [x, U] = $({}), [W, q] = $([]), [b, B] = $(null), [F, w] = $(null), [V, fe] = $(""), [ge, he] = $(""), [be, ye] = $(""), [ke, xe] = $(""), [te, ne] = $(null), [T, Se] = $(null), j = O(null);
+  const s = ot(), l = st(), a = it(), { openChat: k } = at(), [S, A] = $(null), [I, N] = $("focus"), [x, U] = $({}), [W, H] = $([]), [b, B] = $(null), [F, w] = $(null), [V, fe] = $(""), [ge, he] = $(""), [be, ye] = $(""), [ke, xe] = $(""), [te, ne] = $(null), [T, Se] = $(null), j = O(null);
   j.current = S;
   const Ce = O(Promise.resolve()), ve = O(0), re = O({}), R = O(!1), M = O(null), L = O({}), _ = O(/* @__PURE__ */ new Set()), oe = O(!1), Ue = E((e) => {
     M.current = e, Se(e);
   }, []), Y = E((e) => M.current !== e ? !1 : (M.current = null, Se(null), !0), []), g = E((e, n) => {
-    q((c) => [{ ts: Tt(), level: e, msg: n }, ...c].slice(0, vt));
+    H((c) => [{ ts: Tt(), level: e, msg: n }, ...c].slice(0, vt));
   }, []), we = E(
     (e) => {
       A(e), j.current = e;
@@ -258,7 +258,7 @@ function Mt() {
         ...c,
         tasks: c.tasks.map((i) => {
           if (i.id !== e) return i;
-          const d = new Set(i.subtasks.map((p) => p.title.toLowerCase())), f = n.filter((p) => !d.has(p.title.toLowerCase())).map((p) => ({ id: H("sub"), title: p.title, done: !1, source: "agent", ...p.command ? { command: p.command } : {} }));
+          const d = new Set(i.subtasks.map((p) => p.title.toLowerCase())), f = n.filter((p) => !d.has(p.title.toLowerCase())).map((p) => ({ id: q("sub"), title: p.title, done: !1, source: "agent", ...p.command ? { command: p.command } : {} }));
           return { ...i, subtasks: [...i.subtasks, ...f] };
         })
       })), g("ok", `Taskmaster agent drafted ${n.length} micro-step(s).`), l(`Added ${n.length} drafted micro-steps`);
@@ -320,7 +320,7 @@ function Mt() {
         L.current[i] = h, _.current.delete(i);
       }
     oe.current = !1;
-    const f = { ...c, sentAt: Date.now() };
+    const f = { ...c, id: q("work"), sentAt: Date.now() };
     R.current = !1, Ue(f), e.slotStarted || v((p) => ({
       ...p,
       tasks: p.tasks.map((m) => m.id === e.id ? { ...m, slotStarted: !0 } : m)
@@ -403,7 +403,7 @@ function Mt() {
     return c(), () => {
       n = !0, clearInterval(i);
     };
-  }, [T == null ? void 0 : T.sentAt]);
+  }, [T == null ? void 0 : T.id]);
   function He(e, n, c) {
     !n.command || M.current || R.current || (g("info", `Kiro terminal execute (step ${c + 1}): ${n.command}`), le(
       e,
@@ -461,7 +461,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
     const e = V.trim();
     if (!e) return;
     const n = Number.parseInt(ge, 10), c = {
-      id: H("task"),
+      id: q("task"),
       title: e,
       ...Number.isFinite(n) && n > 0 ? { estimateMinutes: n } : {},
       createdAt: (/* @__PURE__ */ new Date()).toISOString(),
@@ -472,7 +472,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
   function de(e) {
     const n = be.trim();
     if (!n) return;
-    const c = ke.trim(), i = { id: H("sub"), title: n, done: !1, source: "manual", ...c ? { command: c } : {} };
+    const c = ke.trim(), i = { id: q("sub"), title: n, done: !1, source: "manual", ...c ? { command: c } : {} };
     v((d) => ({
       ...d,
       tasks: d.tasks.map((f) => f.id === e.id ? { ...f, subtasks: [...f.subtasks, i] } : f)

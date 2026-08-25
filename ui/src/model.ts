@@ -189,6 +189,7 @@ export interface SlotData {
  * `draft` waits for a parseable breakdown.
  */
 export interface PendingWork {
+  id: string
   taskId: string
   kind: 'step' | 'draft' | 'all'
   stepIndex?: number
@@ -245,7 +246,7 @@ export function isActivePendingWork(
   expected: PendingWork,
   stopped = false,
 ): boolean {
-  return !stopped && current === expected
+  return !stopped && current?.id === expected.id
 }
 
 export function normalizeSlotData(raw: unknown): Required<Pick<SlotData, 'messages' | 'running'>> {
