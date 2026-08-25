@@ -442,12 +442,10 @@ export default function App() {
 
   // Poll the pending tasks' slots until they settle, the agent turn
   // ends, or the timeout passes. Manual toggling always remains as fallback.
-  const activeSendsKey = Object.values(pending)
-    .map((w) => w.sentAt)
-    .sort()
-    .join(',')
+  const hasPending = Object.keys(pending).length > 0
 
   useEffect(() => {
+    if (!hasPending) return
     let stopped = false
     const tick = async () => {
       const works = Object.values(pendingRef.current)
@@ -501,7 +499,7 @@ export default function App() {
       clearInterval(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSendsKey])
+  }, [hasPending])
 
   function runCommand(task: Task, sub: Subtask, index: number) {
     if (!sub.command || pendingRef.current[task.id] || sendLockRef.current[task.id]) return
