@@ -40,6 +40,8 @@ Accepted tradeoff: task slots created via generic `POST /api/chat` are ordinary 
 
 This folder is only the install *source* — Crew copies it to `~/.kiro/crew/apps/taskmaster-pro/` on install; nothing project-level is needed at runtime.
 
+First-time verification: follow the step-by-step smoke-test run sheet in [`docs/work-machine-verification.md`](docs/work-machine-verification.md) (issue #19).
+
 1. Copy this folder to the work machine (any path).
 2. Install + enable (Gateway on default port 5476):
    ```bash
