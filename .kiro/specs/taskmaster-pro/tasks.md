@@ -21,7 +21,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 | 1 — CI that guards the committed build artifact | done — merged 2026-08-25 ([#10](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/10)) | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
 | 2 — Extract the slot engine and test it | done — extraction in `main`; safety follow-up merged 2026-08-25 ([#25](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/25)) | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
 | 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
-| 4 — Cancel an in-flight agent run | in progress — stop-waiting PR under review | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
+| 4 — Cancel an in-flight agent run | done — merged 2026-08-25 ([#31](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/31)) | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
 | 5 — Per-task `pending` | not started | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
 | 6 — Keyboard access to the step queue | not started | [#17](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17) | Independent |
 
@@ -165,7 +165,7 @@ did is wrong. Memory sync fires exactly once through the normal step-toggle path
 
 ## Task 4 — Cancel an in-flight agent run
 
-Status: in progress — stop-waiting PR under review
+Status: done — merged 2026-08-25 via PR #31 (commit `5a324e0`)
 Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15
 
 **Why:** `PENDING_TIMEOUT_MS` is 15 minutes, and while `pending` is set every action button
