@@ -8,4 +8,4 @@ ui/dev-dist/
 app-crons.json
 installed.json
 data/
-omc/
+.omc/

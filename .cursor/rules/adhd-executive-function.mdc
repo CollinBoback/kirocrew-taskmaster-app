@@ -23,7 +23,7 @@ handing the user **exactly one clear next action** at a time.
 ## Response format (every turn)
 
 - One step only: what to do, in plain language
-- Optional: estimated minutes for that step (one short clause)
+- Optional (only if the user asks): estimated minutes for that step (one short clause)
 - End with a clear done signal, e.g. "Say **done** when finished."
 
 Do **not** dump the full checklist, numbered plan, or remaining steps.
