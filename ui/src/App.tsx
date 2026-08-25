@@ -14,6 +14,7 @@ import {
   normalizeConfig,
   normalizeSlotData,
   progress,
+  rebaseSlotWatermark,
   taskSlotKey,
   uid,
 } from './model'
@@ -92,6 +93,8 @@ export default function App() {
   const pendingRef = useRef<PendingWork | null>(null)
   /** Per-slot watermark: how many slot messages have already been parsed. */
   const seenRef = useRef<Record<string, number>>({})
+  /** Slots whose abandoned turn must finish before a new request can start. */
+  const abandonedSlotsRef = useRef<Set<string>>(new Set())
   /** True once at least one agent reply arrived for the current pending. */
   const sawReplyRef = useRef(false)
 
@@ -299,9 +302,17 @@ export default function App() {
     const slot = taskSlotKey(task)
     // Baseline the watermark BEFORE sending so pre-existing transcript
     // history (old STEP RESULT lines included) is never re-parsed.
-    if (seenRef.current[slot] === undefined) {
+    const waitingForAbandonedTurn = abandonedSlotsRef.current.has(slot)
+    if (seenRef.current[slot] === undefined || waitingForAbandonedTurn) {
       try {
-        const historyLength = (await fetchSlot(slot)).messages.length
+        const slotData = await fetchSlot(slot)
+        if (waitingForAbandonedTurn && slotData.running) {
+          sendLockRef.current = false
+          addLog('info', 'The stopped agent turn is still running in chat; request was not sent.')
+          notify('The previous agent turn is still finishing — retry after it ends')
+          return
+        }
+        const historyLength = slotData.messages.length
         const baseline = baselineSlotWatermark(seenRef.current[slot], {
           status: 'loaded',
           messageCount: historyLength,
@@ -311,10 +322,18 @@ export default function App() {
           return
         }
         seenRef.current[slot] = baseline
+        abandonedSlotsRef.current.delete(slot)
       } catch (err) {
+        const explicitlyMissing = isExplicitNotFoundError(err)
+        if (waitingForAbandonedTurn && !explicitlyMissing) {
+          sendLockRef.current = false
+          addLog('info', `Could not verify that the stopped agent turn ended: ${String(err)}`)
+          notify('Could not verify the previous agent turn — retry after it ends', { type: 'error' })
+          return
+        }
         const baseline = baselineSlotWatermark(
           seenRef.current[slot],
-          isExplicitNotFoundError(err) ? { status: 'missing' } : { status: 'failed' },
+          explicitlyMissing ? { status: 'missing' } : { status: 'failed' },
         )
         if (baseline === null) {
           sendLockRef.current = false
@@ -323,6 +342,7 @@ export default function App() {
           return
         }
         seenRef.current[slot] = baseline
+        abandonedSlotsRef.current.delete(slot)
       }
     }
     sawReplyRef.current = false
@@ -345,6 +365,27 @@ export default function App() {
       clearPending(nextWork)
     })
     addLog('info', `Sent to task slot ${slot}: ${message.split('\n')[0].slice(0, 120)}`)
+  }
+
+  async function stopWaiting(task: Task) {
+    const work = pendingRef.current
+    if (!work || work.taskId !== task.id || !clearPending(work)) return
+    const slot = taskSlotKey(task)
+    abandonedSlotsRef.current.add(slot)
+    // Keep all send entry points closed while the cancellation rebase reads a
+    // final slot snapshot. The underlying agent turn may still be running.
+    sendLockRef.current = true
+    addLog('warn', 'Stopped waiting for the agent; its turn may continue in the task chat.')
+    notify('Stopped waiting — the agent may continue in the task chat')
+    try {
+      const slotData = await fetchSlot(slot)
+      seenRef.current[slot] = rebaseSlotWatermark(seenRef.current[slot], slotData.messages.length)
+    } catch {
+      // The next send will retry the baseline while the abandoned-slot guard
+      // prevents stale output from being accepted as a new request.
+    } finally {
+      sendLockRef.current = false
+    }
   }
 
   /** Translate pure slot-engine actions into React state, logs, and notices. */
@@ -736,7 +777,18 @@ export default function App() {
                 ? 'NO MICRO-STEPS YET'
                 : `ACTIVE MICRO-STEP ${activeIdx + 1} OF ${task.subtasks.length}`}
             </span>
-            <span style={{ display: 'flex', gap: 6 }}>
+            <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              {taskPending && (
+                <button
+                  className="tm-btn"
+                  style={{ ...styles.btnGhost, color: T.danger, borderColor: 'rgba(229,83,75,0.45)' }}
+                  title="Stops Taskmaster waiting; the underlying agent turn may continue in the task chat."
+                  aria-label="Stop waiting for the agent run"
+                  onClick={() => void stopWaiting(task)}
+                >
+                  STOP WAITING
+                </button>
+              )}
               <button className="tm-btn" style={styles.navBtn} onClick={() => jumpStep(task.id, Math.max(0, activeIdx - 1))}>
                 ◄
               </button>

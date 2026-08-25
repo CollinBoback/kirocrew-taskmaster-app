@@ -230,6 +230,15 @@ export function baselineSlotWatermark(current: number | undefined, read: SlotBas
   return read.status === 'missing' ? 0 : null
 }
 
+/**
+ * Rebase a slot watermark when the app stops waiting for an agent turn. Never
+ * move the watermark backwards, because doing so would make already-seen
+ * transcript messages eligible for a later request.
+ */
+export function rebaseSlotWatermark(current: number | undefined, messageCount: number): number {
+  return Math.max(current ?? 0, Math.max(0, messageCount))
+}
+
 /** Object identity prevents a late poll from mutating a replacement request. */
 export function isActivePendingWork(
   current: PendingWork | null,

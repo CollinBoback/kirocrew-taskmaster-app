@@ -13,6 +13,7 @@ import {
   parseBreakdown,
   parseStepResults,
   progress,
+  rebaseSlotWatermark,
   taskSlotKey,
 } from './model'
 
@@ -153,6 +154,13 @@ describe('evaluateSlotPoll (pure chat-slot engine)', () => {
     expect(isActivePendingWork(work, { ...work })).toBe(false)
     expect(isActivePendingWork(null, work)).toBe(false)
     expect(isActivePendingWork(work, work, true)).toBe(false)
+  })
+
+  it('rebases a cancelled slot watermark forward without ever rewinding it', () => {
+    expect(rebaseSlotWatermark(undefined, 7)).toBe(7)
+    expect(rebaseSlotWatermark(3, 7)).toBe(7)
+    expect(rebaseSlotWatermark(9, 7)).toBe(9)
+    expect(rebaseSlotWatermark(3, -1)).toBe(3)
   })
 
   it('does not re-apply transcript messages before the watermark', () => {
