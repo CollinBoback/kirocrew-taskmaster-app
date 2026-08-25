@@ -27,8 +27,10 @@ superseded revision is skipped rather than written out of order. Reads go throug
 This is the intricate part and the reason task 2 exists.
 
 Every agent request becomes a message posted to the task's own chat slot
-(`taskmaster-{task.id}`, derived so it survives delete/re-add), and results are read back
-by polling `GET /api/chat/slots/{slot}` every 2500 ms. Gateway→app event forwarding does
+(`taskmaster-{task.id}`, keyed by the task's timestamped ID). A re-added task receives a
+new ID and therefore a new slot, which avoids collisions with any transcript left behind
+by the deleted task. Results are read back by polling `GET /api/chat/slots/{slot}` every
+2500 ms. Gateway→app event forwarding does
 not exist upstream yet — `AppHost`'s `useAppEvents` bridge has no WS producer — so polling
 is the only working mechanism, the same one `ChatEmbed` uses.
 
@@ -85,6 +87,9 @@ The committed artifact is a deployment contract enforced by nothing but memory.
 
 ## Known intentional slack
 
-`parseBreakdown` caps a breakdown at 12 steps, while the skill and the agent prompt both
-ask for 3–7. The cap is defensive, not a contradiction: the parser is deliberately more
-permissive than the contract so an over-eager reply degrades instead of being discarded.
+`parseBreakdown` also accepts a bare JSON array as a fallback — it first tries to extract
+a fenced-JSON block, and if none is found it attempts to parse the whole response as a
+JSON array. This makes draft settlement permissive: any response that contains either a
+fenced block or a top-level array settles a `draft` request, not just the agent's nominal
+format. The parser caps a breakdown at 12 steps, while the skill and the agent prompt both
+ask for 3–7; the cap is defensive, not a contradiction.

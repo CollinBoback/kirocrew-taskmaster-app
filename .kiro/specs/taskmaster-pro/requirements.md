@@ -23,9 +23,10 @@ defaults to the first incomplete step.
 
 ### R2 — Deterministic progress (met)
 
-Progress percentage, step navigation, and queue rendering are pure functions of the task
-document. No agent judgment participates in progress math. All of it lives in
-`ui/src/model.ts` and is unit tested.
+Progress percentage and the default incomplete index are pure functions of the task
+document and live in `ui/src/model.ts` where they are unit tested. Step selection state
+and queue rendering are also deterministic but remain in `App.tsx` and are not yet covered
+by tests.
 
 ### R3 — The UI holds no shell (met)
 
@@ -36,9 +37,11 @@ conversation.
 
 ### R4 — STEP RESULT is the only auto-completion source (met)
 
-A step is ticked off automatically if and only if the agent emits a line matching
-`STEP RESULT [n]: done|failed — <summary>` at the start of a line. A reply without a
-marker leaves the step for the manual toggle and logs a warning. Guessing is forbidden.
+A step is ticked off automatically when the agent emits a line beginning with
+`STEP RESULT [n]:` with a matching index. The parser accepts leading whitespace,
+case-insensitive status keywords, several separator styles, and even a bare status with no
+summary. A reply without any matching marker leaves the step for the manual toggle and
+logs a warning. Guessing is forbidden.
 
 ### R5 — Failed steps stay visible (met)
 

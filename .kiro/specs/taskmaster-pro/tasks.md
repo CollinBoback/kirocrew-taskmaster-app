@@ -41,13 +41,28 @@ machine silently keeps running the previous UI. No error, no warning, no symptom
 app that ignores the change. That is the worst kind of bug to leave undefended, and the
 defence is about fifteen lines of YAML.
 
-**Do:** Add `.github/workflows/ci.yml` running on push and pull request:
+**Do:** Add `.github/workflows/ci.yml` running on push and pull request. Each step must
+specify its working directory explicitly:
 
-1. `npm ci` in `ui/`
-2. `npm run typecheck`
-3. `npm test`
-4. `npm run build`
-5. `git diff --exit-code ui/dist/index.mjs` — fails the build if the artifact is stale
+```yaml
+- name: Install
+  run: npm ci
+  working-directory: ui
+- name: Typecheck
+  run: npm run typecheck
+  working-directory: ui
+- name: Test
+  run: npm test
+  working-directory: ui
+- name: Build
+  run: npm run build
+  working-directory: ui
+- name: Verify artifact in sync
+  run: git diff --exit-code ui/dist/index.mjs
+  working-directory: ${{ github.workspace }}  # must run from repo root for the path to resolve
+```
+
+The final step runs from the repository root (via `working-directory: ${{ github.workspace }}`) so `ui/dist/index.mjs` resolves correctly.
 
 **Acceptance:** The workflow passes on `main` as-is (all four steps verified green and the
 artifact verified in sync on 2026-08-25), and fails if `App.tsx` is edited without a
@@ -112,10 +127,9 @@ task delete), inline title and command editing, and move up/down. Keep it in the
 queue rows where the steps already render.
 
 **Watch for:** `activeIdx` is clamped against `subtasks.length`, so deleting the active step
-must leave the focus index somewhere sane. Deleting the last incomplete step of a task
-completes it — make sure that path still fires the memory sync exactly once, and does not
-fire it for a task completed purely by deletion, which would post a lesson describing work
-nobody did.
+must leave the focus index somewhere sane. Deletion does not trigger completion side
+effects, even if it removes the last incomplete step — posting a lesson for work nobody
+did is wrong. Memory sync fires exactly once through the normal step-toggle path only.
 
 **Size:** Medium. The highest user-visible payoff on this list.
 
@@ -132,8 +146,12 @@ the abandonment. Note honestly in the log line that cancelling stops the app fro
 — the agent turn itself continues in the chat slot, and the embedded session below still
 shows it. That is the truthful framing and it costs nothing to say.
 
-**Watch for:** Cancelling must not rewind `seenRef`, or the next send will re-parse the
-abandoned turn's markers and tick off steps the user walked away from.
+**Watch for:** Cancelling stops the app from polling, but the abandoned agent turn continues
+in the chat slot and may finish after the cancel. Without intervention `seenRef` still holds
+the pre-cancel watermark, so the next send will slice from that old position and may apply
+the abandoned turn's markers to the new pending work. Cancelling must advance `seenRef` to
+the current slot length (or beyond) — rebasing the watermark to discard whatever the
+abandoned turn eventually writes.
 
 **Size:** Small. Pairs naturally with task 2, since both touch pending lifecycle.
 
@@ -168,20 +186,13 @@ handler, so selecting a step is mouse-only. For an app whose entire premise is r
 friction on the active step, reaching for the mouse to change focus is the wrong texture.
 The `◄`/`►` buttons are real buttons and do work, so this is a gap rather than a wall.
 
-**Do:** Give the rows `role="button"`, `tabIndex={0}`, and Enter/Space handling, plus a
-visible focus ring. Consider `j`/`k` or arrow keys for step navigation while Focus is
-active.
+**Do:** Replace the `div`'s `onClick` with a native `<button>` wrapping only the step title
+area, keeping the existing completion button as a sibling rather than a child. Give the
+title button a visible focus ring. Nesting the completion button inside a row-level
+interactive element would produce invalid semantics and confuse screen readers. Consider
+`j`/`k` or arrow keys for step navigation while Focus is active.
 
 **Size:** Small.
-
----
-
-## Also open, not code
-
-**PR #3, "Add Cloud Agent development environment", is `CONFLICTING`.** It adds
-`.cursor/environment.json` and touches `ui/dev/mockSdk.tsx`. Until it lands, every cloud
-agent on this repository reinstalls npm dependencies from scratch. Resolve the conflict or
-close it — leaving a conflicting environment PR open is its own small tax on everyone.
 
 ---
 
