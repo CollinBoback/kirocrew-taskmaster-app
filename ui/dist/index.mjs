@@ -1,7 +1,7 @@
 import { jsx as r, jsxs as u, Fragment as pe } from "react/jsx-runtime";
-import { useState as $, useRef as O, useCallback as E, useEffect as me, useMemo as nt } from "react";
-import { useAppApi as rt, useNotify as ot, useNavBadge as st, useChatLauncher as it, useAppEvents as at, ChatEmbed as lt } from "@kirocrew/app-sdk";
-import { MarkdownRenderer as dt } from "@kirocrew/ui";
+import { useState as $, useRef as O, useCallback as E, useEffect as me, useMemo as rt } from "react";
+import { useAppApi as ot, useNotify as st, useNavBadge as it, useChatLauncher as at, useAppEvents as lt, ChatEmbed as dt } from "@kirocrew/app-sdk";
+import { MarkdownRenderer as ct } from "@kirocrew/ui";
 function Z(s) {
   return `taskmaster-${s.id}`;
 }
@@ -9,14 +9,14 @@ let Le = 0;
 function H(s) {
   return Le += 1, `${s}-${Date.now().toString(36)}-${Le.toString(36)}`;
 }
-function ct() {
+function ut() {
   return { version: 1, settings: { memorySync: !0 }, activeTaskId: null, tasks: [] };
 }
-function ut(s) {
+function pt(s) {
   var I;
-  const l = ct();
+  const l = ut();
   if (typeof s != "object" || s === null) return l;
-  const a = s, k = Array.isArray(a.tasks) ? a.tasks.filter(Pe).map(pt) : l.tasks, S = typeof a.settings == "object" && a.settings !== null ? { memorySync: a.settings.memorySync !== !1 } : l.settings, A = typeof a.activeTaskId == "string" ? a.activeTaskId : null;
+  const a = s, k = Array.isArray(a.tasks) ? a.tasks.filter(Ge).map(mt) : l.tasks, S = typeof a.settings == "object" && a.settings !== null ? { memorySync: a.settings.memorySync !== !1 } : l.settings, A = typeof a.activeTaskId == "string" ? a.activeTaskId : null;
   return {
     version: 1,
     settings: S,
@@ -24,11 +24,11 @@ function ut(s) {
     tasks: k
   };
 }
-function Pe(s) {
+function Ge(s) {
   return typeof s == "object" && s !== null && typeof s.title == "string";
 }
-function pt(s) {
-  const l = Array.isArray(s.subtasks) ? s.subtasks.filter(Pe).map((a) => ({
+function mt(s) {
+  const l = Array.isArray(s.subtasks) ? s.subtasks.filter(Ge).map((a) => ({
     id: typeof a.id == "string" ? a.id : H("sub"),
     title: String(a.title),
     done: a.done === !0,
@@ -51,11 +51,11 @@ function De(s) {
   const l = s.subtasks.length, a = s.subtasks.filter((k) => k.done).length;
   return { done: a, total: l, pct: l === 0 ? 0 : Math.round(a / l * 100) };
 }
-function mt(s) {
+function ft(s) {
   const l = s.subtasks.findIndex((a) => !a.done);
   return l === -1 ? Math.max(0, s.subtasks.length - 1) : l;
 }
-function ft(s) {
+function gt(s) {
   const l = /```(?:json)?\s*([\s\S]*?)```/.exec(s), a = [];
   l != null && l[1] && a.push(l[1]);
   const k = s.indexOf("["), S = s.lastIndexOf("]");
@@ -73,15 +73,15 @@ function ft(s) {
     }
   return null;
 }
-function gt(s) {
+function ht(s) {
   const l = s.subtasks.map((a, k) => `${k + 1}. ${a.title}${a.command ? ` [${a.command}]` : ""}`);
   return `Completed "${s.title}" via micro-steps: ${l.join(" ")}`;
 }
-const ht = 900 * 1e3;
-function bt(s, l, a = ht) {
+const bt = 900 * 1e3;
+function yt(s, l, a = bt) {
   return l - s.sentAt > a;
 }
-function yt(s) {
+function kt(s) {
   if (typeof s == "object" && s !== null) {
     const a = s;
     if (a.status === 404 || a.statusCode === 404 || typeof a.response == "object" && a.response !== null && a.response.status === 404)
@@ -93,10 +93,10 @@ function yt(s) {
 function Be(s, l) {
   return s !== void 0 ? s : l.status === "loaded" ? l.messageCount : l.status === "missing" ? 0 : null;
 }
-function kt(s, l) {
+function ze(s, l) {
   return Math.max(s ?? 0, Math.max(0, l));
 }
-function ze(s, l, a = !1) {
+function Oe(s, l, a = !1) {
   return !a && s === l;
 }
 function xt(s) {
@@ -104,12 +104,12 @@ function xt(s) {
   const l = s;
   return { messages: Array.isArray(l.messages) ? l.messages.filter((k) => typeof k == "object" && k !== null) : [], running: l.running === !0 };
 }
-const Oe = /^\s*STEP RESULT \[(\d+)\]:\s*(done|failed)\s*(?:[—–:-]\s*)?(.*)$/gim;
+const We = /^\s*STEP RESULT \[(\d+)\]:\s*(done|failed)\s*(?:[—–:-]\s*)?(.*)$/gim;
 function St(s) {
   const l = [];
-  Oe.lastIndex = 0;
+  We.lastIndex = 0;
   let a;
-  for (; (a = Oe.exec(s)) !== null; )
+  for (; (a = We.exec(s)) !== null; )
     l.push({
       index: Number.parseInt(a[1], 10),
       ok: a[2].toLowerCase() === "done",
@@ -117,7 +117,7 @@ function St(s) {
     });
   return l;
 }
-const We = 4e3;
+const Fe = 4e3;
 function Ct(s) {
   const { work: l, data: a, seen: k, stepCount: S } = s, A = a.running ? Math.max(0, a.messages.length - 1) : a.messages.length, I = a.messages.slice(k, A), N = Math.max(k, A);
   if (S === null)
@@ -127,35 +127,35 @@ function Ct(s) {
   for (const b of I) {
     if (b.role === "user" || !b.content) continue;
     U = !0;
-    const D = b.content;
+    const B = b.content;
     if (l.kind === "draft") {
-      const w = ft(D);
+      const w = gt(B);
       w && (x.push({ type: "append-draft", steps: w }), W = !0);
       continue;
     }
-    const F = St(D);
+    const F = St(B);
     for (const w of F) {
       if (w.index < 1 || w.index > S) {
         x.push({ type: "unknown-step", result: w });
         continue;
       }
-      const V = F.length === 1 ? D.slice(0, We) : `${w.ok ? "done" : "failed"} — ${w.summary || "(no summary)"}`;
+      const V = F.length === 1 ? B.slice(0, Fe) : `${w.ok ? "done" : "failed"} — ${w.summary || "(no summary)"}`;
       x.push({ type: "step-result", result: w, output: V }), w.ok && (q = !0), l.kind === "step" && (W = !0);
     }
   }
   if (W && l.kind !== "all")
     return { actions: x, nextSeen: N, sawReply: U, settled: !0, stepSucceeded: q };
   if (!a.running && U) {
-    const b = [...I].reverse().find((D) => D.role !== "user" && D.content);
+    const b = [...I].reverse().find((B) => B.role !== "user" && B.content);
     x.push({
       type: "turn-ended",
       kind: l.kind,
-      ...l.kind === "step" && (b != null && b.content) ? { output: b.content.slice(0, We) } : {}
+      ...l.kind === "step" && (b != null && b.content) ? { output: b.content.slice(0, Fe) } : {}
     }), W = !0;
   }
   return { actions: x, nextSeen: N, sawReply: U, settled: W, stepSucceeded: q };
 }
-const Fe = "/api/apps/taskmaster-pro/config", vt = 200, je = "notification scope · slot polling", wt = 2500, t = {
+const je = "/api/apps/taskmaster-pro/config", vt = 200, Pe = "notification scope · slot polling", wt = 2500, t = {
   bg: "var(--bg, #030712)",
   card: "var(--card, #0b1329)",
   border: "var(--border, #1e293b)",
@@ -165,17 +165,17 @@ const Fe = "/api/apps/taskmaster-pro/config", vt = 200, je = "notification scope
   kiro: "#818cf8",
   warn: "var(--warn, #d29922)",
   danger: "var(--danger, #e5534b)"
-}, L = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+}, D = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 function Tt() {
   return (/* @__PURE__ */ new Date()).toTimeString().split(" ")[0];
 }
 function Mt() {
-  const s = rt(), l = ot(), a = st(), { openChat: k } = it(), [S, A] = $(null), [I, N] = $("focus"), [x, U] = $({}), [W, q] = $([]), [b, D] = $(null), [F, w] = $(null), [V, fe] = $(""), [ge, he] = $(""), [be, ye] = $(""), [ke, xe] = $(""), [te, ne] = $(null), [T, Se] = $(null), j = O(null);
+  const s = ot(), l = st(), a = it(), { openChat: k } = at(), [S, A] = $(null), [I, N] = $("focus"), [x, U] = $({}), [W, q] = $([]), [b, B] = $(null), [F, w] = $(null), [V, fe] = $(""), [ge, he] = $(""), [be, ye] = $(""), [ke, xe] = $(""), [te, ne] = $(null), [T, Se] = $(null), j = O(null);
   j.current = S;
-  const Ce = O(Promise.resolve()), ve = O(0), re = O({}), R = O(!1), M = O(null), B = O({}), _ = O(/* @__PURE__ */ new Set()), oe = O(!1), Ge = E((e) => {
+  const Ce = O(Promise.resolve()), ve = O(0), re = O({}), R = O(!1), M = O(null), L = O({}), _ = O(/* @__PURE__ */ new Set()), oe = O(!1), Ue = E((e) => {
     M.current = e, Se(e);
   }, []), Y = E((e) => M.current !== e ? !1 : (M.current = null, Se(null), !0), []), g = E((e, n) => {
-    q((d) => [{ ts: Tt(), level: e, msg: n }, ...d].slice(0, vt));
+    q((c) => [{ ts: Tt(), level: e, msg: n }, ...c].slice(0, vt));
   }, []), we = E(
     (e) => {
       A(e), j.current = e;
@@ -183,9 +183,9 @@ function Mt() {
       Ce.current = Ce.current.then(async () => {
         if (n === ve.current)
           try {
-            await s.put(Fe, e);
-          } catch (d) {
-            g("warn", `Config save failed: ${String(d)}`);
+            await s.put(je, e);
+          } catch (c) {
+            g("warn", `Config save failed: ${String(c)}`);
           }
       });
     },
@@ -198,8 +198,8 @@ function Mt() {
     [we]
   ), se = E(
     (e) => {
-      s.get(Fe).then((n) => {
-        e != null && e() || (A(ut(n)), w(null), g("info", "Loaded task state from gateway app config."));
+      s.get(je).then((n) => {
+        e != null && e() || (A(pt(n)), w(null), g("info", "Loaded task state from gateway app config."));
       }).catch((n) => {
         e != null && e() || (A(null), w(`Config load failed (${String(n)}) — retry to continue.`), g("warn", `Config load failed: ${String(n)}`));
       });
@@ -209,10 +209,10 @@ function Mt() {
   me(() => {
     let e = !1;
     return se(() => e), s.get("/api/status").then((n) => {
-      e || (D(typeof n == "object" && n !== null ? n : {}), g("ok", "Connected to Kiro Crew gateway."));
+      e || (B(typeof n == "object" && n !== null ? n : {}), g("ok", "Connected to Kiro Crew gateway."));
     }).catch(() => {
       e || g("warn", "Gateway status unavailable.");
-    }), g("info", `Console mode: ${je} — gateway event forwarding to app pages is pending upstream.`), () => {
+    }), g("info", `Console mode: ${Pe} — gateway event forwarding to app pages is pending upstream.`), () => {
       e = !0;
     };
   }, [se]);
@@ -220,45 +220,45 @@ function Mt() {
     (e) => {
       l(`Task complete: ${e.title}`), g("ok", `Task "${e.title}" fully completed.`);
       const n = j.current;
-      !(n != null && n.settings.memorySync) || e.lessonPosted || re.current[e.id] || (re.current[e.id] = !0, s.post("/api/lessons", { rule: gt(e), category: "knowledge" }).then(() => {
-        v((d) => ({
-          ...d,
-          tasks: d.tasks.map((i) => i.id === e.id ? { ...i, lessonPosted: !0 } : i)
+      !(n != null && n.settings.memorySync) || e.lessonPosted || re.current[e.id] || (re.current[e.id] = !0, s.post("/api/lessons", { rule: ht(e), category: "knowledge" }).then(() => {
+        v((c) => ({
+          ...c,
+          tasks: c.tasks.map((i) => i.id === e.id ? { ...i, lessonPosted: !0 } : i)
         })), g("ok", "Kiro Memory: appended solution path to lessons (category: knowledge).");
-      }).catch((d) => g("warn", `Memory sync failed: ${String(d)}`)).finally(() => {
+      }).catch((c) => g("warn", `Memory sync failed: ${String(c)}`)).finally(() => {
         delete re.current[e.id];
       }));
     },
     [s, l, g, v]
   ), X = E(
-    (e, n, d, i, c) => {
+    (e, n, c, i, d) => {
       let f = null;
       v((p) => {
         const m = p.tasks.map((h) => {
           if (h.id !== e) return h;
           const z = h.subtasks.map((G) => {
             if (G.id !== n) return G;
-            const ue = { ...G, done: d, ...i !== void 0 ? { output: i } : {} };
-            return c ? ue.runState = c : delete ue.runState, ue;
-          }), K = { ...h, subtasks: z }, tt = h.subtasks.length > 0 && h.subtasks.every((G) => G.done);
-          return z.length > 0 && z.every((G) => G.done) && !tt && (f = K), K;
+            const ue = { ...G, done: c, ...i !== void 0 ? { output: i } : {} };
+            return d ? ue.runState = d : delete ue.runState, ue;
+          }), K = { ...h, subtasks: z }, nt = h.subtasks.length > 0 && h.subtasks.every((G) => G.done);
+          return z.length > 0 && z.every((G) => G.done) && !nt && (f = K), K;
         });
         return { ...p, tasks: m };
       }), f && Te(f);
     },
     [v, Te]
   );
-  at("notification", (e) => {
-    const n = typeof e == "object" && e !== null ? e : {}, d = typeof n.title == "string" ? n.title : "notification", i = typeof n.text == "string" ? n.text : "";
-    g("info", `Gateway notification [${d}]: ${i.slice(0, 200)}`);
+  lt("notification", (e) => {
+    const n = typeof e == "object" && e !== null ? e : {}, c = typeof n.title == "string" ? n.title : "notification", i = typeof n.text == "string" ? n.text : "";
+    g("info", `Gateway notification [${c}]: ${i.slice(0, 200)}`);
   });
   const Ie = E(
     (e, n) => {
-      v((d) => ({
-        ...d,
-        tasks: d.tasks.map((i) => {
+      v((c) => ({
+        ...c,
+        tasks: c.tasks.map((i) => {
           if (i.id !== e) return i;
-          const c = new Set(i.subtasks.map((p) => p.title.toLowerCase())), f = n.filter((p) => !c.has(p.title.toLowerCase())).map((p) => ({ id: H("sub"), title: p.title, done: !1, source: "agent", ...p.command ? { command: p.command } : {} }));
+          const d = new Set(i.subtasks.map((p) => p.title.toLowerCase())), f = n.filter((p) => !d.has(p.title.toLowerCase())).map((p) => ({ id: H("sub"), title: p.title, done: !1, source: "agent", ...p.command ? { command: p.command } : {} }));
           return { ...i, subtasks: [...i.subtasks, ...f] };
         })
       })), g("ok", `Taskmaster agent drafted ${n.length} micro-step(s).`), l(`Added ${n.length} drafted micro-steps`);
@@ -268,14 +268,14 @@ function Mt() {
     async (e) => xt(await s.get(`/api/chat/slots/${encodeURIComponent(e)}`)),
     [s]
   ), ae = E(
-    (e, n, d, i) => {
-      v((c) => ({
-        ...c,
-        tasks: c.tasks.map(
+    (e, n, c, i) => {
+      v((d) => ({
+        ...d,
+        tasks: d.tasks.map(
           (f) => f.id === e ? {
             ...f,
             subtasks: f.subtasks.map(
-              (p) => p.id === n ? { ...p, output: d, ...i ? { runState: i } : {} } : p
+              (p) => p.id === n ? { ...p, output: c, ...i ? { runState: i } : {} } : p
             )
           } : f
         )
@@ -283,18 +283,18 @@ function Mt() {
     },
     [v]
   );
-  async function le(e, n, d) {
+  async function le(e, n, c) {
     if (M.current || R.current) return;
     R.current = !0;
-    const i = Z(e), c = _.current.has(i);
-    if (B.current[i] === void 0 || c)
+    const i = Z(e), d = _.current.has(i);
+    if (L.current[i] === void 0 || d)
       try {
         const p = await ie(i);
-        if (c && p.running) {
+        if (d && p.running) {
           R.current = !1, g("info", "The stopped agent turn is still running in chat; request was not sent."), l("The previous agent turn is still finishing — retry after it ends");
           return;
         }
-        const m = p.messages.length, h = Be(B.current[i], {
+        const m = p.messages.length, h = d ? ze(L.current[i], m) : Be(L.current[i], {
           status: "loaded",
           messageCount: m
         });
@@ -302,26 +302,26 @@ function Mt() {
           R.current = !1;
           return;
         }
-        B.current[i] = h, _.current.delete(i);
+        L.current[i] = h, _.current.delete(i);
       } catch (p) {
-        const m = yt(p);
-        if (c && !m) {
+        const m = kt(p);
+        if (d && !m) {
           R.current = !1, g("info", `Could not verify that the stopped agent turn ended: ${String(p)}`), l("Could not verify the previous agent turn — retry after it ends", { type: "error" });
           return;
         }
         const h = Be(
-          B.current[i],
+          L.current[i],
           m ? { status: "missing" } : { status: "failed" }
         );
         if (h === null) {
           R.current = !1, g("warn", `Could not safely read task chat history; request was not sent: ${String(p)}`), l("Could not verify task chat history — retry the run", { type: "error" });
           return;
         }
-        B.current[i] = h, _.current.delete(i);
+        L.current[i] = h, _.current.delete(i);
       }
     oe.current = !1;
-    const f = { ...d, sentAt: Date.now() };
-    R.current = !1, Ge(f), e.slotStarted || v((p) => ({
+    const f = { ...c, sentAt: Date.now() };
+    R.current = !1, Ue(f), e.slotStarted || v((p) => ({
       ...p,
       tasks: p.tasks.map((m) => m.id === e.id ? { ...m, slotStarted: !0 } : m)
     })), s.post("/api/chat", { message: n, slot: i, agent: "taskmaster" }).catch((p) => {
@@ -329,44 +329,44 @@ function Mt() {
     }), g("info", `Sent to task slot ${i}: ${n.split(`
 `)[0].slice(0, 120)}`);
   }
-  async function Ue(e) {
+  async function Ke(e) {
     const n = M.current;
     if (!n || n.taskId !== e.id || !Y(n)) return;
-    const d = Z(e);
-    _.current.add(d), R.current = !0, g("warn", "Stopped waiting for the agent; its turn may continue in the task chat."), l("Stopped waiting — the agent may continue in the task chat");
+    const c = Z(e);
+    _.current.add(c), R.current = !0, g("warn", "Stopped waiting for the agent; its turn may continue in the task chat."), l("Stopped waiting — the agent may continue in the task chat");
     try {
-      const i = await ie(d);
-      B.current[d] = kt(B.current[d], i.messages.length);
+      const i = await ie(c);
+      L.current[c] = ze(L.current[c], i.messages.length);
     } catch {
     } finally {
       R.current = !1;
     }
   }
-  const Ke = E(
+  const qe = E(
     (e, n) => {
-      var d, i;
-      for (const c of n) {
-        if (c.type === "append-draft") {
-          Ie(e.taskId, c.steps);
+      var c, i;
+      for (const d of n) {
+        if (d.type === "append-draft") {
+          Ie(e.taskId, d.steps);
           continue;
         }
-        if (c.type === "unknown-step") {
-          g("warn", `Agent reported STEP RESULT [${c.result.index}] but the task has no such step.`);
+        if (d.type === "unknown-step") {
+          g("warn", `Agent reported STEP RESULT [${d.result.index}] but the task has no such step.`);
           continue;
         }
-        if (c.type === "step-result") {
-          const f = (d = j.current) == null ? void 0 : d.tasks.find((m) => m.id === e.taskId), p = f == null ? void 0 : f.subtasks[c.result.index - 1];
+        if (d.type === "step-result") {
+          const f = (c = j.current) == null ? void 0 : c.tasks.find((m) => m.id === e.taskId), p = f == null ? void 0 : f.subtasks[d.result.index - 1];
           if (!p) continue;
-          c.result.ok ? (X(e.taskId, p.id, !0, c.output, "done"), g("ok", `Step ${c.result.index} completed by agent: ${c.result.summary || p.title}`)) : (ae(e.taskId, p.id, c.output, "failed"), g("warn", `Step ${c.result.index} failed: ${c.result.summary || "(no summary)"}`));
+          d.result.ok ? (X(e.taskId, p.id, !0, d.output, "done"), g("ok", `Step ${d.result.index} completed by agent: ${d.result.summary || p.title}`)) : (ae(e.taskId, p.id, d.output, "failed"), g("warn", `Step ${d.result.index} failed: ${d.result.summary || "(no summary)"}`));
           continue;
         }
-        if (c.kind === "all")
+        if (d.kind === "all")
           g("ok", "Agent finished the run — see per-step results above and the task chat.");
-        else if (c.kind === "draft")
+        else if (d.kind === "draft")
           g("warn", "Draft reply had no parseable json block — see the task chat."), l("Agent reply was not parseable — see the task chat");
         else {
           const f = (i = j.current) == null ? void 0 : i.tasks.find((m) => m.id === e.taskId), p = e.stepIndex != null ? f == null ? void 0 : f.subtasks[e.stepIndex] : void 0;
-          p && c.output && ae(e.taskId, p.id, c.output), g("warn", "Agent reply had no STEP RESULT marker — step left for manual toggle.");
+          p && d.output && ae(e.taskId, p.id, d.output), g("warn", "Agent reply had no STEP RESULT marker — step left for manual toggle.");
         }
       }
     },
@@ -376,12 +376,12 @@ function Mt() {
     if (!T) return;
     const e = Z({ id: T.taskId });
     let n = !1;
-    const d = async () => {
+    const c = async () => {
       var z;
-      const c = M.current;
-      if (!c || !ze(M.current, c, n)) return;
-      if (bt(c, Date.now())) {
-        g("warn", "Agent request timed out — check the task chat."), Y(c);
+      const d = M.current;
+      if (!d || !Oe(M.current, d, n)) return;
+      if (yt(d, Date.now())) {
+        g("warn", "Agent request timed out — check the task chat."), Y(d);
         return;
       }
       let f;
@@ -390,33 +390,33 @@ function Mt() {
       } catch {
         return;
       }
-      if (!ze(M.current, c, n)) return;
-      const p = B.current[e] ?? 0, m = (z = j.current) == null ? void 0 : z.tasks.find((K) => K.id === c.taskId), h = Ct({
-        work: c,
+      if (!Oe(M.current, d, n)) return;
+      const p = L.current[e] ?? 0, m = (z = j.current) == null ? void 0 : z.tasks.find((K) => K.id === d.taskId), h = Ct({
+        work: d,
         data: f,
         seen: p,
         sawReply: oe.current,
         stepCount: (m == null ? void 0 : m.subtasks.length) ?? null
       });
-      B.current[e] = h.nextSeen, oe.current = h.sawReply, Ke(c, h.actions), h.settled && (c.kind === "step" && h.stepSucceeded && l("Step completed via taskmaster agent", { type: "success" }), Y(c));
-    }, i = setInterval(() => void d(), wt);
-    return d(), () => {
+      L.current[e] = h.nextSeen, oe.current = h.sawReply, qe(d, h.actions), h.settled && (d.kind === "step" && h.stepSucceeded && l("Step completed via taskmaster agent", { type: "success" }), Y(d));
+    }, i = setInterval(() => void c(), wt);
+    return c(), () => {
       n = !0, clearInterval(i);
     };
   }, [T == null ? void 0 : T.sentAt]);
-  function qe(e, n, d) {
-    !n.command || M.current || R.current || (g("info", `Kiro terminal execute (step ${d + 1}): ${n.command}`), le(
+  function He(e, n, c) {
+    !n.command || M.current || R.current || (g("info", `Kiro terminal execute (step ${c + 1}): ${n.command}`), le(
       e,
-      `Run micro-step [${d + 1}] of task "${e.title}": ${n.title}
+      `Run micro-step [${c + 1}] of task "${e.title}": ${n.title}
 Execute this terminal command and report concise output:
 ${n.command}
-End your reply with exactly one line: STEP RESULT [${d + 1}]: done|failed — <short summary>`,
-      { taskId: e.id, kind: "step", stepIndex: d }
+End your reply with exactly one line: STEP RESULT [${c + 1}]: done|failed — <short summary>`,
+      { taskId: e.id, kind: "step", stepIndex: c }
     ));
   }
   function Re(e) {
     if (M.current || R.current) return;
-    const n = e.subtasks.map((d) => d.title).join("; ") || "none";
+    const n = e.subtasks.map((c) => c.title).join("; ") || "none";
     g("info", `Requesting micro-step breakdown for "${e.title}".`), l("Taskmaster agent is drafting micro-steps…"), le(
       e,
       `Break the task "${e.title}"${e.estimateMinutes ? ` (~${e.estimateMinutes}m)` : ""} into micro-steps per the taskmaster-method skill. Reply with ONE fenced json code block containing an array of {"title", "command"?} objects and no prose outside it.
@@ -424,28 +424,28 @@ Existing steps (do not duplicate): ${n}`,
       { taskId: e.id, kind: "draft" }
     );
   }
-  function He(e) {
+  function Ve(e) {
     if (M.current || R.current) return;
-    const n = e.subtasks.map((i, c) => ({ sub: i, index: c })).filter(({ sub: i }) => !i.done);
+    const n = e.subtasks.map((i, d) => ({ sub: i, index: d })).filter(({ sub: i }) => !i.done);
     if (n.length === 0) return;
-    const d = n.map(({ sub: i, index: c }) => `[${c + 1}] ${i.title}${i.command ? ` — command: ${i.command}` : ""}`).join(`
+    const c = n.map(({ sub: i, index: d }) => `[${d + 1}] ${i.title}${i.command ? ` — command: ${i.command}` : ""}`).join(`
 `);
     g("info", `Running ${n.length} remaining step(s) unattended via taskmaster agent.`), l(`Agent is running ${n.length} remaining step(s)…`), le(
       e,
       `Execute the remaining micro-steps of task "${e.title}" in order, autonomously:
-${d}
+${c}
 After finishing each step output one line: STEP RESULT [n]: done|failed — <short summary>. If a step cannot be completed autonomously, mark it failed with the reason and continue to the next.`,
       { taskId: e.id, kind: "all" }
     );
   }
   function $e(e) {
-    const n = e.subtasks.filter((d) => !d.done).map((d) => d.title);
+    const n = e.subtasks.filter((c) => !c.done).map((c) => c.title);
     k({
       agent: "taskmaster",
       message: `Check in on task "${e.title}". Remaining micro-steps: ${n.join("; ") || "none"}. Help me with the next one.`
     });
   }
-  async function Ve(e) {
+  async function _e(e) {
     try {
       await s.post("/api/crons", {
         name: `taskmaster-${e.id}`,
@@ -460,38 +460,38 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
   function Ee() {
     const e = V.trim();
     if (!e) return;
-    const n = Number.parseInt(ge, 10), d = {
+    const n = Number.parseInt(ge, 10), c = {
       id: H("task"),
       title: e,
       ...Number.isFinite(n) && n > 0 ? { estimateMinutes: n } : {},
       createdAt: (/* @__PURE__ */ new Date()).toISOString(),
       subtasks: []
     };
-    v((i) => ({ ...i, tasks: [...i.tasks, d], activeTaskId: i.activeTaskId ?? d.id })), fe(""), he(""), g("info", `Task added to backlog: "${e}"`);
+    v((i) => ({ ...i, tasks: [...i.tasks, c], activeTaskId: i.activeTaskId ?? c.id })), fe(""), he(""), g("info", `Task added to backlog: "${e}"`);
   }
   function de(e) {
     const n = be.trim();
     if (!n) return;
-    const d = ke.trim(), i = { id: H("sub"), title: n, done: !1, source: "manual", ...d ? { command: d } : {} };
-    v((c) => ({
-      ...c,
-      tasks: c.tasks.map((f) => f.id === e.id ? { ...f, subtasks: [...f.subtasks, i] } : f)
+    const c = ke.trim(), i = { id: H("sub"), title: n, done: !1, source: "manual", ...c ? { command: c } : {} };
+    v((d) => ({
+      ...d,
+      tasks: d.tasks.map((f) => f.id === e.id ? { ...f, subtasks: [...f.subtasks, i] } : f)
     })), ye(""), xe("");
   }
-  function _e(e) {
+  function Ye(e) {
     v((n) => {
       var i;
-      const d = n.tasks.filter((c) => c.id !== e);
-      return { ...n, tasks: d, activeTaskId: n.activeTaskId === e ? ((i = d[0]) == null ? void 0 : i.id) ?? null : n.activeTaskId };
+      const c = n.tasks.filter((d) => d.id !== e);
+      return { ...n, tasks: c, activeTaskId: n.activeTaskId === e ? ((i = c[0]) == null ? void 0 : i.id) ?? null : n.activeTaskId };
     }), ne(null), g("info", "Task removed from backlog.");
   }
-  function Ye(e) {
+  function Xe(e) {
     v((n) => ({ ...n, activeTaskId: e })), N("focus");
   }
-  const C = nt(() => S ? S.tasks.find((e) => e.id === S.activeTaskId) ?? S.tasks[0] ?? null : null, [S]), P = C ? Math.max(
+  const C = rt(() => S ? S.tasks.find((e) => e.id === S.activeTaskId) ?? S.tasks[0] ?? null : null, [S]), P = C ? Math.max(
     0,
-    Math.min(x[C.id] ?? mt(C), Math.max(0, C.subtasks.length - 1))
-  ) : 0, y = (C == null ? void 0 : C.subtasks[P]) ?? null, Xe = C ? De(C) : null, J = C ? C.subtasks.filter((e) => !e.done).length : 0;
+    Math.min(x[C.id] ?? ft(C), Math.max(0, C.subtasks.length - 1))
+  ) : 0, y = (C == null ? void 0 : C.subtasks[P]) ?? null, Je = C ? De(C) : null, J = C ? C.subtasks.filter((e) => !e.done).length : 0;
   me(() => {
     try {
       a(J);
@@ -499,7 +499,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
     }
   }, [J, a]);
   function ce(e, n) {
-    U((d) => ({ ...d, [e]: n }));
+    U((c) => ({ ...c, [e]: n }));
   }
   if (!S)
     return /* @__PURE__ */ r("div", { style: { ...o.root, alignItems: "center", justifyContent: "center" }, children: /* @__PURE__ */ u("div", { style: { display: "grid", gap: 10, justifyItems: "center" }, children: [
@@ -510,20 +510,20 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
   let Q;
   switch (I) {
     case "focus":
-      Q = Qe();
-      break;
-    case "backlog":
       Q = Ze();
       break;
-    case "console":
+    case "backlog":
       Q = et();
+      break;
+    case "console":
+      Q = tt();
       break;
     default: {
       const e = I;
       throw new Error(`Unhandled view: ${String(e)}`);
     }
   }
-  function Je() {
+  function Qe() {
     const e = [
       { id: "focus", label: "★ Focus" },
       { id: "backlog", label: `Backlog (${Ae})` },
@@ -567,7 +567,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
       /* @__PURE__ */ r("button", { className: "tm-btn", style: o.btnPrimary, onClick: Ee, children: "ADD TASK" })
     ] });
   }
-  function Qe() {
+  function Ze() {
     if (!C)
       return /* @__PURE__ */ u("section", { className: "tm-card", style: { ...o.card, textAlign: "center" }, children: [
         /* @__PURE__ */ r("div", { style: { fontSize: 28, marginBottom: 8 }, children: "⚡" }),
@@ -575,7 +575,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
         /* @__PURE__ */ r("p", { style: { color: t.muted, fontSize: 12, margin: "6px 0 14px" }, children: "Add your first task — the taskmaster agent can draft its micro-steps." }),
         Me()
       ] });
-    const e = C, n = Xe ?? { done: 0, total: 0, pct: 0 }, d = Z(e), i = (T == null ? void 0 : T.taskId) === e.id ? T : null, c = !!(y && (i == null ? void 0 : i.kind) === "step" && i.stepIndex === P), f = (i == null ? void 0 : i.kind) === "draft", p = (i == null ? void 0 : i.kind) === "all";
+    const e = C, n = Je ?? { done: 0, total: 0, pct: 0 }, c = Z(e), i = (T == null ? void 0 : T.taskId) === e.id ? T : null, d = !!(y && (i == null ? void 0 : i.kind) === "step" && i.stepIndex === P), f = (i == null ? void 0 : i.kind) === "draft", p = (i == null ? void 0 : i.kind) === "all";
     return /* @__PURE__ */ u(pe, { children: [
       /* @__PURE__ */ u("section", { className: "tm-card", style: { ...o.card, paddingTop: 20, position: "relative", overflow: "hidden" }, children: [
         /* @__PURE__ */ r("div", { style: o.gradientStrip }),
@@ -603,17 +603,17 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
           /* @__PURE__ */ r("p", { style: { color: t.muted, fontSize: 11, fontStyle: "italic", margin: "10px 0 6px" }, children: "Isolation mode active. Execute one step at a time." }),
           /* @__PURE__ */ r("h2", { style: o.taskTitle, children: e.title }),
           /* @__PURE__ */ u("div", { style: { display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap", justifyContent: "center" }, children: [
-            e.estimateMinutes != null && /* @__PURE__ */ u("span", { style: { ...o.chip, color: "#38bdf8", borderColor: t.border, fontFamily: L }, children: [
+            e.estimateMinutes != null && /* @__PURE__ */ u("span", { style: { ...o.chip, color: "#38bdf8", borderColor: t.border, fontFamily: D }, children: [
               "~",
               e.estimateMinutes,
               "m"
             ] }),
-            /* @__PURE__ */ r("button", { className: "tm-btn", style: { ...o.chip, cursor: "pointer", color: t.text, borderColor: t.border }, onClick: () => void Ve(e), children: "⏰ SCHEDULE ROUTINE (CRON)" }),
+            /* @__PURE__ */ r("button", { className: "tm-btn", style: { ...o.chip, cursor: "pointer", color: t.text, borderColor: t.border }, onClick: () => void _e(e), children: "⏰ SCHEDULE ROUTINE (CRON)" }),
             /* @__PURE__ */ r("button", { className: "tm-btn", style: { ...o.chip, cursor: "pointer", color: t.text, borderColor: t.border }, onClick: () => $e(e), children: "💬 OPEN IN CHAT" })
           ] })
         ] }),
         /* @__PURE__ */ r("div", { style: o.progressTrack, role: "progressbar", "aria-valuenow": n.pct, "aria-valuemin": 0, "aria-valuemax": 100, children: /* @__PURE__ */ r("div", { style: { ...o.progressFill, width: `${n.pct}%` } }) }),
-        /* @__PURE__ */ u("div", { style: { textAlign: "right", color: t.muted, fontSize: 11, marginTop: 6, fontFamily: L }, children: [
+        /* @__PURE__ */ u("div", { style: { textAlign: "right", color: t.muted, fontSize: 11, marginTop: 6, fontFamily: D }, children: [
           n.done,
           "/",
           n.total,
@@ -636,7 +636,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                 style: { ...o.btnGhost, color: t.danger, borderColor: "rgba(229,83,75,0.45)" },
                 title: "Stops Taskmaster waiting; the underlying agent turn may continue in the task chat.",
                 "aria-label": "Stop waiting for the agent run",
-                onClick: () => void Ue(e),
+                onClick: () => void Ke(e),
                 children: "STOP WAITING"
               }
             ),
@@ -680,7 +680,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
               /* @__PURE__ */ u("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" }, children: [
                 /* @__PURE__ */ r("span", { style: o.commandLabel, children: "KIRO TERMINAL EXECUTABLE" }),
                 /* @__PURE__ */ u("span", { style: { display: "flex", alignItems: "center", gap: 8 }, children: [
-                  y.runState === "failed" && !c && /* @__PURE__ */ r("span", { style: { ...o.execChip, ...o.failedChip }, children: "LAST RUN FAILED" }),
+                  y.runState === "failed" && !d && /* @__PURE__ */ r("span", { style: { ...o.execChip, ...o.failedChip }, children: "LAST RUN FAILED" }),
                   /* @__PURE__ */ r("span", { style: { ...o.commandLabel, color: t.kiro }, children: "VIA TASKMASTER AGENT" })
                 ] })
               ] }),
@@ -692,24 +692,24 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                   style: {
                     ...o.btnPrimary,
                     ...y.done ? { opacity: 0.5, cursor: "default" } : {},
-                    ...c ? { background: "rgba(129,140,248,0.25)", color: t.kiro } : {}
+                    ...d ? { background: "rgba(129,140,248,0.25)", color: t.kiro } : {}
                   },
                   disabled: y.done || !!i,
-                  onClick: () => qe(e, y, P),
-                  children: c ? "⚙ EXECUTING VIA AGENT…" : y.done ? "✓ COMPLETED" : y.runState === "failed" ? "↻ RETRY VIA AGENT" : "▶ RUN COMMAND NATIVELY"
+                  onClick: () => He(e, y, P),
+                  children: d ? "⚙ EXECUTING VIA AGENT…" : y.done ? "✓ COMPLETED" : y.runState === "failed" ? "↻ RETRY VIA AGENT" : "▶ RUN COMMAND NATIVELY"
                 }
               ) }),
-              (c || y.output) && /* @__PURE__ */ r(
+              (d || y.output) && /* @__PURE__ */ r(
                 "div",
                 {
                   style: {
                     ...o.outputPre,
                     // Always longhand: toggling borderColor against the
                     // shorthand `border` triggers a React style warning.
-                    borderColor: y.runState === "failed" && !c ? "rgba(229,83,75,0.45)" : t.border
+                    borderColor: y.runState === "failed" && !d ? "rgba(229,83,75,0.45)" : t.border
                   },
-                  children: c ? `$ ${y.command}
-… taskmaster agent is executing — the reply lands here and in the task chat below` : /* @__PURE__ */ r(dt, { content: y.output ?? "" })
+                  children: d ? `$ ${y.command}
+… taskmaster agent is executing — the reply lands here and in the task chat below` : /* @__PURE__ */ r(ct, { content: y.output ?? "" })
                 }
               )
             ] }),
@@ -742,7 +742,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                   className: "tm-btn",
                   style: { ...o.btnGhost, ...p ? { color: t.kiro } : { color: t.focus, borderColor: "rgba(52,211,153,0.3)" } },
                   disabled: !!i || J === 0,
-                  onClick: () => He(e),
+                  onClick: () => Ve(e),
                   children: p ? "⚙ AGENT RUNNING STEPS…" : `▶ RUN REMAINING (${J})`
                 }
               )
@@ -800,7 +800,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
             /* @__PURE__ */ r(
               "input",
               {
-                style: { ...o.input, flex: 3, fontFamily: L, fontSize: 11 },
+                style: { ...o.input, flex: 3, fontFamily: D, fontSize: 11 },
                 placeholder: "optional terminal command",
                 value: ke,
                 onChange: (m) => xe(m.target.value),
@@ -828,16 +828,16 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
             children: [
               /* @__PURE__ */ r("span", { style: o.queueLabel, children: "TASK AGENT SESSION" }),
               /* @__PURE__ */ u("span", { style: { ...o.execChip, color: t.kiro, borderColor: "rgba(129,140,248,0.3)", background: "rgba(129,140,248,0.08)" }, children: [
-                d,
+                c,
                 " · taskmaster"
               ] })
             ]
           }
         ),
         /* @__PURE__ */ r("div", { style: { height: 380 }, children: /* @__PURE__ */ r(
-          lt,
+          dt,
           {
-            slotKey: d,
+            slotKey: c,
             agent: "taskmaster",
             frameless: !0,
             startAtBottom: !0,
@@ -847,7 +847,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
       ] })
     ] });
   }
-  function Ze() {
+  function et() {
     return /* @__PURE__ */ u(pe, { children: [
       /* @__PURE__ */ u("section", { className: "tm-card", style: o.card, children: [
         /* @__PURE__ */ u("div", { style: { ...o.queueLabel, marginBottom: 10 }, children: [
@@ -858,30 +858,30 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
         Me()
       ] }),
       S.tasks.map((e) => {
-        const n = De(e), d = e.id === (C == null ? void 0 : C.id), i = (T == null ? void 0 : T.taskId) === e.id ? T : null, c = (i == null ? void 0 : i.kind) === "draft";
+        const n = De(e), c = e.id === (C == null ? void 0 : C.id), i = (T == null ? void 0 : T.taskId) === e.id ? T : null, d = (i == null ? void 0 : i.kind) === "draft";
         return /* @__PURE__ */ u(
           "section",
           {
             className: "tm-card",
-            style: { ...o.card, ...d ? { borderColor: "rgba(52,211,153,0.4)" } : {} },
+            style: { ...o.card, ...c ? { borderColor: "rgba(52,211,153,0.4)" } : {} },
             children: [
               /* @__PURE__ */ u("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }, children: [
                 /* @__PURE__ */ r("span", { style: { fontWeight: 600, fontSize: 14, minWidth: 0 }, children: e.title }),
                 /* @__PURE__ */ u("span", { style: { display: "flex", gap: 6, flexWrap: "wrap" }, children: [
-                  e.estimateMinutes != null && /* @__PURE__ */ u("span", { style: { ...o.chip, color: "#38bdf8", borderColor: t.border, fontFamily: L }, children: [
+                  e.estimateMinutes != null && /* @__PURE__ */ u("span", { style: { ...o.chip, color: "#38bdf8", borderColor: t.border, fontFamily: D }, children: [
                     "~",
                     e.estimateMinutes,
                     "m"
                   ] }),
-                  /* @__PURE__ */ r("button", { className: "tm-btn", style: { ...o.btnGhost, color: t.focus, borderColor: "rgba(52,211,153,0.3)" }, onClick: () => Ye(e.id), children: "FOCUS" }),
+                  /* @__PURE__ */ r("button", { className: "tm-btn", style: { ...o.btnGhost, color: t.focus, borderColor: "rgba(52,211,153,0.3)" }, onClick: () => Xe(e.id), children: "FOCUS" }),
                   /* @__PURE__ */ r(
                     "button",
                     {
                       className: "tm-btn",
-                      style: { ...o.btnGhost, ...c ? { color: t.kiro } : {} },
+                      style: { ...o.btnGhost, ...d ? { color: t.kiro } : {} },
                       disabled: !!i,
                       onClick: () => Re(e),
-                      children: c ? "⚙ DRAFTING…" : "✦ DRAFT STEPS"
+                      children: d ? "⚙ DRAFTING…" : "✦ DRAFT STEPS"
                     }
                   ),
                   /* @__PURE__ */ r("button", { className: "tm-btn", style: o.btnGhost, onClick: () => $e(e), children: "💬 CHAT" }),
@@ -890,7 +890,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                     {
                       className: "tm-btn",
                       style: { ...o.btnGhost, ...te === e.id ? { color: t.danger, borderColor: t.danger } : {} },
-                      onClick: () => te === e.id ? _e(e.id) : ne(e.id),
+                      onClick: () => te === e.id ? Ye(e.id) : ne(e.id),
                       onBlur: () => ne(null),
                       children: te === e.id ? "SURE?" : "DELETE"
                     }
@@ -916,7 +916,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
       })
     ] });
   }
-  function et() {
+  function tt() {
     return /* @__PURE__ */ u(pe, { children: [
       /* @__PURE__ */ u("section", { className: "tm-card", style: o.card, children: [
         /* @__PURE__ */ u("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }, children: [
@@ -928,7 +928,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
               style: o.btnGhost,
               onClick: () => {
                 s.get("/api/status").then((e) => {
-                  D(typeof e == "object" && e !== null ? e : {}), g("ok", "Gateway status refreshed.");
+                  B(typeof e == "object" && e !== null ? e : {}), g("ok", "Gateway status refreshed.");
                 }).catch((e) => g("warn", `Status refresh failed: ${String(e)}`));
               },
               children: "REFRESH"
@@ -942,10 +942,10 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
           /* @__PURE__ */ r(ee, { label: "PROVIDER", value: String((b == null ? void 0 : b.provider) ?? "—"), accent: t.text })
         ] })
       ] }),
-      /* @__PURE__ */ u("section", { className: "tm-card", style: { ...o.card, fontFamily: L }, children: [
+      /* @__PURE__ */ u("section", { className: "tm-card", style: { ...o.card, fontFamily: D }, children: [
         /* @__PURE__ */ u("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap", borderBottom: `1px solid ${t.border}`, paddingBottom: 8, marginBottom: 10 }, children: [
           /* @__PURE__ */ r("span", { style: { color: t.muted, fontSize: 11 }, children: "Taskmaster activity + gateway console" }),
-          /* @__PURE__ */ r("span", { style: { ...o.execChip, color: t.muted }, children: je })
+          /* @__PURE__ */ r("span", { style: { ...o.execChip, color: t.muted }, children: Pe })
         ] }),
         /* @__PURE__ */ u("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 380, overflowY: "auto" }, children: [
           W.length === 0 && /* @__PURE__ */ r("span", { style: { color: t.muted, fontSize: 11 }, children: "No events yet." }),
@@ -978,7 +978,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
           /* @__PURE__ */ r("div", { style: { color: t.muted, fontSize: 10, marginTop: 2 }, children: "Task focus · agent-run commands · memory sync" })
         ] })
       ] }),
-      Je()
+      Qe()
     ] }),
     F && /* @__PURE__ */ r("div", { style: o.errorBanner, children: F }),
     Q
@@ -987,7 +987,7 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
 function ee({ label: s, value: l, accent: a }) {
   return /* @__PURE__ */ u("div", { style: o.statBox, children: [
     /* @__PURE__ */ r("div", { style: { color: t.muted, fontSize: 9, letterSpacing: "0.1em", marginBottom: 4 }, children: s }),
-    /* @__PURE__ */ r("div", { style: { color: a, fontSize: 13, fontWeight: 700, fontFamily: L, wordBreak: "break-all" }, children: l })
+    /* @__PURE__ */ r("div", { style: { color: a, fontSize: 13, fontWeight: 700, fontFamily: D, wordBreak: "break-all" }, children: l })
   ] });
 }
 const It = `
@@ -1130,7 +1130,7 @@ const It = `
     border: `1px solid ${t.border}`,
     background: t.bg
   },
-  commandLabel: { fontSize: 9, letterSpacing: "0.14em", color: t.muted, fontFamily: L },
+  commandLabel: { fontSize: 9, letterSpacing: "0.14em", color: t.muted, fontFamily: D },
   commandCode: {
     display: "block",
     padding: 8,
@@ -1139,7 +1139,7 @@ const It = `
     background: t.card,
     color: "#6ee7b7",
     fontSize: 11,
-    fontFamily: L,
+    fontFamily: D,
     overflowX: "auto",
     whiteSpace: "pre"
   },
@@ -1171,7 +1171,7 @@ const It = `
     background: "#000",
     color: "#cbd5e1",
     fontSize: 10.5,
-    fontFamily: L,
+    fontFamily: D,
     whiteSpace: "pre-wrap",
     wordBreak: "break-word",
     maxHeight: 200,
@@ -1201,7 +1201,7 @@ const It = `
     fontSize: 8,
     fontWeight: 700,
     letterSpacing: "0.08em",
-    fontFamily: L
+    fontFamily: D
   },
   failedChip: {
     color: t.danger,

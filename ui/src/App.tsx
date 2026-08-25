@@ -313,10 +313,17 @@ export default function App() {
           return
         }
         const historyLength = slotData.messages.length
-        const baseline = baselineSlotWatermark(seenRef.current[slot], {
-          status: 'loaded',
-          messageCount: historyLength,
-        })
+        // A stopped turn may have appended after stopWaiting's snapshot. On
+        // retry, rebase to the freshly loaded history before releasing the
+        // abandoned guard, or that late reply could be parsed as this run's
+        // result. Normal first-send baselining still preserves an existing
+        // watermark so ordinary sends cannot rewind it.
+        const baseline = waitingForAbandonedTurn
+          ? rebaseSlotWatermark(seenRef.current[slot], historyLength)
+          : baselineSlotWatermark(seenRef.current[slot], {
+              status: 'loaded',
+              messageCount: historyLength,
+            })
         if (baseline === null) {
           sendLockRef.current = false
           return
