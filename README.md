@@ -2,7 +2,7 @@
 
 Execution engine from Collin's mockup: pick one task, isolate **one micro-step at a time**, run executable steps through the `taskmaster` agent (in an embedded per-task chat), sync completed solution paths to Crew memory, and watch everything on a console.
 
-Spec: `memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md` (repo root; includes the v0.2 revision). Crew App Kit docs: [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/). Sibling app: `apps/work-cockpit/` (day-level focus cockpit; Taskmaster owns single-task decomposition + step execution).
+Spec: `memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md` (external workspace path, not in this repository; includes the v0.2 revision) — **not yet copied into this repository**; `.kiro/specs/taskmaster-pro/` holds what was reconstructable from source, plus the prioritized backlog in [`tasks.md`](.kiro/specs/taskmaster-pro/tasks.md). Crew App Kit docs: [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/). Sibling app: `apps/work-cockpit/` (day-level focus cockpit; Taskmaster owns single-task decomposition + step execution).
 
 ## Architecture
 
