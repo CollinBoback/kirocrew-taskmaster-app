@@ -45,7 +45,7 @@ bolt icon). Visit **Focus**, **Backlog**, and **Console**.
 **If it fails:** no sidebar entry → step 1's enable/restart didn't happen. Views blank or
 visibly stale → the installed copy's `ui/dist/index.mjs` is stale; re-copy a fresh source
 checkout and reinstall (the gateway serves the committed bundle directly; a stale bundle
-produces no error and no symptom).
+often shows no console/runtime error and may simply look like an older UI).
 
 ## Step 3 — Persistence across reload
 
