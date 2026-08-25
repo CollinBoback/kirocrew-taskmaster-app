@@ -183,6 +183,29 @@ export interface SlotData {
   title?: string
 }
 
+/**
+ * One in-flight agent request against a task's chat slot. `step` waits for a
+ * single STEP RESULT marker, `all` collects markers until the turn ends, and
+ * `draft` waits for a parseable breakdown.
+ */
+export interface PendingWork {
+  taskId: string
+  kind: 'step' | 'draft' | 'all'
+  stepIndex?: number
+  sentAt: number
+}
+
+export const PENDING_TIMEOUT_MS = 15 * 60 * 1000
+
+export function isPendingTimedOut(work: PendingWork, now: number, timeoutMs = PENDING_TIMEOUT_MS): boolean {
+  return now - work.sentAt > timeoutMs
+}
+
+/** Keep an existing watermark; otherwise baseline it to the current history. */
+export function baselineSlotWatermark(current: number | undefined, messageCount: number): number {
+  return current ?? messageCount
+}
+
 export function normalizeSlotData(raw: unknown): Required<Pick<SlotData, 'messages' | 'running'>> {
   if (typeof raw !== 'object' || raw === null) return { messages: [], running: false }
   const record = raw as Record<string, unknown>
@@ -218,4 +241,106 @@ export function parseStepResults(text: string): StepResult[] {
     })
   }
   return results
+}
+
+const SLOT_OUTPUT_CAP = 4000
+
+export type SlotPollAction =
+  | { type: 'append-draft'; steps: DraftStep[] }
+  | { type: 'step-result'; result: StepResult; output: string }
+  | { type: 'unknown-step'; result: StepResult }
+  | { type: 'turn-ended'; kind: PendingWork['kind']; output?: string }
+
+export interface SlotPollDecision {
+  /** Actions for App.tsx to translate into state, notifications, and logs. */
+  actions: SlotPollAction[]
+  /** Watermark after excluding any still-streaming final message. */
+  nextSeen: number
+  /** Carries reply detection across poll ticks. */
+  sawReply: boolean
+  /** True when this request should stop polling. */
+  settled: boolean
+  /** Used only for the existing success notification on a single-step run. */
+  stepSucceeded: boolean
+}
+
+export interface SlotPollInput {
+  work: PendingWork
+  data: Required<Pick<SlotData, 'messages' | 'running'>>
+  seen: number
+  sawReply: boolean
+  /** Null means the task disappeared while its request was in flight. */
+  stepCount: number | null
+}
+
+/**
+ * Decide what a single slot poll means without performing React or SDK side
+ * effects. This preserves the shipped polling rules while making watermark,
+ * streaming, parsing, settlement, and no-marker fallback behavior testable.
+ */
+export function evaluateSlotPoll(input: SlotPollInput): SlotPollDecision {
+  const { work, data, seen, stepCount } = input
+  const visible = data.running ? Math.max(0, data.messages.length - 1) : data.messages.length
+  const fresh = data.messages.slice(seen, visible)
+  const nextSeen = Math.max(seen, visible)
+
+  // The old component callback settled immediately if its task disappeared.
+  if (stepCount === null) {
+    return { actions: [], nextSeen, sawReply: input.sawReply, settled: true, stepSucceeded: false }
+  }
+
+  const actions: SlotPollAction[] = []
+  let sawReply = input.sawReply
+  let settled = false
+  let stepSucceeded = false
+
+  for (const message of fresh) {
+    if (message.role === 'user' || !message.content) continue
+    sawReply = true
+    const content = message.content
+
+    if (work.kind === 'draft') {
+      const steps = parseBreakdown(content)
+      if (steps) {
+        actions.push({ type: 'append-draft', steps })
+        settled = true
+      }
+      continue
+    }
+
+    const results = parseStepResults(content)
+    for (const result of results) {
+      if (result.index < 1 || result.index > stepCount) {
+        actions.push({ type: 'unknown-step', result })
+        continue
+      }
+      const output =
+        results.length === 1
+          ? content.slice(0, SLOT_OUTPUT_CAP)
+          : `${result.ok ? 'done' : 'failed'} — ${result.summary || '(no summary)'}`
+      actions.push({ type: 'step-result', result, output })
+      if (result.ok) stepSucceeded = true
+      if (work.kind === 'step') settled = true
+    }
+  }
+
+  // Single-step and draft requests preserve their early-settlement behavior.
+  if (settled && work.kind !== 'all') {
+    return { actions, nextSeen, sawReply, settled: true, stepSucceeded }
+  }
+
+  // A reply ended without the expected marker/JSON, or a run-all turn ended.
+  if (!data.running && sawReply) {
+    const lastReply = [...fresh].reverse().find((message) => message.role !== 'user' && message.content)
+    actions.push({
+      type: 'turn-ended',
+      kind: work.kind,
+      ...(work.kind === 'step' && lastReply?.content
+        ? { output: lastReply.content.slice(0, SLOT_OUTPUT_CAP) }
+        : {}),
+    })
+    settled = true
+  }
+
+  return { actions, nextSeen, sawReply, settled, stepSucceeded }
 }
