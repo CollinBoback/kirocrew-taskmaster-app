@@ -10,6 +10,8 @@ export interface Subtask {
   command?: string
   /** Last execution report from the taskmaster agent. */
   output?: string
+  /** Outcome of the last agent run (STEP RESULT marker). Absent = never run. */
+  runState?: 'done' | 'failed'
   source?: 'manual' | 'agent'
 }
 
@@ -88,6 +90,7 @@ function normalizeTask(record: Record<string, unknown>): Task {
         done: sub.done === true,
         ...(typeof sub.command === 'string' && sub.command.trim() ? { command: sub.command } : {}),
         ...(typeof sub.output === 'string' && sub.output ? { output: sub.output } : {}),
+        ...(sub.runState === 'done' || sub.runState === 'failed' ? { runState: sub.runState as 'done' | 'failed' } : {}),
         ...(sub.source === 'agent' || sub.source === 'manual' ? { source: sub.source as 'agent' | 'manual' } : {}),
       }))
     : []
