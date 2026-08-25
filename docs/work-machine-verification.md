@@ -18,8 +18,7 @@ machine.
 
 ```bash
 # REST (gateway on default port)
-curl -X POST http://localhost:5476/api/apps/install -H 'Content-Type: application/json' \
-  -d '{"source": "C:/path/to/taskmaster-pro"}'
+curl -X POST http://localhost:5476/api/apps/install -H 'Content-Type: application/json' -d '{"source": "C:/path/to/taskmaster-pro"}'
 curl -X POST http://localhost:5476/api/apps/taskmaster-pro/enable
 ```
 
