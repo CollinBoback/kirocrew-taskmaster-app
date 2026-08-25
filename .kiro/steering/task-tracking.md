@@ -57,7 +57,7 @@ For Task 2–6 mirrors, use this order:
 4. **Agent change** — a bounded description of what should change; do not silently widen
    scope.
 5. **Done when** — observable acceptance checks in bullets.
-6. **Priority / sequence** — P0/P1/P2 plus explicit upstream/downstream dependencies.
+6. **Priority / sequence** — P0/P1/P2/P3/P4 plus explicit upstream/downstream dependencies.
 
 Additional rules:
 
