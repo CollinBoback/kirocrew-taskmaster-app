@@ -295,6 +295,9 @@ row markup.
 This is not a coding task. It is the final reality check that the committed app actually
 installs and behaves correctly on the machine where KiroCrew is installed.
 
+A step-by-step run sheet with pass criteria, triage hints, and a paste-ready results
+template lives at `docs/work-machine-verification.md`.
+
 ### Why it cannot be delegated to the repo agent
 
 `.kiro/steering/deploy-install.md` explicitly says install/gateway/`kirocrew` commands are
