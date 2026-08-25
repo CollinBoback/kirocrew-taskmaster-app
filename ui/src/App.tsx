@@ -7,6 +7,8 @@ import {
   baselineSlotWatermark,
   evaluateSlotPoll,
   firstIncompleteIndex,
+  isActivePendingWork,
+  isExplicitNotFoundError,
   isPendingTimedOut,
   lessonFor,
   normalizeConfig,
@@ -83,14 +85,30 @@ export default function App() {
   const saveChainRef = useRef<Promise<void>>(Promise.resolve())
   const saveRevisionRef = useRef(0)
   const lessonPostingRef = useRef<Record<string, boolean>>({})
+  /** Blocks a second send while the first request is baselining its slot. */
+  const sendLockRef = useRef(false)
   // Async closures (send + poll tick) read these refs so they never act on a
   // stale pending after the state has moved on.
   const pendingRef = useRef<PendingWork | null>(null)
-  pendingRef.current = pending
   /** Per-slot watermark: how many slot messages have already been parsed. */
   const seenRef = useRef<Record<string, number>>({})
   /** True once at least one agent reply arrived for the current pending. */
   const sawReplyRef = useRef(false)
+
+  const beginPending = useCallback((work: PendingWork) => {
+    // Update the ref synchronously so another click cannot start a second run
+    // before React commits the state update.
+    pendingRef.current = work
+    setPending(work)
+  }, [])
+
+  const clearPending = useCallback((expected: PendingWork) => {
+    if (pendingRef.current !== expected) return false
+    // Invalidate in-flight poll/send continuations before scheduling render.
+    pendingRef.current = null
+    setPending(null)
+    return true
+  }, [])
 
   const addLog = useCallback((level: LogEntry['level'], msg: string) => {
     setLog((prev) => [{ ts: timeStamp(), level, msg }, ...prev].slice(0, LOG_CAP))
@@ -276,20 +294,41 @@ export default function App() {
   )
 
   async function sendToTaskSlot(task: Task, message: string, work: Omit<PendingWork, 'sentAt'>) {
-    if (pendingRef.current) return
+    if (pendingRef.current || sendLockRef.current) return
+    sendLockRef.current = true
     const slot = taskSlotKey(task)
     // Baseline the watermark BEFORE sending so pre-existing transcript
     // history (old STEP RESULT lines included) is never re-parsed.
     if (seenRef.current[slot] === undefined) {
       try {
         const historyLength = (await fetchSlot(slot)).messages.length
-        seenRef.current[slot] = baselineSlotWatermark(seenRef.current[slot], historyLength)
-      } catch {
-        seenRef.current[slot] = baselineSlotWatermark(seenRef.current[slot], 0)
+        const baseline = baselineSlotWatermark(seenRef.current[slot], {
+          status: 'loaded',
+          messageCount: historyLength,
+        })
+        if (baseline === null) {
+          sendLockRef.current = false
+          return
+        }
+        seenRef.current[slot] = baseline
+      } catch (err) {
+        const baseline = baselineSlotWatermark(
+          seenRef.current[slot],
+          isExplicitNotFoundError(err) ? { status: 'missing' } : { status: 'failed' },
+        )
+        if (baseline === null) {
+          sendLockRef.current = false
+          addLog('warn', `Could not safely read task chat history; request was not sent: ${String(err)}`)
+          notify('Could not verify task chat history — retry the run', { type: 'error' })
+          return
+        }
+        seenRef.current[slot] = baseline
       }
     }
     sawReplyRef.current = false
-    setPending({ ...work, sentAt: Date.now() })
+    const nextWork = { ...work, sentAt: Date.now() }
+    sendLockRef.current = false
+    beginPending(nextWork)
     if (!task.slotStarted) {
       mutate((cfg) => ({
         ...cfg,
@@ -303,7 +342,7 @@ export default function App() {
       if (err instanceof SyntaxError) return
       addLog('err', `Send to task slot failed: ${String(err)}`)
       notify('Could not reach the gateway', { type: 'error' })
-      if (pendingRef.current?.taskId === task.id) setPending(null)
+      clearPending(nextWork)
     })
     addLog('info', `Sent to task slot ${slot}: ${message.split('\n')[0].slice(0, 120)}`)
   }
@@ -357,10 +396,10 @@ export default function App() {
     let stopped = false
     const tick = async () => {
       const work = pendingRef.current
-      if (stopped || !work) return
+      if (!work || !isActivePendingWork(pendingRef.current, work, stopped)) return
       if (isPendingTimedOut(work, Date.now())) {
         addLog('warn', 'Agent request timed out — check the task chat.')
-        setPending(null)
+        clearPending(work)
         return
       }
       let data: { messages: SlotMessage[]; running: boolean }
@@ -369,6 +408,10 @@ export default function App() {
       } catch {
         return // slot not created yet, or transient error — next tick retries
       }
+      // A previous tick may have timed out/settled this request while this
+      // fetch was in flight. Never let that stale response touch refs/state or
+      // clear a newer request, even if it belongs to the same task.
+      if (!isActivePendingWork(pendingRef.current, work, stopped)) return
       const seen = seenRef.current[slot] ?? 0
       const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
       const decision = evaluateSlotPoll({
@@ -385,7 +428,7 @@ export default function App() {
         if (work.kind === 'step' && decision.stepSucceeded) {
           notify('Step completed via taskmaster agent', { type: 'success' })
         }
-        setPending(null)
+        clearPending(work)
       }
     }
     const timer = setInterval(() => void tick(), POLL_MS)
@@ -398,7 +441,7 @@ export default function App() {
   }, [pending?.sentAt])
 
   function runCommand(task: Task, sub: Subtask, index: number) {
-    if (!sub.command || pendingRef.current) return
+    if (!sub.command || pendingRef.current || sendLockRef.current) return
     addLog('info', `Kiro terminal execute (step ${index + 1}): ${sub.command}`)
     void sendToTaskSlot(
       task,
@@ -408,7 +451,7 @@ export default function App() {
   }
 
   function draftSteps(task: Task) {
-    if (pendingRef.current) return
+    if (pendingRef.current || sendLockRef.current) return
     const existing = task.subtasks.map((sub) => sub.title).join('; ') || 'none'
     addLog('info', `Requesting micro-step breakdown for "${task.title}".`)
     notify('Taskmaster agent is drafting micro-steps…')
@@ -420,7 +463,7 @@ export default function App() {
   }
 
   function runRemaining(task: Task) {
-    if (pendingRef.current) return
+    if (pendingRef.current || sendLockRef.current) return
     const remaining = task.subtasks
       .map((sub, index) => ({ sub, index }))
       .filter(({ sub }) => !sub.done)

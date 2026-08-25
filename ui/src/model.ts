@@ -201,9 +201,42 @@ export function isPendingTimedOut(work: PendingWork, now: number, timeoutMs = PE
   return now - work.sentAt > timeoutMs
 }
 
-/** Keep an existing watermark; otherwise baseline it to the current history. */
-export function baselineSlotWatermark(current: number | undefined, messageCount: number): number {
-  return current ?? messageCount
+export type SlotBaselineRead =
+  | { status: 'loaded'; messageCount: number }
+  | { status: 'missing' }
+  | { status: 'failed' }
+
+/** Recognize only explicit slot/HTTP 404s; generic network failures are unsafe. */
+export function isExplicitNotFoundError(error: unknown): boolean {
+  if (typeof error === 'object' && error !== null) {
+    const record = error as Record<string, unknown>
+    if (record.status === 404 || record.statusCode === 404) return true
+    if (typeof record.response === 'object' && record.response !== null) {
+      if ((record.response as Record<string, unknown>).status === 404) return true
+    }
+  }
+  const message = error instanceof Error ? error.message : String(error)
+  return /(?:^|\D)404(?:\D|$)|slot not found/i.test(message)
+}
+
+/**
+ * Resolve the pre-send transcript watermark. A known-missing slot is new and
+ * safely starts at zero; an unknown read failure must abort the send rather
+ * than risk replaying stale history. Null means "unsafe to send".
+ */
+export function baselineSlotWatermark(current: number | undefined, read: SlotBaselineRead): number | null {
+  if (current !== undefined) return current
+  if (read.status === 'loaded') return read.messageCount
+  return read.status === 'missing' ? 0 : null
+}
+
+/** Object identity prevents a late poll from mutating a replacement request. */
+export function isActivePendingWork(
+  current: PendingWork | null,
+  expected: PendingWork,
+  stopped = false,
+): boolean {
+  return !stopped && current === expected
 }
 
 export function normalizeSlotData(raw: unknown): Required<Pick<SlotData, 'messages' | 'running'>> {

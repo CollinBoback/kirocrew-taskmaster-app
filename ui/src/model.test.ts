@@ -4,6 +4,8 @@ import {
   baselineSlotWatermark,
   evaluateSlotPoll,
   firstIncompleteIndex,
+  isActivePendingWork,
+  isExplicitNotFoundError,
   isPendingTimedOut,
   lessonFor,
   normalizeConfig,
@@ -130,9 +132,27 @@ describe('parseBreakdown (fenced-JSON contract)', () => {
 })
 
 describe('evaluateSlotPoll (pure chat-slot engine)', () => {
-  it('baselines a new slot to its current history and preserves an existing watermark', () => {
-    expect(baselineSlotWatermark(undefined, 7)).toBe(7)
-    expect(baselineSlotWatermark(3, 7)).toBe(3)
+  it('baselines loaded/missing slots but rejects an unknown read failure', () => {
+    expect(baselineSlotWatermark(undefined, { status: 'loaded', messageCount: 7 })).toBe(7)
+    expect(baselineSlotWatermark(undefined, { status: 'missing' })).toBe(0)
+    expect(baselineSlotWatermark(undefined, { status: 'failed' })).toBeNull()
+    expect(baselineSlotWatermark(3, { status: 'failed' })).toBe(3)
+  })
+
+  it('treats only explicit slot/HTTP 404 errors as a safely missing slot', () => {
+    expect(isExplicitNotFoundError({ status: 404 })).toBe(true)
+    expect(isExplicitNotFoundError({ response: { status: 404 } })).toBe(true)
+    expect(isExplicitNotFoundError(new Error('404: slot not found'))).toBe(true)
+    expect(isExplicitNotFoundError(new Error('DNS host not found'))).toBe(false)
+    expect(isExplicitNotFoundError(new Error('gateway unavailable'))).toBe(false)
+  })
+
+  it('accepts poll results only for the exact active request', () => {
+    const work = makePending()
+    expect(isActivePendingWork(work, work)).toBe(true)
+    expect(isActivePendingWork(work, { ...work })).toBe(false)
+    expect(isActivePendingWork(null, work)).toBe(false)
+    expect(isActivePendingWork(work, work, true)).toBe(false)
   })
 
   it('does not re-apply transcript messages before the watermark', () => {
@@ -277,6 +297,7 @@ describe('evaluateSlotPoll (pure chat-slot engine)', () => {
   it('times out only after the configured window has elapsed', () => {
     const work = makePending({ sentAt: 1_000 })
     expect(isPendingTimedOut(work, 1_999, 1_000)).toBe(false)
+    expect(isPendingTimedOut(work, 2_000, 1_000)).toBe(false)
     expect(isPendingTimedOut(work, 2_001, 1_000)).toBe(true)
   })
 })
