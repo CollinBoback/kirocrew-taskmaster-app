@@ -2,7 +2,7 @@
 
 Execution engine from Collin's mockup: pick one task, isolate **one micro-step at a time**, run executable steps through the `taskmaster` agent (in an embedded per-task chat), sync completed solution paths to Crew memory, and watch everything on a console.
 
-Spec: [`.kiro/specs/taskmaster-pro/`](.kiro/specs/taskmaster-pro/) (`requirements.md` + `design.md`, plus the prioritized backlog in [`tasks.md`](.kiro/specs/taskmaster-pro/tasks.md)) — **authoritative since 2026-08-25**, superseding the original external narrative spec (`memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md`, kept on Collin's machine as a historical artifact). Crew App Kit docs: [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/). Sibling app: `apps/work-cockpit/` (day-level focus cockpit; Taskmaster owns single-task decomposition + step execution).
+Spec: [`.kiro/specs/taskmaster-pro/`](.kiro/specs/taskmaster-pro/) (`requirements.md` + `design.md`, plus the prioritized backlog in [`tasks.md`](.kiro/specs/taskmaster-pro/tasks.md)) — **authoritative since 2026-08-25**, superseding the original external narrative spec. Steering: [`.kiro/steering/`](.kiro/steering/) holds the deploy/install contract and the task-tracking convention (spec `Status:` lines are canonical; GitHub issues #12–#17 mirror them, cross-linked both ways) (`memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md`, kept on Collin's machine as a historical artifact). Crew App Kit docs: [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/). Sibling app: `apps/work-cockpit/` (day-level focus cockpit; Taskmaster owns single-task decomposition + step execution).
 
 ## Architecture
 
