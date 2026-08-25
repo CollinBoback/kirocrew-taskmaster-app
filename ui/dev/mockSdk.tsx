@@ -196,7 +196,7 @@ export function useAppEvents(event: string, cb: (payload: unknown) => void): voi
 // These hooks also return stable references, matching the real SDK. App keeps
 // them in useCallback/useEffect deps, so unstable identities would re-run those
 // effects on every render.
-function notifyToast(text: string, _opts?: Record<string, unknown>) {
+function notifyToast(text: string, _opts?: { type?: 'info' | 'success' | 'error' }) {
   const toast = document.createElement('div')
   toast.textContent = text
   Object.assign(toast.style, {
