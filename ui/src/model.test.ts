@@ -151,6 +151,7 @@ describe('evaluateSlotPoll (pure chat-slot engine)', () => {
   it('accepts poll results only for the exact active request', () => {
     const work = makePending()
     expect(isActivePendingWork(work, work)).toBe(true)
+    expect(isActivePendingWork({ ...work }, work)).toBe(true)
     expect(isActivePendingWork(work, { ...work, id: 'different' })).toBe(false)
     expect(isActivePendingWork(null, work)).toBe(false)
     expect(isActivePendingWork(work, work, true)).toBe(false)
