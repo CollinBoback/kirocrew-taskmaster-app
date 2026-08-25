@@ -50,7 +50,7 @@ This folder is only the install *source* — Crew copies it to `~/.kiro/crew/app
 3. "Taskmaster" appears in the dashboard sidebar (route `/taskmaster-pro`, bolt icon from `ui/icon.svg`).
 4. The daily `taskmaster-pro-selfheal` cron symlinks `skills/taskmaster-method` into `~/.kiro/crew/skills/` on its first run (the skill scanner only reads that flat namespace). To skip the wait, create the link/junction manually.
 
-`ui/dist/index.mjs` is **committed**, so no Node/npm is required on the work machine. Rebuild only when UI source changes: `cd ui && npm install && npm run build`, then sanity-check with `node --check dist/index.mjs`.
+`ui/dist/index.mjs` is **committed**, so no Node/npm is required on the work machine. Rebuild only when UI source changes: `cd ui && npm install && npm run build`, then sanity-check with `node --check dist/index.mjs`. CI enforces this: it rebuilds on every push/PR and fails if the committed `ui/dist/index.mjs` doesn't match a fresh build.
 
 ## Local development (no Crew needed)
 
