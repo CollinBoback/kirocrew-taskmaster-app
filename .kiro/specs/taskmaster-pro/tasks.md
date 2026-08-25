@@ -23,7 +23,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 | 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
 | 4 — Cancel an in-flight agent run | done — merged 2026-08-25 ([#31](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/31)) | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
 | 5 — Per-task `pending` | not started | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
-| 6 — Keyboard access to the step queue | not started | [#17](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17) | Independent |
+| 6 — Keyboard access to the step queue | done — merged 2026-08-25 ([#47](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/47)) | [#17](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17) | Independent |
 
 ---
 
@@ -215,8 +215,13 @@ around it.
 
 ## Task 6 — Keyboard access to the step queue
 
-Status: not started
+Status: done — merged 2026-08-25 via PR [#47](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/47)
 Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17
+
+**Resolution:** The step title/select area in each queue row is a native `<button>`
+(sibling of the completion button, `aria-current` on the active step) with a keyboard-only
+`:focus-visible` outline applied to all `tm-btn` controls. Whole-row mouse click still
+selects. Optional `j`/`k`/arrow navigation was deliberately skipped per Collin.
 
 **Why:** Queue rows are `div` elements with `onClick` and no `role`, `tabIndex`, or key
 handler, so selecting a step is mouse-only. For an app whose entire premise is reducing
