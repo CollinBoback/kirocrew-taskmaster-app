@@ -791,7 +791,9 @@ export default function App() {
                       <div
                         style={{
                           ...styles.outputPre,
-                          ...(activeSub.runState === 'failed' && !running ? { borderColor: 'rgba(229,83,75,0.45)' } : {}),
+                          // Always longhand: toggling borderColor against the
+                          // shorthand `border` triggers a React style warning.
+                          borderColor: activeSub.runState === 'failed' && !running ? 'rgba(229,83,75,0.45)' : T.border,
                         }}
                       >
                         {running ? (

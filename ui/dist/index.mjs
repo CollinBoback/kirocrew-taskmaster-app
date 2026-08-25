@@ -599,7 +599,9 @@ After finishing each step output one line: STEP RESULT [n]: done|failed — <sho
                 {
                   style: {
                     ...r.outputPre,
-                    ...b.runState === "failed" && !c ? { borderColor: "rgba(229,83,75,0.45)" } : {}
+                    // Always longhand: toggling borderColor against the
+                    // shorthand `border` triggers a React style warning.
+                    borderColor: b.runState === "failed" && !c ? "rgba(229,83,75,0.45)" : t.border
                   },
                   children: c ? `$ ${b.command}
 … taskmaster agent is executing — the reply lands here and in the task chat below` : /* @__PURE__ */ o(ot, { content: b.output ?? "" })
