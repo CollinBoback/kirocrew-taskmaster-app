@@ -79,7 +79,7 @@ export default function App() {
   const [newStepTitle, setNewStepTitle] = useState('')
   const [newStepCommand, setNewStepCommand] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
-  const [pending, setPending] = useState<PendingWork | null>(null)
+  const [pending, setPending] = useState<Record<string, PendingWork>>({})
 
   const configRef = useRef<TaskmasterConfig | null>(null)
   configRef.current = config
@@ -87,29 +87,33 @@ export default function App() {
   const saveRevisionRef = useRef(0)
   const lessonPostingRef = useRef<Record<string, boolean>>({})
   /** Blocks a second send while the first request is baselining its slot. */
-  const sendLockRef = useRef(false)
+  const sendLockRef = useRef<Record<string, boolean>>({})
   // Async closures (send + poll tick) read these refs so they never act on a
   // stale pending after the state has moved on.
-  const pendingRef = useRef<PendingWork | null>(null)
+  const pendingRef = useRef<Record<string, PendingWork>>({})
   /** Per-slot watermark: how many slot messages have already been parsed. */
   const seenRef = useRef<Record<string, number>>({})
   /** Slots whose abandoned turn must finish before a new request can start. */
   const abandonedSlotsRef = useRef<Set<string>>(new Set())
   /** True once at least one agent reply arrived for the current pending. */
-  const sawReplyRef = useRef(false)
+  const sawReplyRef = useRef<Record<string, boolean>>({})
 
   const beginPending = useCallback((work: PendingWork) => {
     // Update the ref synchronously so another click cannot start a second run
     // before React commits the state update.
-    pendingRef.current = work
-    setPending(work)
+    pendingRef.current[work.taskId] = work
+    setPending((prev) => ({ ...prev, [work.taskId]: work }))
   }, [])
 
   const clearPending = useCallback((expected: PendingWork) => {
-    if (pendingRef.current !== expected) return false
+    if (pendingRef.current[expected.taskId] !== expected) return false
     // Invalidate in-flight poll/send continuations before scheduling render.
-    pendingRef.current = null
-    setPending(null)
+    delete pendingRef.current[expected.taskId]
+    setPending((prev) => {
+      const next = { ...prev }
+      delete next[expected.taskId]
+      return next
+    })
     return true
   }, [])
 
@@ -297,8 +301,8 @@ export default function App() {
   )
 
   async function sendToTaskSlot(task: Task, message: string, work: Omit<PendingWork, 'sentAt'>) {
-    if (pendingRef.current || sendLockRef.current) return
-    sendLockRef.current = true
+    if (pendingRef.current[task.id] || sendLockRef.current[task.id]) return
+    sendLockRef.current[task.id] = true
     const slot = taskSlotKey(task)
     // Baseline the watermark BEFORE sending so pre-existing transcript
     // history (old STEP RESULT lines included) is never re-parsed.
@@ -307,7 +311,7 @@ export default function App() {
       try {
         const slotData = await fetchSlot(slot)
         if (waitingForAbandonedTurn && slotData.running) {
-          sendLockRef.current = false
+          sendLockRef.current[task.id] = false
           addLog('info', 'The stopped agent turn is still running in chat; request was not sent.')
           notify('The previous agent turn is still finishing — retry after it ends')
           return
@@ -325,7 +329,7 @@ export default function App() {
               messageCount: historyLength,
             })
         if (baseline === null) {
-          sendLockRef.current = false
+          sendLockRef.current[task.id] = false
           return
         }
         seenRef.current[slot] = baseline
@@ -333,7 +337,7 @@ export default function App() {
       } catch (err) {
         const explicitlyMissing = isExplicitNotFoundError(err)
         if (waitingForAbandonedTurn && !explicitlyMissing) {
-          sendLockRef.current = false
+          sendLockRef.current[task.id] = false
           addLog('info', `Could not verify that the stopped agent turn ended: ${String(err)}`)
           notify('Could not verify the previous agent turn — retry after it ends', { type: 'error' })
           return
@@ -343,7 +347,7 @@ export default function App() {
           explicitlyMissing ? { status: 'missing' } : { status: 'failed' },
         )
         if (baseline === null) {
-          sendLockRef.current = false
+          sendLockRef.current[task.id] = false
           addLog('warn', `Could not safely read task chat history; request was not sent: ${String(err)}`)
           notify('Could not verify task chat history — retry the run', { type: 'error' })
           return
@@ -352,9 +356,9 @@ export default function App() {
         abandonedSlotsRef.current.delete(slot)
       }
     }
-    sawReplyRef.current = false
+    sawReplyRef.current[task.id] = false
     const nextWork = { ...work, sentAt: Date.now() }
-    sendLockRef.current = false
+    sendLockRef.current[task.id] = false
     beginPending(nextWork)
     if (!task.slotStarted) {
       mutate((cfg) => ({
@@ -375,13 +379,13 @@ export default function App() {
   }
 
   async function stopWaiting(task: Task) {
-    const work = pendingRef.current
+    const work = pendingRef.current[task.id]
     if (!work || work.taskId !== task.id || !clearPending(work)) return
     const slot = taskSlotKey(task)
     abandonedSlotsRef.current.add(slot)
     // Keep all send entry points closed while the cancellation rebase reads a
     // final slot snapshot. The underlying agent turn may still be running.
-    sendLockRef.current = true
+    sendLockRef.current[task.id] = true
     addLog('warn', 'Stopped waiting for the agent; its turn may continue in the task chat.')
     notify('Stopped waiting — the agent may continue in the task chat')
     try {
@@ -391,7 +395,7 @@ export default function App() {
       // The next send will retry the baseline while the abandoned-slot guard
       // prevents stale output from being accepted as a new request.
     } finally {
-      sendLockRef.current = false
+      sendLockRef.current[task.id] = false
     }
   }
 
@@ -436,47 +440,51 @@ export default function App() {
     [addLog, appendDraftSteps, notify, setStepOutput, setStepState],
   )
 
-  // Poll the pending task's slot until the request settles, the agent turn
+  // Poll the pending tasks' slots until they settle, the agent turn
   // ends, or the timeout passes. Manual toggling always remains as fallback.
   useEffect(() => {
-    if (!pending) return
-    const slot = taskSlotKey({ id: pending.taskId })
     let stopped = false
     const tick = async () => {
-      const work = pendingRef.current
-      if (!work || !isActivePendingWork(pendingRef.current, work, stopped)) return
-      if (isPendingTimedOut(work, Date.now())) {
-        addLog('warn', 'Agent request timed out — check the task chat.')
-        clearPending(work)
-        return
-      }
-      let data: { messages: SlotMessage[]; running: boolean }
-      try {
-        data = await fetchSlot(slot)
-      } catch {
-        return // slot not created yet, or transient error — next tick retries
-      }
-      // A previous tick may have timed out/settled this request while this
-      // fetch was in flight. Never let that stale response touch refs/state or
-      // clear a newer request, even if it belongs to the same task.
-      if (!isActivePendingWork(pendingRef.current, work, stopped)) return
-      const seen = seenRef.current[slot] ?? 0
-      const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
-      const decision = evaluateSlotPoll({
-        work,
-        data,
-        seen,
-        sawReply: sawReplyRef.current,
-        stepCount: task?.subtasks.length ?? null,
-      })
-      seenRef.current[slot] = decision.nextSeen
-      sawReplyRef.current = decision.sawReply
-      applySlotActions(work, decision.actions)
-      if (decision.settled) {
-        if (work.kind === 'step' && decision.stepSucceeded) {
-          notify('Step completed via taskmaster agent', { type: 'success' })
+      const works = Object.values(pendingRef.current)
+      if (works.length === 0) return
+      
+      for (const work of works) {
+        if (stopped) return
+        const slot = taskSlotKey({ id: work.taskId })
+        if (!isActivePendingWork(pendingRef.current[work.taskId] ?? null, work, stopped)) continue
+        if (isPendingTimedOut(work, Date.now())) {
+          addLog('warn', 'Agent request timed out — check the task chat.')
+          clearPending(work)
+          continue
         }
-        clearPending(work)
+        let data: { messages: SlotMessage[]; running: boolean }
+        try {
+          data = await fetchSlot(slot)
+        } catch {
+          continue // slot not created yet, or transient error — next tick retries
+        }
+        // A previous tick may have timed out/settled this request while this
+        // fetch was in flight. Never let that stale response touch refs/state or
+        // clear a newer request, even if it belongs to the same task.
+        if (!isActivePendingWork(pendingRef.current[work.taskId] ?? null, work, stopped)) continue
+        const seen = seenRef.current[slot] ?? 0
+        const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
+        const decision = evaluateSlotPoll({
+          work,
+          data,
+          seen,
+          sawReply: sawReplyRef.current[work.taskId] ?? false,
+          stepCount: task?.subtasks.length ?? null,
+        })
+        seenRef.current[slot] = decision.nextSeen
+        sawReplyRef.current[work.taskId] = decision.sawReply
+        applySlotActions(work, decision.actions)
+        if (decision.settled) {
+          if (work.kind === 'step' && decision.stepSucceeded) {
+            notify('Step completed via taskmaster agent', { type: 'success' })
+          }
+          clearPending(work)
+        }
       }
     }
     const timer = setInterval(() => void tick(), POLL_MS)
@@ -486,10 +494,10 @@ export default function App() {
       clearInterval(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending?.sentAt])
+  }, [pending])
 
   function runCommand(task: Task, sub: Subtask, index: number) {
-    if (!sub.command || pendingRef.current || sendLockRef.current) return
+    if (!sub.command || pendingRef.current[task.id] || sendLockRef.current[task.id]) return
     addLog('info', `Kiro terminal execute (step ${index + 1}): ${sub.command}`)
     void sendToTaskSlot(
       task,
@@ -499,7 +507,7 @@ export default function App() {
   }
 
   function draftSteps(task: Task) {
-    if (pendingRef.current || sendLockRef.current) return
+    if (pendingRef.current[task.id] || sendLockRef.current[task.id]) return
     const existing = task.subtasks.map((sub) => sub.title).join('; ') || 'none'
     addLog('info', `Requesting micro-step breakdown for "${task.title}".`)
     notify('Taskmaster agent is drafting micro-steps…')
@@ -511,7 +519,7 @@ export default function App() {
   }
 
   function runRemaining(task: Task) {
-    if (pendingRef.current || sendLockRef.current) return
+    if (pendingRef.current[task.id] || sendLockRef.current[task.id]) return
     const remaining = task.subtasks
       .map((sub, index) => ({ sub, index }))
       .filter(({ sub }) => !sub.done)
@@ -724,7 +732,7 @@ export default function App() {
     const task = activeTask
     const prog = activeProgress ?? { done: 0, total: 0, pct: 0 }
     const slotKey = taskSlotKey(task)
-    const taskPending = pending?.taskId === task.id ? pending : null
+    const taskPending = pending[task.id] ?? null
     const running = Boolean(activeSub && taskPending?.kind === 'step' && taskPending.stepIndex === activeIdx)
     const drafting = taskPending?.kind === 'draft'
     const runningAll = taskPending?.kind === 'all'
@@ -1019,7 +1027,7 @@ export default function App() {
         {config!.tasks.map((task) => {
           const prog = progress(task)
           const isFocused = task.id === activeTask?.id
-          const taskPending = pending?.taskId === task.id ? pending : null
+          const taskPending = pending[task.id] ?? null
           const drafting = taskPending?.kind === 'draft'
           return (
             <section
