@@ -71,3 +71,4 @@ With a real gateway, use hot reload instead: `kirocrew app dev taskmaster-pro`.
 - **STEP RESULT is the contract.** Auto-completion only ever comes from the agent's `STEP RESULT [n]` line; a reply without one leaves the step for the manual toggle (graceful degradation, never guessing).
 - **Memory sync is per task, not per step** — lessons store reusable solution paths, not activity logs.
 - Sample data is the mockup's fictional migration task (generic `sqlcmd`, localhost). No Boeing names, servers, or data — deployment crosses to the work machine by Collin's hand only.
+- **Cursor Automations** (prompts in [`.cursor/automations/`](.cursor/automations/)) are the cloud layer for CI, PR review, and spec/issue drift. They never run `kirocrew`, never talk to a gateway, and never touch work-machine state. Create them at [cursor.com/automations/new](https://cursor.com/automations/new); the files do not enable themselves.
