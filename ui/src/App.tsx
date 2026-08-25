@@ -202,14 +202,19 @@ export default function App() {
   )
 
   const setStepState = useCallback(
-    (taskId: string, subId: string, done: boolean, output?: string) => {
+    (taskId: string, subId: string, done: boolean, output?: string, runState?: Subtask['runState']) => {
       let completedTask: Task | null = null
       mutate((cfg) => {
         const tasks = cfg.tasks.map((task) => {
           if (task.id !== taskId) return task
-          const subtasks = task.subtasks.map((sub) =>
-            sub.id === subId ? { ...sub, done, ...(output !== undefined ? { output } : {}) } : sub,
-          )
+          const subtasks = task.subtasks.map((sub) => {
+            if (sub.id !== subId) return sub
+            const next: Subtask = { ...sub, done, ...(output !== undefined ? { output } : {}) }
+            // Manual toggles (no runState) clear any stale agent-run outcome.
+            if (runState) next.runState = runState
+            else delete next.runState
+            return next
+          })
           const next = { ...task, subtasks }
           const wasComplete = task.subtasks.length > 0 && task.subtasks.every((sub) => sub.done)
           const isComplete = subtasks.length > 0 && subtasks.every((sub) => sub.done)
@@ -262,12 +267,17 @@ export default function App() {
   )
 
   const setStepOutput = useCallback(
-    (taskId: string, subId: string, output: string) => {
+    (taskId: string, subId: string, output: string, runState?: Subtask['runState']) => {
       mutate((cfg) => ({
         ...cfg,
         tasks: cfg.tasks.map((task) =>
           task.id === taskId
-            ? { ...task, subtasks: task.subtasks.map((sub) => (sub.id === subId ? { ...sub, output } : sub)) }
+            ? {
+                ...task,
+                subtasks: task.subtasks.map((sub) =>
+                  sub.id === subId ? { ...sub, output, ...(runState ? { runState } : {}) } : sub,
+                ),
+              }
             : task,
         ),
       }))
@@ -338,11 +348,11 @@ export default function App() {
               ? content.slice(0, OUTPUT_CAP)
               : `${result.ok ? 'done' : 'failed'} — ${result.summary || '(no summary)'}`
           if (result.ok) {
-            setStepState(work.taskId, sub.id, true, output)
+            setStepState(work.taskId, sub.id, true, output, 'done')
             addLog('ok', `Step ${result.index} completed by agent: ${result.summary || sub.title}`)
             stepSucceeded = true
           } else {
-            setStepOutput(work.taskId, sub.id, output)
+            setStepOutput(work.taskId, sub.id, output, 'failed')
             addLog('warn', `Step ${result.index} failed: ${result.summary || '(no summary)'}`)
           }
           if (work.kind === 'step') settled = true
@@ -749,7 +759,12 @@ export default function App() {
                   <div style={styles.commandBox}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={styles.commandLabel}>KIRO TERMINAL EXECUTABLE</span>
-                      <span style={{ ...styles.commandLabel, color: T.kiro }}>VIA TASKMASTER AGENT</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {activeSub.runState === 'failed' && !running && (
+                          <span style={{ ...styles.execChip, ...styles.failedChip }}>LAST RUN FAILED</span>
+                        )}
+                        <span style={{ ...styles.commandLabel, color: T.kiro }}>VIA TASKMASTER AGENT</span>
+                      </span>
                     </div>
                     <code style={styles.commandCode}>{activeSub.command}</code>
                     <div>
@@ -763,11 +778,24 @@ export default function App() {
                         disabled={activeSub.done || Boolean(taskPending)}
                         onClick={() => runCommand(task, activeSub, activeIdx)}
                       >
-                        {running ? '⚙ EXECUTING VIA AGENT…' : activeSub.done ? '✓ COMPLETED' : '▶ RUN COMMAND NATIVELY'}
+                        {running
+                          ? '⚙ EXECUTING VIA AGENT…'
+                          : activeSub.done
+                            ? '✓ COMPLETED'
+                            : activeSub.runState === 'failed'
+                              ? '↻ RETRY VIA AGENT'
+                              : '▶ RUN COMMAND NATIVELY'}
                       </button>
                     </div>
                     {(running || activeSub.output) && (
-                      <div style={styles.outputPre}>
+                      <div
+                        style={{
+                          ...styles.outputPre,
+                          // Always longhand: toggling borderColor against the
+                          // shorthand `border` triggers a React style warning.
+                          borderColor: activeSub.runState === 'failed' && !running ? 'rgba(229,83,75,0.45)' : T.border,
+                        }}
+                      >
                         {running ? (
                           `$ ${activeSub.command}\n… taskmaster agent is executing — the reply lands here and in the task chat below`
                         ) : (
@@ -834,6 +862,7 @@ export default function App() {
                       <span style={{ minWidth: 0 }}>
                         <span style={{ fontSize: 12, ...(sub.done ? { textDecoration: 'line-through', color: T.muted } : {}) }}>{sub.title}</span>
                         <span style={{ display: 'flex', gap: 6, marginTop: 2 }}>
+                          {sub.runState === 'failed' && !sub.done && <span style={{ ...styles.execChip, ...styles.failedChip }}>FAILED</span>}
                           {sub.command && !sub.done && <span style={styles.execChip}>EXECUTABLE</span>}
                           {sub.source === 'agent' && <span style={{ ...styles.execChip, color: T.kiro, borderColor: 'rgba(129,140,248,0.3)', background: 'rgba(129,140,248,0.08)' }}>AGENT-DRAFTED</span>}
                         </span>
@@ -953,12 +982,18 @@ export default function App() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 10 }}>
                 {task.subtasks.length === 0 && <span style={{ color: T.muted, fontSize: 11 }}>No micro-steps yet.</span>}
-                {task.subtasks.map((sub) => (
-                  <div key={sub.id} style={styles.backlogSubRow}>
-                    <span style={{ color: sub.done ? T.focus : '#475569' }}>{sub.done ? '✓' : '○'}</span>
-                    <span style={{ fontSize: 11, ...(sub.done ? { textDecoration: 'line-through', color: T.muted } : {}) }}>{sub.title}</span>
-                  </div>
-                ))}
+                {task.subtasks.map((sub) => {
+                  const failed = sub.runState === 'failed' && !sub.done
+                  return (
+                    <div key={sub.id} style={styles.backlogSubRow}>
+                      <span style={{ color: sub.done ? T.focus : failed ? T.danger : '#475569' }}>
+                        {sub.done ? '✓' : failed ? '✗' : '○'}
+                      </span>
+                      <span style={{ fontSize: 11, ...(sub.done ? { textDecoration: 'line-through', color: T.muted } : {}) }}>{sub.title}</span>
+                      {failed && <span style={{ ...styles.execChip, ...styles.failedChip }}>FAILED</span>}
+                    </div>
+                  )
+                })}
               </div>
             </section>
           )
@@ -1278,6 +1313,11 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 700,
     letterSpacing: '0.08em',
     fontFamily: MONO,
+  },
+  failedChip: {
+    color: T.danger,
+    borderColor: 'rgba(229,83,75,0.35)',
+    background: 'rgba(229,83,75,0.08)',
   },
   activeChip: {
     padding: '2px 8px',

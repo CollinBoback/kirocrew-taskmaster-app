@@ -9,7 +9,7 @@
 // - ChatEmbed: minimal stand-in for the host component (same props surface).
 // - useNotify(): DOM toast. useNavBadge(): tab title. useChatLauncher(): toast.
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 
 type Listener = (payload: unknown) => void
@@ -154,13 +154,13 @@ async function route(method: string, path: string, body?: unknown): Promise<unkn
 }
 
 export function useAppApi() {
-  return {
+  return useMemo(() => ({
     get: (path: string) => route('GET', path),
     post: (path: string, body?: unknown) => route('POST', path, body),
     put: (path: string, body?: unknown) => route('PUT', path, body),
     patch: (path: string, body?: unknown) => route('PATCH', path, body),
     del: (path: string) => route('DELETE', path),
-  }
+  }), [])
 }
 
 const SCRIPTED_NOTIFICATION = {
@@ -203,9 +203,9 @@ export function useNotify() {
 }
 
 export function useNavBadge() {
-  return (count: number) => {
+  return useCallback((count: number) => {
     document.title = count > 0 ? `(${count}) Taskmaster Pro — dev harness` : 'Taskmaster Pro — dev harness'
-  }
+  }, [])
 }
 
 export function useChatLauncher() {
