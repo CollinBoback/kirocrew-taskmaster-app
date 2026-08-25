@@ -448,44 +448,46 @@ export default function App() {
       const works = Object.values(pendingRef.current)
       if (works.length === 0) return
       
-      for (const work of works) {
-        if (stopped) return
-        const slot = taskSlotKey({ id: work.taskId })
-        if (!isActivePendingWork(pendingRef.current[work.taskId] ?? null, work, stopped)) continue
-        if (isPendingTimedOut(work, Date.now())) {
-          addLog('warn', 'Agent request timed out — check the task chat.')
-          clearPending(work)
-          continue
-        }
-        let data: { messages: SlotMessage[]; running: boolean }
-        try {
-          data = await fetchSlot(slot)
-        } catch {
-          continue // slot not created yet, or transient error — next tick retries
-        }
-        // A previous tick may have timed out/settled this request while this
-        // fetch was in flight. Never let that stale response touch refs/state or
-        // clear a newer request, even if it belongs to the same task.
-        if (!isActivePendingWork(pendingRef.current[work.taskId] ?? null, work, stopped)) continue
-        const seen = seenRef.current[slot] ?? 0
-        const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
-        const decision = evaluateSlotPoll({
-          work,
-          data,
-          seen,
-          sawReply: sawReplyRef.current[work.taskId] ?? false,
-          stepCount: task?.subtasks.length ?? null,
-        })
-        seenRef.current[slot] = decision.nextSeen
-        sawReplyRef.current[work.taskId] = decision.sawReply
-        applySlotActions(work, decision.actions)
-        if (decision.settled) {
-          if (work.kind === 'step' && decision.stepSucceeded) {
-            notify('Step completed via taskmaster agent', { type: 'success' })
+      await Promise.all(
+        works.map(async (work) => {
+          if (stopped) return
+          const slot = taskSlotKey({ id: work.taskId })
+          if (!isActivePendingWork(pendingRef.current[work.taskId] ?? null, work, stopped)) return
+          if (isPendingTimedOut(work, Date.now())) {
+            addLog('warn', 'Agent request timed out — check the task chat.')
+            clearPending(work)
+            return
           }
-          clearPending(work)
-        }
-      }
+          let data: { messages: SlotMessage[]; running: boolean }
+          try {
+            data = await fetchSlot(slot)
+          } catch {
+            return // slot not created yet, or transient error — next tick retries
+          }
+          // A previous tick may have timed out/settled this request while this
+          // fetch was in flight. Never let that stale response touch refs/state or
+          // clear a newer request, even if it belongs to the same task.
+          if (!isActivePendingWork(pendingRef.current[work.taskId] ?? null, work, stopped)) return
+          const seen = seenRef.current[slot] ?? 0
+          const task = configRef.current?.tasks.find((item) => item.id === work.taskId)
+          const decision = evaluateSlotPoll({
+            work,
+            data,
+            seen,
+            sawReply: sawReplyRef.current[work.taskId] ?? false,
+            stepCount: task?.subtasks.length ?? null,
+          })
+          seenRef.current[slot] = decision.nextSeen
+          sawReplyRef.current[work.taskId] = decision.sawReply
+          applySlotActions(work, decision.actions)
+          if (decision.settled) {
+            if (work.kind === 'step' && decision.stepSucceeded) {
+              notify('Step completed via taskmaster agent', { type: 'success' })
+            }
+            clearPending(work)
+          }
+        })
+      )
     }
     const timer = setInterval(() => void tick(), POLL_MS)
     void tick()
@@ -494,7 +496,7 @@ export default function App() {
       clearInterval(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending])
+  }, [])
 
   function runCommand(task: Task, sub: Subtask, index: number) {
     if (!sub.command || pendingRef.current[task.id] || sendLockRef.current[task.id]) return
