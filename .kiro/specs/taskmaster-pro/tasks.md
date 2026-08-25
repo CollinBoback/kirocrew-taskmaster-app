@@ -8,9 +8,28 @@ Ordering rationale: protect the deployment contract first, because a break there
 silent; then make the riskiest code testable; then close the functional gaps that make the
 app frustrating in daily use.
 
+## Status index
+
+This table is canonical for task status; the linked GitHub issues mirror it. The
+tracking convention (status vocabulary, partial-progress protocol, two-way linking)
+lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit as any
+`Status:` line change below.
+
+| Task | Status | Issue | Sequencing |
+|---|---|---|---|
+| 0 — Bring the spec into the repository | closed (won't do) — copy not needed; in-repo spec made authoritative instead | — | — |
+| 1 — CI that guards the committed build artifact | done — merged 2026-08-25 ([#10](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/10)) | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
+| 2 — Extract the slot engine and test it | not started | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
+| 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
+| 4 — Cancel an in-flight agent run | not started | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
+| 5 — Per-task `pending` | not started | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
+| 6 — Keyboard access to the step queue | not started | [#17](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17) | Independent |
+
 ---
 
 ## Task 0 — Bring the spec into the repository (closed 2026-08-25)
+
+Status: closed (won't do)
 
 **Resolution:** Closed without the copy, per Collin. The in-repo spec in this directory
 (`requirements.md` + `design.md`) has since been polished and improved and is now the
@@ -27,6 +46,9 @@ parallel document — one source of truth, in-repo.
 ---
 
 ## Task 1 — CI that guards the committed build artifact
+
+Status: done — merged 2026-08-25 via PR #10 (commit `4b67391`)
+Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12
 
 **Why this is first.** There is no `.github/` directory at all. Nothing runs `typecheck`,
 nothing runs the tests, and — the part that actually bites — nothing verifies that the
@@ -72,6 +94,11 @@ rebuild. Add a one-line note to `README.md` telling contributors CI enforces the
 
 ## Task 2 — Extract the slot engine into the pure model and test it
 
+Status: not started
+Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13
+(Note: that issue body's Sequencing line mispredicts the downstream numbers — the
+correct ones are #15 for task 4 and #16 for task 5, as in the status index here.)
+
 **Why:** The 35 existing tests all cover `ui/src/model.ts`. Meanwhile the most intricate
 logic in the app is untested, because it lives inside `App.tsx` as closures over refs:
 
@@ -109,6 +136,9 @@ mid-stream trimming, all three settlement kinds, timeout, and the no-marker fall
 
 ## Task 3 — Let steps be edited, deleted, and reordered
 
+Status: not started
+Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14
+
 **Why:** Today you can add a step, add a task, and delete a task — but you cannot touch an
 individual micro-step once it exists. There is no `deleteStep`, no `editStep`, no reorder.
 A typo is permanent. More importantly this undermines the flagship feature: `✦ Draft Steps
@@ -135,6 +165,9 @@ did is wrong. Memory sync fires exactly once through the normal step-toggle path
 
 ## Task 4 — Cancel an in-flight agent run
 
+Status: not started
+Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15
+
 **Why:** `PENDING_TIMEOUT_MS` is 15 minutes, and while `pending` is set every action button
 is disabled. If a run hangs, the user watches a dead UI for a quarter of an hour with no
 escape. There is no cancel affordance anywhere in the app.
@@ -157,6 +190,9 @@ abandoned turn eventually writes.
 
 ## Task 5 — Make `pending` per task instead of app-wide
 
+Status: not started
+Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16
+
 **Why:** `sendToTaskSlot`, `runCommand`, `draftSteps`, and `runRemaining` all begin with
 `if (pendingRef.current) return`. One in-flight request anywhere blocks agent actions on
 every task. Slots are already per task and independent, so the restriction is incidental to
@@ -178,6 +214,9 @@ around it.
 ---
 
 ## Task 6 — Keyboard access to the step queue
+
+Status: not started
+Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17
 
 **Why:** Queue rows are `div` elements with `onClick` and no `role`, `tabIndex`, or key
 handler, so selecting a step is mouse-only. For an app whose entire premise is reducing
