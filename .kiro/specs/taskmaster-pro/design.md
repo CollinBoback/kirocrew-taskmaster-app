@@ -93,3 +93,9 @@ JSON array. This makes draft settlement permissive: any response that contains e
 fenced block or a top-level array settles a `draft` request, not just the agent's nominal
 format. The parser caps a breakdown at 12 steps, while the skill and the agent prompt both
 ask for 3–7; the cap is defensive, not a contradiction.
+
+Hallmark-style design generation is deliberately out of band. It is a useful reference for
+future contributor-led UI polish, but integrating it into the shipped app would add another
+agent/skill surface to a product whose runtime loop is intentionally narrow: one execution
+agent, one committed bundle, no live design-generation workflow, and no user problem in the
+current focus/backlog/console flow that Hallmark solves by itself.
