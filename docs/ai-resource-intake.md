@@ -5,6 +5,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 | # | Title | Source | Decision |
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
+| 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
 
 ---
 
@@ -42,3 +43,30 @@ A compact, table-driven coding-standards skill that instructs an AI agent to be 
 ### Recommendation
 
 Strong candidate for ingestion if trimmed: keep the principles, naming/function/structure rules, anti-patterns, dependency checklist, and self-check; drop or rewrite the ecosystem-specific verification-scripts section.
+
+---
+
+## 2. find-skills — Skill Discovery and Installation
+
+- **URL:** https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md
+- **Type:** Skill (agent skill, installable via `npx skills add vercel-labs/skills@find-skills`)
+- **Category:** Productivity / agent tooling
+- **Decision:** Pending
+
+### What it is
+
+A skill from `vercel-labs/skills` that teaches an agent to discover and install other skills from the open agent skills ecosystem via the Skills CLI (`npx skills`). It triggers on questions like "how do I do X" or "is there a skill for X", walks through checking the skills.sh leaderboard, running `npx skills find`, vetting results by install count / source reputation / GitHub stars, presenting options, and installing on request with `npx skills add <owner/repo@skill> -g -y`.
+
+### Proposed value / use case
+
+- Gives Cursor/Kiro agents a standard workflow for extending their own capabilities instead of ad-hoc web searching.
+- Built-in quality checklist (install counts, source reputation, repo stars) is a reasonable filter for third-party skills.
+
+### Caveats
+
+- The skill instructs agents to search the open ecosystem and run `npx skills add` — including the `-g -y` global, no-confirmation form — so adopting it creates a path for further unreviewed third-party agent instructions to enter the environment. Any adoption should route discovered skills through this intake list rather than direct installation.
+- Vendoring it would place identical copies under `.kiro/skills/`, `.agents/skills/`, and `.claude/skills/` plus a `skills-lock.json`, which adds duplicate-maintenance overhead.
+
+### Recommendation
+
+Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) with an instruction to record candidates here for a yes/no decision first.
