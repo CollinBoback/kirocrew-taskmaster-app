@@ -26,6 +26,7 @@ source/guidance.
 | #14 | Let users correct, remove, and reorder micro-steps | P1 | AI-ready; safest after #13 in a single-agent queue | 96% |
 | #17 | Make step selection usable from the keyboard | P2 | AI-ready; independent | 92% |
 | #19 | Prove the install/runtime flow on the real work machine | P2 | Collin manually, before release confidence is claimed | 100% |
+| #52 | Decide whether to add Linear's GitLab integration in a GitHub-synced project | P3 | Clarify workflow first; likely manual policy decision | 95% |
 | #8 | Correct the real-gateway development instructions | P3 | Clarify first; do not blindly apply the current symlink prescription | 93% |
 | #11 | Duplicate of #13 | P4 | Close duplicate | 100% |
 | #12 | CI/build-artifact guard is already merged | P4 | Close completed | 100% |
@@ -333,6 +334,51 @@ is merged to `main`.
 ### Action
 
 Close #22 as completed. No implementation agent should pick it up again.
+
+---
+
+## #52 — Investigate Linear / GitLab integration
+
+### In plain English
+
+Linear is already synced 1:1 with this GitHub project. Adding GitLab integration is only
+useful if GitLab is also a real execution surface for this same body of work, not just an
+occasional mirror.
+
+### Why it matters
+
+Connecting both GitHub and GitLab to the same Linear workspace without a policy can create
+duplicated or noisy linkage on a single work item (for example separate PR/MR references
+for one task). If most delivery decisions happen in GitHub, GitLab sync adds maintenance
+cost with little tracking benefit.
+
+### Current setup to recognize
+
+- Task tracking doctrine in this repo is GitHub-first (`tasks.md` canonical, GitHub issues
+  as mirror/work queue).
+- Linear is already connected to the GitHub project.
+- GitLab is enterprise-hosted and accessible via PAT/API key.
+
+### Recommendation
+
+Use this decision rule:
+
+1. Keep GitHub-only Linear sync if GitHub remains the authoritative code review and merge
+   surface for this repository.
+2. Enable Linear GitLab integration only if one or more is true:
+   - merge requests are actively reviewed/merged in GitLab for the same initiatives;
+   - GitLab commit/branch references are part of day-to-day execution tracking;
+   - compliance/process requires issue-to-MR linkage in GitLab.
+3. If enabling GitLab, set boundaries to avoid duplicate automation:
+   - choose one authoritative delivery surface per initiative (GitHub PRs or GitLab MRs);
+   - scope the integration to only required GitLab groups/projects;
+   - pilot on one project first, then expand if signal quality improves.
+
+### Done when
+
+- A written team policy defines when work should link to GitHub PRs vs GitLab MRs.
+- The team confirms whether GitLab is primary execution or mirror-only for this project.
+- Issue #52 can close as a documented decision (enable with scope, or defer).
 
 ## Suggested single-agent order
 
