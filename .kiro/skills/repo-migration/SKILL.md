@@ -16,7 +16,7 @@ Migration progress is state, and state lives in a doc:
 3. Link the tracking issue (Linear/GitHub) in the doc header.
 4. Commit the doc; re-commit it every time items get checked so progress is visible in Git history.
 
-An existing instantiation to crib from: `docs/github-repo-migration-checklist.md` (COL-308).
+If an earlier migration checklist exists in `docs/`, link it here as a reference (otherwise omit this line).
 
 ## The eight phases
 
