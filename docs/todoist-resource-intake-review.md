@@ -16,7 +16,7 @@ The links below intentionally preserve the exact captured URLs from issue #63, e
 
 ## Decision summary
 
-- **total reviewed items**: 205
+- **Total reviewed items**: 205
 - **Most likely to keep close at hand:** upstream Kiro/Copilot references, review-loop skills, and issue/repo automation ideas.
 - **Most likely to revisit selectively:** plugin/marketplace directories, planning skills, and workflow-reading references.
 - **Mostly parked or removed:** personal/private links, jobs, inbox items, and domain-specific data/platform material outside current scope.
