@@ -4,10 +4,12 @@ import {
   baselineSlotWatermark,
   evaluateSlotPoll,
   firstIncompleteIndex,
+  focusIndexAfterRemoval,
   isActivePendingWork,
   isExplicitNotFoundError,
   isPendingTimedOut,
   lessonFor,
+  moveSubtask,
   normalizeConfig,
   normalizeSlotData,
   parseBreakdown,
@@ -437,5 +439,50 @@ describe('lessonFor / taskSlotKey / normalizeSlotData', () => {
       messages: [{ role: 'user', content: 'hi' }],
       running: true,
     })
+  })
+})
+
+describe('moveSubtask (step reordering)', () => {
+  const steps = ['a', 'b', 'c']
+
+  it('swaps a step with its neighbor in either direction', () => {
+    expect(moveSubtask(steps, 1, -1)).toEqual(['b', 'a', 'c'])
+    expect(moveSubtask(steps, 1, 1)).toEqual(['a', 'c', 'b'])
+  })
+
+  it('leaves untouched steps in place across a swap', () => {
+    expect(moveSubtask(['a', 'b', 'c', 'd'], 2, -1)).toEqual(['a', 'c', 'b', 'd'])
+  })
+
+  it('is a no-op at the list boundaries', () => {
+    expect(moveSubtask(steps, 0, -1)).toEqual(steps)
+    expect(moveSubtask(steps, 2, 1)).toEqual(steps)
+  })
+
+  it('is a no-op for out-of-range indices', () => {
+    expect(moveSubtask(steps, -1, 1)).toEqual(steps)
+    expect(moveSubtask(steps, 3, -1)).toEqual(steps)
+    expect(moveSubtask([], 0, 1)).toEqual([])
+  })
+
+  it('never mutates the input array', () => {
+    const input = ['a', 'b']
+    moveSubtask(input, 0, 1)
+    expect(input).toEqual(['a', 'b'])
+  })
+})
+
+describe('focusIndexAfterRemoval (step deletion focus rule)', () => {
+  it('shifts the focus down when an earlier step is removed, keeping the same step focused', () => {
+    expect(focusIndexAfterRemoval(2, 0)).toBe(1)
+    expect(focusIndexAfterRemoval(2, 1)).toBe(1)
+  })
+
+  it('keeps the index when the active step itself is removed (clamp lands on the next step)', () => {
+    expect(focusIndexAfterRemoval(2, 2)).toBe(2)
+  })
+
+  it('keeps the index when a later step is removed', () => {
+    expect(focusIndexAfterRemoval(1, 2)).toBe(1)
   })
 })

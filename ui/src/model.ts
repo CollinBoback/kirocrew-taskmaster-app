@@ -124,6 +124,32 @@ export function firstIncompleteIndex(task: Task): number {
   return index === -1 ? Math.max(0, task.subtasks.length - 1) : index
 }
 
+/**
+ * Adjacent swap for step reordering. Returns the input array unchanged when
+ * the move would leave the list, so callers can treat that as a no-op.
+ */
+export function moveSubtask<T>(subtasks: readonly T[], index: number, direction: -1 | 1): T[] {
+  const target = index + direction
+  if (index < 0 || index >= subtasks.length || target < 0 || target >= subtasks.length) {
+    return [...subtasks]
+  }
+  const next = [...subtasks]
+  const moved = next[index]
+  next[index] = next[target]
+  next[target] = moved
+  return next
+}
+
+/**
+ * Where the focus index lands after a step is removed: removing an earlier
+ * step shifts the index down so the same step stays focused; removing the
+ * active step keeps the index, and the caller's existing clamp then lands on
+ * the next remaining step (or the new last one).
+ */
+export function focusIndexAfterRemoval(activeIdx: number, removedIdx: number): number {
+  return removedIdx < activeIdx ? activeIdx - 1 : activeIdx
+}
+
 export interface DraftStep {
   title: string
   command?: string

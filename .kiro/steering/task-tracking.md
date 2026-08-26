@@ -19,6 +19,11 @@ The plain-language companion `.kiro/specs/taskmaster-pro/issue-guide.md` exists 
 the queue easy to scan. It may summarize priorities, dependencies, and code evidence, but
 it never overrides a task's canonical `Status:` line or acceptance criteria.
 
+Tool/mechanism/service analysis decisions are logged once in
+`.kiro/specs/taskmaster-pro/decisions.md` with the options considered and the why/why-not
+reasoning. Treat that log as the closeout record; only reopen a decision when product
+constraints or requirements materially change.
+
 ## Status vocabulary
 
 Each task section carries a `Status:` line with exactly one of:
