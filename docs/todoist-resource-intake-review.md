@@ -16,12 +16,10 @@ The links below intentionally preserve the exact captured URLs from issue #63, e
 
 ## Decision summary
 
-- **adopt**: 17
-- **adapt**: 40
-- **experiment**: 63
-- **defer**: 31
-- **discard**: 54
 - **total reviewed items**: 205
+- **Most likely to keep close at hand:** upstream Kiro/Copilot references, review-loop skills, and issue/repo automation ideas.
+- **Most likely to revisit selectively:** plugin/marketplace directories, planning skills, and workflow-reading references.
+- **Mostly parked or removed:** personal/private links, jobs, inbox items, and domain-specific data/platform material outside current scope.
 
 ## Decision key
 
@@ -312,8 +310,8 @@ _Default lean: **experiment** — Integration candidates should be trialed befor
 - [x] [Todoist <- GitHub Sync](https://github.com/marketplace/todoist-github-sync) — **experiment**: High relevance to the Todoist-origin backlog; validate before committing workflow changes. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Codetree](https://github.com/marketplace/codetree) — **experiment**: Potential workflow integration candidate; validate fit first. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Claude Code Action Official](https://github.com/marketplace/actions/claude-code-action-official) — **experiment**: Directly relevant to agent-enabled repo automation; worth a bounded trial. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [MCP Registry — Zereight GitLab](https://github.com/mcp/zereight/gitlab-mcp) — **defer**: Captured as an MCP registry-style bookmark with an invalid GitHub path shape; only useful if GitLab becomes active in this workflow. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [MCP Registry — Outlook Personal MCP](https://github.com/mcp/salahawad/outlook-personal-mcp) — **discard**: Captured as an MCP registry-style bookmark with an invalid GitHub path shape; personal mailbox integration is outside repository scope. — 🆕 **Added &lt;24h**
+- [x] MCP Registry — Zereight GitLab — `https://github.com/mcp/zereight/gitlab-mcp` — **defer**: Captured as an MCP registry-style bookmark with an invalid GitHub path shape; only useful if GitLab becomes active in this workflow. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] MCP Registry — Outlook Personal MCP — `https://github.com/mcp/salahawad/outlook-personal-mcp` — **discard**: Captured as an MCP registry-style bookmark with an invalid GitHub path shape; personal mailbox integration is outside repository scope. — 🆕 **Added &lt;24h**
 
 ---
 
