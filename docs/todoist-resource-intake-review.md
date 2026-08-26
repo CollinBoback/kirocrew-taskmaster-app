@@ -301,7 +301,7 @@ _Default lean: **experiment** — Try only the most relevant plugins; keep the r
 
 ---
 
-## GitHub Marketplace / integrations
+## GitHub Marketplace / integrations / registry links
 
 _Default lean: **experiment** — Integration candidates should be trialed before any workflow commitment._
 
@@ -312,8 +312,8 @@ _Default lean: **experiment** — Integration candidates should be trialed befor
 - [x] [Todoist <- GitHub Sync](https://github.com/marketplace/todoist-github-sync) — **experiment**: High relevance to the Todoist-origin backlog; validate before committing workflow changes. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Codetree](https://github.com/marketplace/codetree) — **experiment**: Potential workflow integration candidate; validate fit first. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Claude Code Action Official](https://github.com/marketplace/actions/claude-code-action-official) — **experiment**: Directly relevant to agent-enabled repo automation; worth a bounded trial. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [MCP Registry — Zereight GitLab](https://github.com/mcp/zereight/gitlab-mcp) — **defer**: Only useful if GitLab becomes active in this workflow. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [MCP Registry — Outlook Personal MCP](https://github.com/mcp/salahawad/outlook-personal-mcp) — **discard**: Personal mailbox integration is outside repository scope. — 🆕 **Added &lt;24h**
+- [x] [MCP Registry — Zereight GitLab](https://github.com/mcp/zereight/gitlab-mcp) — **defer**: Captured as an MCP registry-style bookmark with an invalid GitHub path shape; only useful if GitLab becomes active in this workflow. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [MCP Registry — Outlook Personal MCP](https://github.com/mcp/salahawad/outlook-personal-mcp) — **discard**: Captured as an MCP registry-style bookmark with an invalid GitHub path shape; personal mailbox integration is outside repository scope. — 🆕 **Added &lt;24h**
 
 ---
 
@@ -360,11 +360,11 @@ _Default lean: **experiment** — Discovery source for reusable agent skills; tr
 
 - [x] [Best skills for AI & Agents [2026]](https://skillselion.com/best/skills-for-ai-agents) — **experiment**: Discovery roundup; use it to find candidates, not as an authority. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Repo Intake And Plan Skill for Claude Code](https://skillselion.com/skills/lllllllama/rigorpilot-skills/repo-intake-and-plan) — **adopt**: Directly relevant to recurring repository-intake work. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [Brainstorming](https://skillselion.com/category/docs-planning) — **discard**: Generic ideation skill is too broad for this backlog. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [Doc Coauthoring](https://skillselion.com/category/docs-planning?page=2) — **adapt**: Potentially useful for documentation tasks if kept constrained. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [Brainstorming](https://skillselion.com/category/docs-planning) — **discard**: Captured URL is a broad Skillselion docs/planning category page, not a durable single-skill permalink, so treat it as generic discovery only. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [Doc Coauthoring](https://skillselion.com/category/docs-planning?page=2) — **adapt**: Captured URL is a paginated Skillselion category page rather than a stable single-skill link; keep only the documentation-coauthoring idea. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Review Loop](https://skillselion.com/category/testing-review) — **adopt**: Directly relevant to iterative code/doc review workflows. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [Antigravity Awesome Skills / Ponytail marketplace page](https://skillselion.com/marketplaces) — **experiment**: Useful only as a discovery breadcrumb; trial the underlying skill if needed. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [improve-codebase-architecture](https://skillselion.com/leaderboard) — **adapt**: Potentially useful, but should be applied only to clearly scoped refactors. — 🔴 **P1** · 🆕 **Added &lt;24h**
-- [x] [Database Migration](https://skillselion.com/browse) — **defer**: Relevant only for future data-migration work. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [Antigravity Awesome Skills / Ponytail marketplace page](https://skillselion.com/marketplaces) — **experiment**: Captured URL is the marketplace index, so use it only as a breadcrumb to the underlying skill if needed. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [improve-codebase-architecture](https://skillselion.com/leaderboard) — **adapt**: Captured URL is the Skillselion leaderboard rather than a stable skill permalink; keep only the architecture-improvement theme. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [Database Migration](https://skillselion.com/browse) — **defer**: Captured URL is the generic Skillselion browse page, so this is too ambiguous to prioritize now. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Writing For Agents Skill for Claude Code](https://skillselion.com/skills/mattpocock/skills/writing-for-agents) — **adapt**: Useful if translated into the repo's existing prompt and docs style. — 🆕 **Added &lt;24h**
 - [x] [Self Improving Agent Skill for Claude Code](https://skillselion.com/skills/zhaono1/agent-playbook/self-improving-agent) — **experiment**: Interesting advanced pattern worth a bounded trial. — 🆕 **Added &lt;24h**
