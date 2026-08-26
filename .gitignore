@@ -9,3 +9,5 @@ app-crons.json
 installed.json
 data/
 .omc/
+.env
+.DS_Store

@@ -2,7 +2,35 @@
 
 Execution engine from Collin's mockup: pick one task, isolate **one micro-step at a time**, run executable steps through the `taskmaster` agent (in an embedded per-task chat), sync completed solution paths to Crew memory, and watch everything on a console.
 
-Spec: [`.kiro/specs/taskmaster-pro/`](.kiro/specs/taskmaster-pro/) (`requirements.md` + `design.md`, plus the prioritized backlog in [`tasks.md`](.kiro/specs/taskmaster-pro/tasks.md)) — **authoritative since 2026-08-25**, superseding the original external narrative spec (`memory/specs/2026-08-24-taskmaster-pro-kirocrew-app.md`, kept on Collin's machine as a historical artifact). Steering: [`.kiro/steering/`](.kiro/steering/) holds the deploy/install contract and the task-tracking convention (spec `Status:` lines are canonical; GitHub issues #12–#17 mirror them, cross-linked both ways). Crew App Kit docs: [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/). Sibling app: `apps/work-cockpit/` (day-level focus cockpit; Taskmaster owns single-task decomposition + step execution).
+The in-repository [product spec](.kiro/specs/taskmaster-pro/) is authoritative. It contains the requirements, design, and prioritized [task backlog](.kiro/specs/taskmaster-pro/tasks.md). The [steering rules](.kiro/steering/) define deployment and task tracking. Crew App Kit documentation is at [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/).
+
+## Quick start
+
+Use Node.js 22 and npm. The local harness uses synthetic data and mock KiroCrew SDK components, so no Crew gateway is required.
+
+```bash
+cd ui
+npm ci
+npm run dev
+```
+
+Open <http://localhost:5174>. Select the seeded task and run its current step. A scripted agent reply should produce a `STEP RESULT` marker, complete the step, and advance Focus. Drafting steps and running the remaining queue are also available in the harness.
+
+## Project status
+
+Taskmaster Pro is an active `0.2.0` prototype. Type checking, tests, the production build, and committed-bundle synchronization run in CI. The canonical current status and sequencing live in [`tasks.md`](.kiro/specs/taskmaster-pro/tasks.md); GitHub issues mirror that file but do not replace it.
+
+Known limitation: task slots created through generic `POST /api/chat` appear as ordinary user sessions. True app-owned slots require an in-gateway hooks backend and are deferred.
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| `ui/src/` | React UI and deterministic task/slot model |
+| `ui/dev/` | Local mock SDK, UI components, and scripted gateway behavior |
+| `ui/dist/` | Committed deployment artifact served by Crew |
+| `agents/` and `skills/` | Taskmaster agent definition and execution method |
+| `.kiro/specs/` and `.kiro/steering/` | Product authority, backlog, deployment, and tracking rules |
 
 ## Architecture
 
@@ -34,7 +62,7 @@ Gateway integration map (all failure-tolerant — errors land in the Console vie
 - Bare `POST /api/spawn` hits the interactive spawn-approval gate with no way to approve from an app page — another reason runs go through the chat slot, where approval cards render inline.
 - The host import map vendors `@kirocrew/app-sdk` **and `@kirocrew/ui`** (`shared-modules.ts`; the docs' `@kirocrew/app-sdk/ui` spelling is stale). Both are build externals.
 
-Accepted tradeoff: task slots created via generic `POST /api/chat` are ordinary user sessions (visible in the dashboard session list, not app-owned). True app-owned slots need an in-gateway hooks backend — a possible later phase.
+Accepted tradeoff: task slots created via generic `POST /api/chat` are ordinary user sessions (visible in the dashboard session list, not app-owned).
 
 ## Install on the work machine (Crew installed globally)
 
@@ -50,19 +78,23 @@ This folder is only the install *source* — Crew copies it to `~/.kiro/crew/app
 3. "Taskmaster" appears in the dashboard sidebar (route `/taskmaster-pro`, bolt icon from `ui/icon.svg`).
 4. The daily `taskmaster-pro-selfheal` cron symlinks `skills/taskmaster-method` into `~/.kiro/crew/skills/` on its first run (the skill scanner only reads that flat namespace). To skip the wait, create the link/junction manually.
 
-`ui/dist/index.mjs` is **committed**, so no Node/npm is required on the work machine. Rebuild only when UI source changes: `cd ui && npm install && npm run build`, then sanity-check with `node --check dist/index.mjs`. CI enforces this: it rebuilds on every push/PR and fails if the committed `ui/dist/index.mjs` doesn't match a fresh build.
+`ui/dist/index.mjs` is **committed**, so no Node/npm is required on the work machine. Rebuild only when UI source changes: `cd ui && npm ci && npm run build`, then sanity-check with `node --check dist/index.mjs`. CI enforces this: it rebuilds on every push/PR and fails if the committed `ui/dist/index.mjs` doesn't match a fresh build.
 
-## Local development (no Crew needed)
+## Local harness details
 
 The dev harness aliases `@kirocrew/app-sdk` → `ui/dev/mockSdk.tsx` and `@kirocrew/ui` → `ui/dev/mockUi.tsx`: in-memory config seeded with the mockup's Tableau→SQL migration task, an in-memory chat-slot store with scripted taskmaster replies (~1.6 s: STEP RESULT reports for runs, fenced JSON for drafts, per-step markers for run-remaining), and a minimal `ChatEmbed` stand-in.
 
-```bash
-cd ui && npm install && npm run dev
-```
-
-Open http://localhost:5174. "Run Command Natively" sends into the task slot and auto-completes the step off the STEP RESULT marker; "Run Remaining" ticks steps off one by one (non-command steps come back `failed — needs Collin`); "Draft Steps with AI" appends four parsed micro-steps.
+"Run Command Natively" sends into the task slot and auto-completes the step from the STEP RESULT marker; "Run Remaining" ticks steps off one by one (non-command steps come back `failed — needs Collin`); "Draft Steps with AI" appends four parsed micro-steps.
 
 With a real gateway, use hot reload instead: `kirocrew app dev taskmaster-pro`.
+
+## Contributing
+
+1. Pick an eligible item from [`tasks.md`](.kiro/specs/taskmaster-pro/tasks.md) and respect its sequencing constraints.
+2. Read [`AGENTS.md`](AGENTS.md) and the relevant requirement/design sections before editing.
+3. Make a bounded change and preserve unrelated work already in the tree.
+4. From `ui/`, run `npm run typecheck`, `npm test`, and `npm run build`; then run `node --check ui/dist/index.mjs` from the repository root and include the rebuilt bundle with any UI source change.
+5. Update the canonical task status or record partial progress using the [tracking convention](.kiro/steering/task-tracking.md).
 
 ## Doctrine
 
