@@ -12,6 +12,8 @@ Reviewed the full Todoist bookmark backlog into five actions: **adopt, adapt, ex
 
 Where a link was obviously private, personal, or off-scope, the decision follows directly from its title/category. Where a link was upstream, repo-adjacent, or clearly workflow-oriented, the decision reflects likely reuse value for this repository/toolbox.
 
+The links below intentionally preserve the exact captured URLs from issue #63, even when a label points at a marketplace, category page, or other discovery index. The review decision applies to the deduplicated Todoist bookmark as captured, not to a rewritten substitute URL.
+
 ## Decision summary
 
 - **adopt**: 17
@@ -19,6 +21,7 @@ Where a link was obviously private, personal, or off-scope, the decision follows
 - **experiment**: 63
 - **defer**: 31
 - **discard**: 54
+- **total reviewed items**: 205
 
 ## Decision key
 
