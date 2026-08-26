@@ -20,7 +20,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 | 0 — Bring the spec into the repository | closed (won't do) — copy not needed; in-repo spec made authoritative instead | — | — |
 | 1 — CI that guards the committed build artifact | done — merged 2026-08-25 ([#10](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/10)) | [#12](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/12) | First priority |
 | 2 — Extract the slot engine and test it | done — extraction in `main`; safety follow-up merged 2026-08-25 ([#25](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/25)) | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
-| 3 — Steps: edit, delete, reorder | not started | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
+| 3 — Steps: edit, delete, reorder | in progress — PR [#57](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/57) open 2026-08-26 | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
 | 4 — Cancel an in-flight agent run | done — merged 2026-08-25 ([#31](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/31)) | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
 | 5 — Per-task `pending` | not started | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
 | 6 — Keyboard access to the step queue | done — merged 2026-08-25 ([#47](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/47)) | [#17](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17) | Independent |
@@ -136,7 +136,7 @@ mid-stream trimming, all three settlement kinds, timeout, and the no-marker fall
 
 ## Task 3 — Let steps be edited, deleted, and reordered
 
-Status: not started
+Status: in progress — implementation in review via PR #57 (opened 2026-08-26)
 Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14
 
 **Why:** Today you can add a step, add a task, and delete a task — but you cannot touch an
