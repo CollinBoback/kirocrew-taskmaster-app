@@ -1,0 +1,44 @@
+# AI Resource Intake List
+
+Running list of AI agents, skills, ideas, and info under evaluation for formal ingestion into the Cursor/Kiro system. Each entry gets a research summary (fetched from the source URL) to inform a final yes/no decision.
+
+| # | Title | Source | Decision |
+|---|-------|--------|----------|
+| 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
+
+---
+
+## 1. Clean Code — Pragmatic AI Coding Standards
+
+- **URL:** https://www.aitmpl.com/component/skill/development/clean-code
+- **Type:** Skill (Claude Code / agent skill, installable via `npx claude-code-templates@latest --skill development/clean-code`)
+- **Category:** Development
+- **Decision:** Pending
+
+### What it is
+
+A compact, table-driven coding-standards skill that instructs an AI agent to be concise, direct, and solution-focused. Covers:
+
+- **Core principles:** SRP, DRY, KISS, YAGNI, Boy Scout rule.
+- **Naming rules:** intent-revealing variables, verb+noun functions, question-form booleans, SCREAMING_SNAKE constants.
+- **Function rules:** max ~20 lines, one thing per function, max 3 args, no side effects.
+- **Structure:** guard clauses, flat over nested (max 2 levels), composition, colocation.
+- **AI behavior rules:** write code directly (no tutorials), fix bugs without preamble, ask when requirements are unclear.
+- **Anti-pattern table:** no obvious comments, no one-liner helpers, no premature factories, no magic numbers, no god functions.
+- **Impact-analysis checklist:** before editing a file, identify importers/imports/tests; update all dependents in the same task.
+- **Mandatory self-check:** goal met, all files edited, code verified, lint/types pass.
+
+### Proposed value / use case
+
+- Directly applicable as an always-on rule or skill for Cursor and Kiro agents to reduce verbose, over-engineered agent output (redundant comments, unnecessary helpers/files, tutorial-style responses).
+- The "before editing any file" dependency checklist and "self-check before completing" sections are practical guardrails that reduce broken-import and half-finished-change failures.
+- Overlaps somewhat with guidance already common in agent system prompts (KISS/YAGNI, no narration comments), so value depends on what the current ruleset already covers.
+
+### Caveats
+
+- The "Verification Scripts" section is specific to the claude-code-templates agent ecosystem (frontend-specialist, ux_audit.py, etc.) and references `~/.claude/skills/` paths — that portion would not transfer without adaptation or trimming.
+- The "wait for user confirmation before fixing" script-output workflow conflicts with autonomous cloud-agent operation; would need adjustment if adopted.
+
+### Recommendation
+
+Strong candidate for ingestion if trimmed: keep the principles, naming/function/structure rules, anti-patterns, dependency checklist, and self-check; drop or rewrite the ecosystem-specific verification-scripts section.
