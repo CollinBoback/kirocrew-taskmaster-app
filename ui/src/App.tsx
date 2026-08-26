@@ -7,10 +7,12 @@ import {
   baselineSlotWatermark,
   evaluateSlotPoll,
   firstIncompleteIndex,
+  focusIndexAfterRemoval,
   isActivePendingWork,
   isExplicitNotFoundError,
   isPendingTimedOut,
   lessonFor,
+  moveSubtask,
   normalizeConfig,
   normalizeSlotData,
   progress,
@@ -79,6 +81,9 @@ export default function App() {
   const [newStepTitle, setNewStepTitle] = useState('')
   const [newStepCommand, setNewStepCommand] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [editingStepId, setEditingStepId] = useState<string | null>(null)
+  const [editStepTitle, setEditStepTitle] = useState('')
+  const [editStepCommand, setEditStepCommand] = useState('')
   const [pending, setPending] = useState<Record<string, PendingWork>>({})
 
   const configRef = useRef<TaskmasterConfig | null>(null)
@@ -597,6 +602,75 @@ export default function App() {
     setNewStepCommand('')
   }
 
+  function beginEditStep(sub: Subtask) {
+    setEditingStepId(sub.id)
+    setEditStepTitle(sub.title)
+    setEditStepCommand(sub.command ?? '')
+    setConfirmDelete(null)
+  }
+
+  function saveEditStep(task: Task, subId: string) {
+    const title = editStepTitle.trim()
+    if (!title) return
+    const command = editStepCommand.trim()
+    mutate((cfg) => ({
+      ...cfg,
+      tasks: cfg.tasks.map((item) =>
+        item.id === task.id
+          ? {
+              ...item,
+              subtasks: item.subtasks.map((sub) => {
+                if (sub.id !== subId) return sub
+                const next: Subtask = { ...sub, title }
+                if (command) next.command = command
+                else delete next.command
+                return next
+              }),
+            }
+          : item,
+      ),
+    }))
+    setEditingStepId(null)
+  }
+
+  // Deletion is a plain list edit on purpose: it must never run
+  // completeTaskSideEffects, even when it removes the last incomplete step —
+  // no lesson is posted for work nobody did (spec Task 3).
+  function deleteStep(task: Task, index: number) {
+    const sub = task.subtasks[index]
+    if (!sub) return
+    setStepIdx((prev) =>
+      prev[task.id] === undefined ? prev : { ...prev, [task.id]: focusIndexAfterRemoval(prev[task.id], index) },
+    )
+    mutate((cfg) => ({
+      ...cfg,
+      tasks: cfg.tasks.map((item) =>
+        item.id === task.id ? { ...item, subtasks: item.subtasks.filter((s) => s.id !== sub.id) } : item,
+      ),
+    }))
+    setConfirmDelete(null)
+    if (editingStepId === sub.id) setEditingStepId(null)
+    addLog('info', `Micro-step removed: "${sub.title}"`)
+  }
+
+  function moveStep(task: Task, index: number, direction: -1 | 1) {
+    const target = index + direction
+    if (target < 0 || target >= task.subtasks.length) return
+    mutate((cfg) => ({
+      ...cfg,
+      tasks: cfg.tasks.map((item) =>
+        item.id === task.id ? { ...item, subtasks: moveSubtask(item.subtasks, index, direction) } : item,
+      ),
+    }))
+    // Keep the focused step focused when it (or its swap partner) moved.
+    setStepIdx((prev) => {
+      const current = prev[task.id]
+      if (current === index) return { ...prev, [task.id]: target }
+      if (current === target) return { ...prev, [task.id]: index }
+      return prev
+    })
+  }
+
   function deleteTask(taskId: string) {
     mutate((cfg) => {
       const tasks = cfg.tasks.filter((task) => task.id !== taskId)
@@ -934,6 +1008,51 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {task.subtasks.map((sub, index) => {
                 const isActive = index === activeIdx
+                // Step edits are blocked while an agent run is pending because
+                // in-flight STEP RESULT markers are matched by index; a
+                // reorder or delete mid-run would land results on the wrong step.
+                const locked = Boolean(taskPending)
+                if (editingStepId === sub.id) {
+                  return (
+                    <div key={sub.id} style={{ ...styles.queueRow, ...(isActive ? styles.queueRowActive : {}), cursor: 'default' }}>
+                      <span style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+                        <input
+                          style={{ ...styles.input, flex: 2, minWidth: 140 }}
+                          aria-label="Step title"
+                          value={editStepTitle}
+                          autoFocus
+                          onChange={(event) => setEditStepTitle(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') saveEditStep(task, sub.id)
+                            if (event.key === 'Escape') setEditingStepId(null)
+                          }}
+                        />
+                        <input
+                          style={{ ...styles.input, flex: 3, minWidth: 160, fontFamily: MONO, fontSize: 11 }}
+                          aria-label="Step command (empty removes it)"
+                          placeholder="optional terminal command"
+                          value={editStepCommand}
+                          onChange={(event) => setEditStepCommand(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') saveEditStep(task, sub.id)
+                            if (event.key === 'Escape') setEditingStepId(null)
+                          }}
+                        />
+                        <button
+                          className="tm-btn"
+                          style={{ ...styles.btnGhost, color: T.focus, borderColor: 'rgba(52,211,153,0.3)' }}
+                          disabled={!editStepTitle.trim()}
+                          onClick={() => saveEditStep(task, sub.id)}
+                        >
+                          SAVE
+                        </button>
+                        <button className="tm-btn" style={styles.btnGhost} onClick={() => setEditingStepId(null)}>
+                          CANCEL
+                        </button>
+                      </span>
+                    </div>
+                  )
+                }
                 return (
                   <div
                     key={sub.id}
@@ -969,7 +1088,62 @@ export default function App() {
                         </span>
                       </button>
                     </span>
-                    {isActive && <span style={styles.activeChip}>ACTIVE</span>}
+                    <span style={{ display: 'flex', gap: 4, alignItems: 'center', flexShrink: 0 }}>
+                      {isActive && <span style={styles.activeChip}>ACTIVE</span>}
+                      <button
+                        className="tm-btn"
+                        style={styles.stepCtrl}
+                        aria-label={`Move step ${index + 1} up`}
+                        disabled={locked || index === 0}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          moveStep(task, index, -1)
+                        }}
+                      >
+                        ▲
+                      </button>
+                      <button
+                        className="tm-btn"
+                        style={styles.stepCtrl}
+                        aria-label={`Move step ${index + 1} down`}
+                        disabled={locked || index === task.subtasks.length - 1}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          moveStep(task, index, 1)
+                        }}
+                      >
+                        ▼
+                      </button>
+                      <button
+                        className="tm-btn"
+                        style={styles.stepCtrl}
+                        aria-label={`Edit step ${index + 1}`}
+                        disabled={locked}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          beginEditStep(sub)
+                        }}
+                      >
+                        ✎
+                      </button>
+                      <button
+                        className="tm-btn"
+                        style={{
+                          ...styles.stepCtrl,
+                          ...(confirmDelete === sub.id ? { color: T.danger, borderColor: T.danger } : {}),
+                        }}
+                        aria-label={confirmDelete === sub.id ? `Confirm delete step ${index + 1}` : `Delete step ${index + 1}`}
+                        disabled={locked}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          if (confirmDelete === sub.id) deleteStep(task, index)
+                          else setConfirmDelete(sub.id)
+                        }}
+                        onBlur={() => setConfirmDelete(null)}
+                      >
+                        {confirmDelete === sub.id ? 'SURE?' : '✕'}
+                      </button>
+                    </span>
                   </div>
                 )
               })}
@@ -1404,6 +1578,17 @@ const styles: Record<string, CSSProperties> = {
   },
   queueRowActive: { borderColor: 'rgba(52,211,153,0.45)', background: 'rgba(52,211,153,0.08)' },
   queueCheck: { background: 'transparent', border: 'none', padding: 0, fontSize: 13, flexShrink: 0 },
+  stepCtrl: {
+    padding: '3px 7px',
+    borderRadius: 7,
+    border: `1px solid ${T.border}`,
+    background: 'transparent',
+    color: T.muted,
+    fontSize: 10,
+    fontWeight: 700,
+    lineHeight: 1.4,
+    flexShrink: 0,
+  },
   queueSelect: {
     background: 'transparent',
     border: 'none',
