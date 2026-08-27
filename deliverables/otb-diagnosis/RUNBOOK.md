@@ -12,14 +12,16 @@ finding; "we should invest in catalog quality" is an opinion.
   shared sheet — **never committed to this repo**.
 - `rubric.md` (this folder) — **skim it first (1 minute) and confirm the lever definitions
   match your framing before anyone tags anything.** ← STOP point: owner sign-off.
-- `tagging-template.xlsx` (this folder) — or add the two columns directly to a copy of the
-  original sheet if that's faster.
+- `tagging-template.xlsx` (this folder) — **copy it to `tagging-template-filled.xlsx` first
+  and work only in the copy** (that name is gitignored; the tracked template must stay
+  blank). Or add the two columns directly to a copy of the original sheet if that's faster —
+  keep any such copy outside the repo or under a gitignored name.
 
 ## Steps
 
 | # | Step | Time | Done when |
 |---|---|---|---|
-| 1 | Open the sheet, add `Lever` + `Why` columns (or paste rows into the template), save | 5 min | Columns exist, file saved |
+| 1 | Open the sheet, add `Lever` + `Why` columns (or paste rows into your **filled copy** of the template — never the tracked template itself), save | 5 min | Columns exist, file saved |
 | 2 | **Gut-call a lever number on all rows. No prose.** | 15 min | Zero blank `Lever` cells |
 | 3 | One line of `Why` per row | 20 min | Zero blank `Why` cells |
 | 4 | Tally the counts per lever (template computes this automatically) | 2 min | Three numbers written down |

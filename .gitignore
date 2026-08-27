@@ -17,3 +17,9 @@ GRILL-LOG*.md
 # Real work data pasted into deliverable kits stays local-only.
 deliverables/**/*-filled.*
 deliverables/**/local/
+# Default-deny spreadsheets under deliverables/ — only blank *-template.xlsx
+# files are committable; any pasted/derived data file is ignored by default.
+deliverables/**/*.xlsx
+deliverables/**/*.xlsm
+deliverables/**/*.csv
+!deliverables/**/*-template.xlsx
