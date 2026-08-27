@@ -93,6 +93,8 @@ Installed by:
 - `.claude/settings.json` — `extraKnownMarketplaces.claude-code-workflows` (github `wshobson/agents`, `ref: main`) + `enabledPlugins` (Claude Code, the primary dev-heavy client)
 - `.cursor/settings.json` — mirrors the same 26 plugin names in Cursor's existing `plugins` block (the second dev-heavy client)
 
+**Cursor prerequisite:** unlike Claude Code's `extraKnownMarketplaces`, Cursor has no repo-committable field that registers a third-party marketplace source — `.cursor/settings.json`'s `plugins` block only toggles plugins Cursor already knows about. Before the 26 entries above take effect, each Cursor user must one-time import the marketplace themselves: Cursor Dashboard → Settings → Plugins → Import, pasting `https://github.com/wshobson/agents`. This is a local, per-account action (like the Codex step below), not something this repo's files can perform on a teammate's behalf.
+
 **Pinning limitation (verified against Claude Code's marketplace-source schema):** a marketplace source's `ref` field accepts only a git branch or tag, never a commit SHA — commit-level pinning (`sha`) is supported only for individual plugin sources inside a `marketplace.json`, which upstream authors control, not something this repo's settings can set. `wshobson/agents` publishes no tags, so `ref: main` (set explicitly above) is the most precise pin actually available; it does not stop the 26 enabled plugins' instructions from changing when upstream pushes to `main`. Residual-risk mitigation: re-review the enabled set's plugin content whenever pruning (see below) rather than treating the pin as immutable.
 
 ### Enabled set (26 plugins)
@@ -112,7 +114,7 @@ Delete the plugin's line from `.claude/settings.json` `enabledPlugins` (and the 
 
 ### Codex (work machine)
 
-Codex is not a marketplace-native consumer of this repo's `.claude/settings.json`. wshobson documents `npx codex-marketplace add wshobson/agents` for Codex/OpenCode/Cursor/Antigravity/Copilot, which emits generated harness artifacts locally (now gitignored: `.codex/`, `.opencode/`, `.antigravity/`, `.copilot/`). Per `AGENTS.md`'s hard boundary ("never run install ... commands from this development environment"), this is a **local, user-owned step** Collin runs on the work machine himself — not something this repository's automation performs.
+Codex is not a marketplace-native consumer of this repo's `.claude/settings.json`. wshobson documents `npx codex-marketplace add wshobson/agents` for Codex/OpenCode/Antigravity/Copilot, which emits generated harness artifacts locally (now gitignored: `.codex/`, `.opencode/`, `.antigravity/`, `.copilot/`). Per `AGENTS.md`'s hard boundary ("never run install ... commands from this development environment"), this is a **local, user-owned step** Collin runs on the work machine himself — not something this repository's automation performs. (Cursor uses its own Dashboard import mechanism instead — see the Cursor prerequisite noted above, not this CLI path.)
 
 ### Kiro
 
