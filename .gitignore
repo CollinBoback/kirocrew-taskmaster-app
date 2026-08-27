@@ -11,3 +11,9 @@ data/
 .omc/
 .env
 .DS_Store
+# Personal planning docs — this repo is public; these must never be committed.
+GAMEPLAN*.md
+GRILL-LOG*.md
+# Real work data pasted into deliverable kits stays local-only.
+deliverables/**/*-filled.*
+deliverables/**/local/
