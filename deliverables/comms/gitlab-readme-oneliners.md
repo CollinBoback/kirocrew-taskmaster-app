@@ -1,5 +1,9 @@
 # GitLab consolidation — conversation opener + fallback headers
 
+> **Superseded:** the conversation with Ryan happened. The current deliverable is the
+> comparison + recommendation in `gitlab-consolidation-recommendation.md`. The fallback
+> README headers below are still usable until the final decision is recorded.
+
 **Goal tomorrow morning: a 10-minute conversation, not a merge.** You and a coworker built
 the same thing in parallel; which repo survives is a joint call, not unilaterally yours.
 The "due tomorrow" clock is self-imposed — if the conversation slips, apply the fallback
