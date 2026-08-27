@@ -102,6 +102,15 @@ With a real gateway, use hot reload instead: `kirocrew app dev taskmaster-pro`.
 4. From `ui/`, run `npm run typecheck`, `npm test`, and `npm run build`; then run `node --check ui/dist/index.mjs` from the repository root and include the rebuilt bundle with any UI source change.
 5. Update the canonical task status or record partial progress using the [tracking convention](.kiro/steering/task-tracking.md).
 
+### Ponytail project adapters
+
+Cursor and Kiro load the tracked Ponytail rules automatically. Codex discovers the pinned plugin
+through [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json); its cache,
+enablement, and mode state remain user-scoped, with [`AGENTS.md`](AGENTS.md) as the instruction
+fallback. Claude Code registers the project marketplace after workspace trust; install
+`ponytail@taskmaster-ponytail` once from `/plugin`. Both plugin sources are locked to Ponytail
+`v4.9.0` commit `0a4dd63`.
+
 ## Doctrine
 
 - **Isolation mode:** exactly one micro-step visible in Focus; the queue is one click away but never the default view.

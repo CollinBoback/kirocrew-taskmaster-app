@@ -6,6 +6,24 @@
         "repo": "wshobson/agents",
         "ref": "main"
       }
+    },
+    "taskmaster-ponytail": {
+      "source": {
+        "source": "settings",
+        "name": "taskmaster-ponytail",
+        "plugins": [
+          {
+            "name": "ponytail",
+            "source": {
+              "source": "github",
+              "repo": "DietrichGebert/ponytail",
+              "ref": "v4.9.0",
+              "sha": "0a4dd63ad4541f4f655c4108a295916f3c1d8fda"
+            }
+          }
+        ]
+      },
+      "autoUpdate": false
     }
   },
   "enabledPlugins": {
@@ -34,6 +52,7 @@
     "javascript-typescript@claude-code-workflows": true,
     "git-pr-workflows@claude-code-workflows": true,
     "unit-testing@claude-code-workflows": true,
-    "comprehensive-review@claude-code-workflows": true
+    "comprehensive-review@claude-code-workflows": true,
+    "ponytail@taskmaster-ponytail": true
   }
 }

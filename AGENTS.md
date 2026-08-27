@@ -46,6 +46,16 @@ spec and call out the conflict rather than silently choosing a third behavior.
 - Keep documentation task-oriented and link to the canonical spec or steering rule instead of
   duplicating it.
 
+## Ponytail project adapter
+
+Codex discovers the pinned Ponytail plugin through [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json);
+its install cache and mode state remain user-scoped. This section is the instruction-only fallback.
+Before writing code, use the first option that works: skip unnecessary work, reuse existing code,
+use the standard library, use a native platform feature, use an installed dependency, use one
+line, or only then write the minimum correct implementation. Apply this after tracing the real
+flow, and never cut validation, data-loss handling, security, accessibility, or explicit
+requirements. The canonical project rule is [`.kiro/steering/ponytail.md`](.kiro/steering/ponytail.md).
+
 ## Required verification
 
 Run from `ui/` after code changes:
