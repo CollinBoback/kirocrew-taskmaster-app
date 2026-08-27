@@ -11,3 +11,6 @@ data/
 .omc/
 .env
 .DS_Store
+# Personal work notes — employer context, never commit to this public repo
+GRILL-LOG-*.md
+GAMEPLAN.md
