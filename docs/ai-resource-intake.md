@@ -90,8 +90,10 @@ A large third-party Claude Code plugin marketplace. Individual plugins install i
 The repo previously reverted a bulk vendoring of third-party agent content (commit `04dd11a`) for two reasons: (1) unreviewed third-party instructions entering the environment, and (2) duplicate-maintenance overhead from copying files across `.kiro/skills/`, `.agents/skills/`, `.claude/skills/`. A **marketplace pin** avoids both: `.claude/settings.json` commits only a reference to the marketplace and a list of enabled plugin names — no third-party agent/skill files enter the tree. Pruning is deleting a line and committing.
 
 Installed by:
-- `.claude/settings.json` — `extraKnownMarketplaces.claude-code-workflows` (github `wshobson/agents`) + `enabledPlugins` (Claude Code, the primary dev-heavy client)
+- `.claude/settings.json` — `extraKnownMarketplaces.claude-code-workflows` (github `wshobson/agents`, `ref: main`) + `enabledPlugins` (Claude Code, the primary dev-heavy client)
 - `.cursor/settings.json` — mirrors the same 26 plugin names in Cursor's existing `plugins` block (the second dev-heavy client)
+
+**Pinning limitation (verified against Claude Code's marketplace-source schema):** a marketplace source's `ref` field accepts only a git branch or tag, never a commit SHA — commit-level pinning (`sha`) is supported only for individual plugin sources inside a `marketplace.json`, which upstream authors control, not something this repo's settings can set. `wshobson/agents` publishes no tags, so `ref: main` (set explicitly above) is the most precise pin actually available; it does not stop the 26 enabled plugins' instructions from changing when upstream pushes to `main`. Residual-risk mitigation: re-review the enabled set's plugin content whenever pruning (see below) rather than treating the pin as immutable.
 
 ### Enabled set (26 plugins)
 
@@ -108,7 +110,7 @@ Deliberately excluded: SEO, HR/legal, blockchain, game-dev, cloud/k8s infra (bac
 
 Delete the plugin's line from `.claude/settings.json` `enabledPlugins` (and the matching entry in `.cursor/settings.json`), commit. No other cleanup needed since no plugin content is vendored into the tree.
 
-### Codex (Boeing work machine)
+### Codex (work machine)
 
 Codex is not a marketplace-native consumer of this repo's `.claude/settings.json`. wshobson documents `npx codex-marketplace add wshobson/agents` for Codex/OpenCode/Cursor/Antigravity/Copilot, which emits generated harness artifacts locally (now gitignored: `.codex/`, `.opencode/`, `.antigravity/`, `.copilot/`). Per `AGENTS.md`'s hard boundary ("never run install ... commands from this development environment"), this is a **local, user-owned step** Collin runs on the work machine himself — not something this repository's automation performs.
 
