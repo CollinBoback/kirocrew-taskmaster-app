@@ -1,0 +1,25 @@
+{
+  "extraKnownMarketplaces": {
+    "taskmaster-ponytail": {
+      "source": {
+        "source": "settings",
+        "name": "taskmaster-ponytail",
+        "plugins": [
+          {
+            "name": "ponytail",
+            "source": {
+              "source": "github",
+              "repo": "DietrichGebert/ponytail",
+              "ref": "v4.9.0",
+              "sha": "0a4dd63ad4541f4f655c4108a295916f3c1d8fda"
+            }
+          }
+        ]
+      },
+      "autoUpdate": false
+    }
+  },
+  "enabledPlugins": {
+    "ponytail@taskmaster-ponytail": true
+  }
+}
