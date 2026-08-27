@@ -6,6 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
+| 3 | [wshobson/agents marketplace](https://github.com/wshobson/agents) | GitHub (wshobson/agents) | Adopted (marketplace-pinned, curated 26) |
 
 ---
 
@@ -70,3 +71,49 @@ A skill from `vercel-labs/skills` that teaches an agent to discover and install 
 ### Recommendation
 
 Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) with an instruction to record candidates here for a yes/no decision first.
+
+---
+
+## 3. wshobson/agents marketplace
+
+- **URL:** https://github.com/wshobson/agents
+- **Type:** Claude Code plugin marketplace (marketplace name `claude-code-workflows`) — 93 plugins, 202 agents, 181 skills, 105 commands, organized `plugins/<name>/{agents,commands,skills}`
+- **Category:** Agent/skill collection, multi-domain
+- **Decision:** **Adopted (marketplace-pinned, curated 26)**
+
+### What it is
+
+A large third-party Claude Code plugin marketplace. Individual plugins install independently (`/plugin install <name>`); each pulls in only its own agents/commands/skills, not the whole marketplace. Several wshobson plugins were already individually verdicted in `docs/todoist-resource-intake-review.md` (mostly **experiment**/**adapt**; `avoid-ai-writing` **discard**).
+
+### Mechanism decision
+
+The repo previously reverted a bulk vendoring of third-party agent content (commit `04dd11a`) for two reasons: (1) unreviewed third-party instructions entering the environment, and (2) duplicate-maintenance overhead from copying files across `.kiro/skills/`, `.agents/skills/`, `.claude/skills/`. A **marketplace pin** avoids both: `.claude/settings.json` commits only a reference to the marketplace and a list of enabled plugin names — no third-party agent/skill files enter the tree. Pruning is deleting a line and committing.
+
+Installed by:
+- `.claude/settings.json` — `extraKnownMarketplaces.claude-code-workflows` (github `wshobson/agents`) + `enabledPlugins` (Claude Code, the primary dev-heavy client)
+- `.cursor/settings.json` — mirrors the same 26 plugin names in Cursor's existing `plugins` block (the second dev-heavy client)
+
+### Enabled set (26 plugins)
+
+- **Data & analytics (6):** `data-engineering`, `database-design`, `database-migrations`, `database-cloud-optimization`, `data-validation-suite`, `business-analytics`
+- **LLM / AI / agents (6):** `llm-application-dev`, `agent-orchestration`, `agent-teams`, `conductor`, `context-management`, `skill-forge-essentials`
+- **Communication / stakeholder (4):** `team-collaboration`, `startup-business-analyst`, `before-you-build`, `pptx-deck-creation`
+- **Documentation (4):** `code-documentation`, `documentation-generation`, `documentation-standards`, `c4-architecture`
+- **Migration / cleanup (2):** `framework-migration`, `codebase-cleanup`
+- **Dev core (4):** `javascript-typescript`, `git-pr-workflows`, `unit-testing`, `comprehensive-review`
+
+Deliberately excluded: SEO, HR/legal, blockchain, game-dev, cloud/k8s infra (backend-less app), other-language plugins, and every **hook-installing / behavior-modifying** plugin (`pensyve`, `hol-guard`, `protect-mcp`, `block-no-verify`, `signed-audit-trails`, `review-agent-governance`) — those change harness behavior and warrant individual intake review, never a bulk enable. `avoid-ai-writing` stays out per its prior **discard** verdict.
+
+### Pruning
+
+Delete the plugin's line from `.claude/settings.json` `enabledPlugins` (and the matching entry in `.cursor/settings.json`), commit. No other cleanup needed since no plugin content is vendored into the tree.
+
+### Codex (Boeing work machine)
+
+Codex is not a marketplace-native consumer of this repo's `.claude/settings.json`. wshobson documents `npx codex-marketplace add wshobson/agents` for Codex/OpenCode/Cursor/Antigravity/Copilot, which emits generated harness artifacts locally (now gitignored: `.codex/`, `.opencode/`, `.antigravity/`, `.copilot/`). Per `AGENTS.md`'s hard boundary ("never run install ... commands from this development environment"), this is a **local, user-owned step** Collin runs on the work machine himself — not something this repository's automation performs.
+
+### Kiro
+
+Kiro is not a wshobson-supported harness; there is no marketplace or bulk-install path. After the curated 26 settle from real use, individual high-value skills can be vendored one at a time into `.kiro/skills/` through this intake process, using the house provenance convention already established by `sql-optimization`/`sql-server-table-reconciliation`:
+
+> **Provenance:** Vendored from [wshobson/agents](https://github.com/wshobson/agents) (MIT licensed) at commit `<sha>`. Unmodified except for this note.

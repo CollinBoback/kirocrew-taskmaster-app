@@ -34,6 +34,8 @@ Known limitation: task slots created through generic `POST /api/chat` appear as 
 
 Sibling app: `apps/work-cockpit/` owns day-level focus; Taskmaster owns single-task decomposition and step execution.
 
+**AI tooling:** a curated set of [wshobson/agents](https://github.com/wshobson/agents) plugins is pinned for Claude Code (`.claude/settings.json`) and Cursor (`.cursor/settings.json`). See [`docs/ai-resource-intake.md`](docs/ai-resource-intake.md) for the enabled set, rationale, and the Kiro/Codex install paths.
+
 ## Architecture
 
 **Backend-less.** Tasks/steps/settings persist as one JSON document in gateway app config (`GET/PUT /api/apps/taskmaster-pro/config` → `~/.kiro/crew/apps/taskmaster-pro/data/config.json`). Progress math, step navigation, and queue rendering are deterministic TypeScript; the agent is invoked only for judgment/execution — through a **per-task chat slot** (the spec-builder / ops-mission-control builtin pattern):

@@ -11,3 +11,8 @@ data/
 .omc/
 .env
 .DS_Store
+# Harness-generated wshobson/agents artifacts (local installs only — see docs/ai-resource-intake.md)
+.codex/
+.opencode/
+.antigravity/
+.copilot/

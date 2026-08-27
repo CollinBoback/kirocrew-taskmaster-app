@@ -14,6 +14,84 @@
     },
     "cursor-team-kit": {
       "enabled": true
+    },
+    "data-engineering": {
+      "enabled": true
+    },
+    "database-design": {
+      "enabled": true
+    },
+    "database-migrations": {
+      "enabled": true
+    },
+    "database-cloud-optimization": {
+      "enabled": true
+    },
+    "data-validation-suite": {
+      "enabled": true
+    },
+    "business-analytics": {
+      "enabled": true
+    },
+    "llm-application-dev": {
+      "enabled": true
+    },
+    "agent-orchestration": {
+      "enabled": true
+    },
+    "agent-teams": {
+      "enabled": true
+    },
+    "conductor": {
+      "enabled": true
+    },
+    "context-management": {
+      "enabled": true
+    },
+    "skill-forge-essentials": {
+      "enabled": true
+    },
+    "team-collaboration": {
+      "enabled": true
+    },
+    "startup-business-analyst": {
+      "enabled": true
+    },
+    "before-you-build": {
+      "enabled": true
+    },
+    "pptx-deck-creation": {
+      "enabled": true
+    },
+    "code-documentation": {
+      "enabled": true
+    },
+    "documentation-generation": {
+      "enabled": true
+    },
+    "documentation-standards": {
+      "enabled": true
+    },
+    "c4-architecture": {
+      "enabled": true
+    },
+    "framework-migration": {
+      "enabled": true
+    },
+    "codebase-cleanup": {
+      "enabled": true
+    },
+    "javascript-typescript": {
+      "enabled": true
+    },
+    "git-pr-workflows": {
+      "enabled": true
+    },
+    "unit-testing": {
+      "enabled": true
+    },
+    "comprehensive-review": {
+      "enabled": true
     }
   }
 }

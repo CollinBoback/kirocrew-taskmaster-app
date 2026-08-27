@@ -1,0 +1,38 @@
+{
+  "extraKnownMarketplaces": {
+    "claude-code-workflows": {
+      "source": {
+        "source": "github",
+        "repo": "wshobson/agents"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "data-engineering@claude-code-workflows": true,
+    "database-design@claude-code-workflows": true,
+    "database-migrations@claude-code-workflows": true,
+    "database-cloud-optimization@claude-code-workflows": true,
+    "data-validation-suite@claude-code-workflows": true,
+    "business-analytics@claude-code-workflows": true,
+    "llm-application-dev@claude-code-workflows": true,
+    "agent-orchestration@claude-code-workflows": true,
+    "agent-teams@claude-code-workflows": true,
+    "conductor@claude-code-workflows": true,
+    "context-management@claude-code-workflows": true,
+    "skill-forge-essentials@claude-code-workflows": true,
+    "team-collaboration@claude-code-workflows": true,
+    "startup-business-analyst@claude-code-workflows": true,
+    "before-you-build@claude-code-workflows": true,
+    "pptx-deck-creation@claude-code-workflows": true,
+    "code-documentation@claude-code-workflows": true,
+    "documentation-generation@claude-code-workflows": true,
+    "documentation-standards@claude-code-workflows": true,
+    "c4-architecture@claude-code-workflows": true,
+    "framework-migration@claude-code-workflows": true,
+    "codebase-cleanup@claude-code-workflows": true,
+    "javascript-typescript@claude-code-workflows": true,
+    "git-pr-workflows@claude-code-workflows": true,
+    "unit-testing@claude-code-workflows": true,
+    "comprehensive-review@claude-code-workflows": true
+  }
+}
