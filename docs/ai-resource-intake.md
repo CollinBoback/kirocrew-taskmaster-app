@@ -6,6 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
+| 3 | [Linear Triage Plugin for Claude Code](https://github.com/linear/linear-solutions/blob/main/Skills/triage-plugin/README.md) | GitHub (linear/linear-solutions) | Pending |
 
 ---
 
@@ -70,3 +71,35 @@ A skill from `vercel-labs/skills` that teaches an agent to discover and install 
 ### Recommendation
 
 Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) with an instruction to record candidates here for a yes/no decision first.
+
+---
+
+## 3. Linear Triage Plugin for Claude Code
+
+- **URL:** https://github.com/linear/linear-solutions/blob/main/Skills/triage-plugin/README.md
+- **Type:** Claude Code plugin (three skills plus local configuration)
+- **Category:** Issue triage / autonomous implementation
+- **Decision:** Pending
+
+### What it is
+
+A label-gated workflow that polls Linear every 15 minutes, claims matching triage issues, and delegates each issue to a worker. The worker reads the issue, creates a Git worktree from Linear's generated branch name, implements and commits the change, opens a draft GitHub pull request, runs a configured test command, and moves passing work to review. It posts a Linear comment at each stage.
+
+### Proposed value / use case
+
+- Explicit opt-in through a dedicated label is a useful guard against roaming the backlog.
+- One worktree per issue reduces branch collisions between concurrent workers.
+- Keeping pull requests in draft until tests pass is a sensible delivery gate.
+
+These patterns overlap with this repository's existing Cursor Automations, especially the label-triggered implementation workflow in `.cursor/automations/05-cursor-run-label.md`. That workflow also adds repository-specific safeguards the plugin lacks: only canonical `tasks.md` issues are eligible, dependency ordering is enforced, and output is intentionally high-signal or silent.
+
+### Caveats
+
+- The README's clone command points to `shannonhu/linear-triage-plugin`, which is not currently available on GitHub. The actual plugin files are co-located under `linear/linear-solutions/Skills/triage-plugin/`.
+- The worker assumes GitHub, `origin/main`, configured Linear status names, and an arbitrary shell test command. It does not apply this repository's canonical-spec, task-sequencing, deployment, or proprietary-data boundaries.
+- A stage comment for every transition would create substantially more issue noise than this repository's one-comment automation contract.
+- Running this poller beside the current Linear/Cursor automation would create a second issue-claim and implementation path, with duplicate-work risk.
+
+### Recommendation
+
+Do not install the plugin unchanged. Treat it as a design reference and, if Collin chooses **Adapt**, carry only the opt-in label, isolated-worktree, and draft-until-tested patterns into the existing Cursor workflow. Keep `tasks.md` eligibility, dependency checks, one high-signal comment, and the current PR delivery path rather than adding a parallel Claude poller.
