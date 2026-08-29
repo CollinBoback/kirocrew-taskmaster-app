@@ -79,23 +79,26 @@ the manual toggle (graceful degradation) — that is by design. But `echo hello`
 *without* the step auto-completing means the marker or the completion wiring is broken:
 capture the agent's exact reply text in your #19 comment.
 
-## Step 6 — `taskmaster-method` skill registered
+## Step 6 — skills registered
 
-**Do:** check Crew skills for `taskmaster-method`. The daily `taskmaster-pro-selfheal`
-cron symlinks `skills/taskmaster-method` into `~/.kiro/crew/skills/` on its first run; to
-skip the wait, create the link/junction manually:
+**Do:** check Crew skills for `taskmaster-method` and `write-concisely`. The daily
+`taskmaster-pro-selfheal` cron symlinks each folder under `skills/` into
+`~/.kiro/crew/skills/` on its first run; to skip the wait, create the links/junctions
+manually (repeat for each skill name):
 
 ```bash
 # macOS/Linux
 ln -s ~/.kiro/crew/apps/taskmaster-pro/skills/taskmaster-method ~/.kiro/crew/skills/taskmaster-method
+ln -s ~/.kiro/crew/apps/taskmaster-pro/skills/write-concisely ~/.kiro/crew/skills/write-concisely
 ```
 
 ```powershell
-# Windows (junction)
+# Windows (junctions)
 cmd /c mklink /J "%USERPROFILE%\.kiro\crew\skills\taskmaster-method" "%USERPROFILE%\.kiro\crew\apps\taskmaster-pro\skills\taskmaster-method"
+cmd /c mklink /J "%USERPROFILE%\.kiro\crew\skills\write-concisely" "%USERPROFILE%\.kiro\crew\apps\taskmaster-pro\skills\write-concisely"
 ```
 
-**Pass:** the skill shows up under Crew skills (the scanner only reads that flat
+**Pass:** both skills show up under Crew skills (the scanner only reads that flat
 namespace).
 
 ## Step 7 — Report back
@@ -122,7 +125,7 @@ Install path used: REST / CLI / dashboard
 | 3 | Task + step survive reload | ✅ / ❌ |
 | 4 | `echo hello` runs via agent | ✅ / ❌ |
 | 5 | `STEP RESULT [n]` auto-updates step | ✅ / ❌ |
-| 6 | `taskmaster-method` registered (selfheal / manual link) | ✅ / ❌ |
+| 6 | `taskmaster-method` + `write-concisely` registered (selfheal / manual link) | ✅ / ❌ |
 
 ### Differences from README / deploy-install.md
 
