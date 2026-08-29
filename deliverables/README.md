@@ -22,7 +22,7 @@ pull request assigned to the repo owner.
 | `comms/ryan-sedw-message.md` | Drafted commitment message + micro-schedule to the Sept 9 scope/plan date | Review → send |
 | `comms/gitlab-consolidation-recommendation.md` | `Kiro_BI` vs `Kiro` comparison worksheet + recommendation message to Ryan | Fill a `-filled` copy work-side (45 min) |
 | `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Superseded — headers only if Step 0 confirms overlap |
-| `comms/scmods-linear-note.md` | Rationale note for correcting stale ticket target dates | Paste when dates are fixed |
+| `comms/scmods-linear-note.md` | Correction note for the stale SCMODS project target/priority (tickets already fixed) | Append to project description per COL-322 |
 
 ## Workflow
 
