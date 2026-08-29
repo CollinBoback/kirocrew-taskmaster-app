@@ -2,8 +2,11 @@
 
 **State:** the conversation with Ryan happened. Outcome: your action item is to compare
 `Kiro_BI` and `Kiro`, then recommend how to consolidate — merge and repurpose were the
-two shapes discussed. This doc is the whole deliverable. Fill it work-side with both
-repos open; nothing here requires real data to be committed.
+two shapes discussed. This doc is the whole deliverable. Work-side, **copy it to
+`gitlab-consolidation-recommendation-filled.md` first** and fill the copy — the
+`deliverables/**/*-filled.*` gitignore rule keeps repo purposes, user names, and anything
+pointing at internal systems out of the tracked file. Never fill this tracked template
+itself.
 
 > ⚠️ **Everything so far was decided without the repos open.** The "same thing built in
 > parallel" framing, the merge-vs-repurpose binary, and this kit itself are all working
@@ -11,9 +14,9 @@ repos open; nothing here requires real data to be committed.
 > evidence — it is allowed to invalidate the premise, not just pick between the two
 > pre-agreed options.
 
-**Timebox: 45 minutes total.** 5 to check the premise, 20 for the worksheet, 10 for the
-decision, 15 to draft the recommendation message (the premise check overlaps the
-worksheet). The deliverable is a *recommendation*, not the migration and not a prototype
+**Timebox: 45 minutes total.** 5 to check the premise, 15 for the worksheet, 10 for the
+decision, 15 to draft the recommendation message. The deliverable is a *recommendation*,
+not the migration and not a prototype
 merge. If you catch yourself refactoring code, stop — that's the next task, after Ryan
 agrees.
 
@@ -27,7 +30,7 @@ Skim each README and top-level structure, nothing deeper.
   tell Ryan the premise was off. That's a valid, complete outcome of this task — it is
   not a failure to deliver.
 
-## Step 1 — Comparison worksheet (20 min, both repos side by side)
+## Step 1 — Comparison worksheet (15 min, both repos side by side)
 
 One line per cell. "Don't know" is a valid answer — mark it `?` and move on.
 
@@ -78,8 +81,10 @@ still can't tell — let's look at them together for 15 minutes," not a coin fli
 > serve different users: A vs B", or "now that I've had both open, they're doing
 > different jobs — the overlap we assumed is only X"].
 >
-> If that sounds right, next step is [the one concrete migration/repurpose action, e.g.
-> "I'll port the X module and archive `Kiro_BI` with a pointer" — with a rough date].
+> If that sounds right, next step is [one concrete action matching the recommendation —
+> migration/repurpose, e.g. "I'll port the X module and archive `Kiro_BI` with a pointer,
+> by [date]"; or, if they don't duplicate, "I'll add a one-line scope statement to each
+> README and no further consolidation work is needed"].
 > If you or [coworker] see it differently, happy to do 10 minutes on it.
 
 ## Record the outcome (2 min, whenever Ryan replies)
