@@ -19,6 +19,9 @@ pull request assigned to the repo owner.
 | `otb-diagnosis/diff-template.md` | Blind second-opinion disagreement table | Fill after both passes |
 | `otb-diagnosis/meeting-onepager.md` | Fill-in-the-blank presentation artifact (tally, headline, examples, talking points) | Fill from adjudicated tags |
 | `otb-diagnosis/alation-before-after-template.md` | Stretch goal: one before/after catalog definition | Only after runbook steps 1–7 |
+| `alation-catalog-audit/RUNBOOK.md` | Phased run packet for the full catalog audit + curation (Linear COL-64, due Dec 31) | Ready to run |
+| `alation-catalog-audit/rubric.md` | One-card entry-readiness rubric: `ready / fix / retire / ?` | **Needs 2-min owner review before scoring** |
+| `alation-catalog-audit/audit-tracker-template.xlsx` | 200-row inventory tracker with verdict dropdowns + self-computing coverage tally | Paste real inventory work-side |
 | `comms/ryan-sedw-message.md` | Drafted commitment message + micro-schedule to the Sept 9 scope/plan date | Review → send |
 | `comms/gitlab-consolidation-recommendation.md` | `Kiro_BI` vs `Kiro` comparison worksheet + recommendation message to Ryan | Fill a `-filled` copy work-side (45 min) |
 | `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Superseded — headers only if Step 0 confirms overlap |
