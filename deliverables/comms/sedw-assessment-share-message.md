@@ -1,10 +1,16 @@
 # SEDW — assessment delivery message (Ryan + SMEDW team)
 
-**When to send:** once `../sedw-scope/SCOPE-TEMPLATE.md` is filled and its reviewer checklist
-is all checked. Per the commitment in `ryan-sedw-message.md`, that's **Wed Sep 9, 2026**.
+**Copy this file to `sedw-assessment-share-message-filled.md` (gitignored) before pasting
+any real §1–5 content.** This tracked file must stay placeholders only — the repo is
+public, and a committed draft with real dependency/estimate detail is a leak even if the
+same words are about to be sent externally.
+
+**When to send:** once your filled copy of `../sedw-scope/SCOPE-TEMPLATE-filled.md` is
+complete and its reviewer checklist is all checked. Per the commitment in
+`ryan-sedw-message.md`, that's **Wed Sep 9, 2026**.
 **Channel:** whatever thread/channel the SMEDW team normally uses, cc/loop in Ryan directly.
-**STOP — owner review:** paste the real §1–5 content in below, review names/numbers, you send.
-Claude never sends.
+**STOP — owner review:** in your filled copy, paste the real §1–5 content, review
+names/numbers, you send. Claude never sends.
 
 ---
 

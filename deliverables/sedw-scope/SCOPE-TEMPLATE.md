@@ -1,7 +1,12 @@
 # SEDW migration — scope, dependencies, approach, estimate, next action
 
-**Status:** draft — fill in work-side, then copy the finished sections into
-`../comms/sedw-assessment-share-message.md` for delivery to Ryan and the SMEDW team.
+**Copy this file to `SCOPE-TEMPLATE-filled.md` (gitignored) before filling in any real
+content** — object/job names, dependency details, estimates. The tracked template below
+must stay blank placeholders only.
+
+**Status:** template — fill in your **filled** copy work-side, then copy the finished
+sections into your **filled** copy of `../comms/sedw-assessment-share-message.md` for
+delivery to Ryan and the SMEDW team.
 **Audience:** Ryan + SMEDW team. **Owner:** Collin. **Target delivery:** Wed Sep 9, 2026.
 
 ---
@@ -43,6 +48,13 @@ disruption to the other team's decom timeline, etc.)
 **Why not the alternatives** (one line each, only if genuinely considered):
 - `___`
 
+**Migration phases** (the sequenced-phases/owners/risks content the plan-doc milestone
+requires — not optional):
+
+| Phase | What happens | Owner | Target | Key risk |
+|---|---|---|---|---|
+| `___` | `___` | `___` | `___` | `___` |
+
 ## 4. Estimate
 
 **Range:** `___` (e.g. "N–M weeks of effort" or "N sprints") — not a single number.
@@ -66,7 +78,8 @@ the sequence continues, not just the first step)
 ## Reviewer checklist before sending
 
 - [ ] §3 names exactly one approach (not a comparison with no pick)
+- [ ] §3's phase table has real sequenced phases, owners, and a risk per phase (not blank)
 - [ ] §4 is a range with a stated breaking assumption (not false precision)
 - [ ] §5 has a real owner and date (not "TBD")
-- [ ] No real object/job names, ticket internals, or proprietary details leaked into this
-      tracked file — those stay in the gitignored `*-filled` copy
+- [ ] All real content was written in `SCOPE-TEMPLATE-filled.md`, never in this tracked
+      template — check `git status` before any commit touching this folder
