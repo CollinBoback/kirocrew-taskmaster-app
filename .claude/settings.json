@@ -1,5 +1,24 @@
 {
   "extraKnownMarketplaces": {
+    "taskmaster-linear": {
+      "source": {
+        "source": "settings",
+        "name": "taskmaster-linear",
+        "plugins": [
+          {
+            "name": "linear",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/anthropics/claude-plugins-official.git",
+              "path": "external_plugins/linear",
+              "ref": "main",
+              "sha": "ed404106fcd80ba98ecb7c851e531dcb626d13b7"
+            }
+          }
+        ]
+      },
+      "autoUpdate": false
+    },
     "taskmaster-ponytail": {
       "source": {
         "source": "settings",
@@ -20,6 +39,7 @@
     }
   },
   "enabledPlugins": {
+    "linear@taskmaster-linear": true,
     "ponytail@taskmaster-ponytail": true
   }
 }

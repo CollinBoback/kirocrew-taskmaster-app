@@ -109,6 +109,10 @@ fallback. Claude Code registers the project marketplace after workspace trust; i
 `ponytail@taskmaster-ponytail` once from `/plugin`. Both plugin sources are locked to Ponytail
 `v4.9.0` commit `0a4dd63`.
 
+Claude Code also registers the pinned `linear@taskmaster-linear` plugin after workspace trust.
+Install it once from `/plugin`, then authenticate its hosted Linear MCP connection from `/mcp`;
+credentials remain user-scoped.
+
 ## Doctrine
 
 - **Isolation mode:** exactly one micro-step visible in Focus; the queue is one click away but never the default view.
