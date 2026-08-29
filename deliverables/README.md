@@ -20,8 +20,8 @@ pull request assigned to the repo owner.
 | `otb-diagnosis/meeting-onepager.md` | Fill-in-the-blank presentation artifact (tally, headline, examples, talking points) | Fill from adjudicated tags |
 | `otb-diagnosis/alation-before-after-template.md` | Stretch goal: one before/after catalog definition | Only after runbook steps 1–7 |
 | `comms/ryan-sedw-message.md` | Drafted commitment message + micro-schedule to the Sept 9 scope/plan date | Review → send |
-| `comms/gitlab-consolidation-recommendation.md` | `Kiro_BI` vs `Kiro` comparison worksheet + recommendation message to Ryan | Fill work-side (45 min) |
-| `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Superseded — headers still usable |
+| `comms/gitlab-consolidation-recommendation.md` | `Kiro_BI` vs `Kiro` comparison worksheet + recommendation message to Ryan | Fill a `-filled` copy work-side (45 min) |
+| `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Superseded — headers only if Step 0 confirms overlap |
 | `comms/scmods-linear-note.md` | Rationale note for correcting stale ticket target dates | Paste when dates are fixed |
 
 ## Workflow
