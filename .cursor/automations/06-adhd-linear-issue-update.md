@@ -79,8 +79,10 @@ One Linear comment, markdown, standing alone for a reader seeing only a notifica
    attempted — "Done: steps can be edited, deleted, and reordered (PR #57)." Never
    "Great progress!", and never a bare restatement of the issue title.
 2. `**What landed:**` — up to 5 items, each one bounded change with its PR or commit
-   link. Five ranked beats ten unranked; fold or cut the rest. No linked PRs (a manual
-   completion)? Derive from the issue body and spec section; never invent specifics.
+   link. Five ranked beats ten unranked; fold or cut the rest. No linked PRs? Read the
+   linked commits' messages and diffs and describe those actual changes. Only with no
+   code links at all (a purely manual completion) derive from the issue body and spec
+   section; never invent specifics.
 3. `**Next:**` — exactly ONE action, startable in under two minutes, naming a real
    artifact: an issue ID, a file, a spec anchor — never a vibe. Add a concrete time
    ballpark for the step it starts ("about 20 minutes", "an afternoon" — never "some
