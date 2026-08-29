@@ -13,7 +13,7 @@ These files are the source of truth for dashboard copy. They do not enable anyth
 - **No proprietary data** in comments, PRs, or memories. Sample data stays the fictional Tableau→SQL migration task.
 - **Memories** (when enabled) store only already-open PRs / already-commented drift — not activity logs.
 
-## The five (ranked)
+## The six (ranked)
 
 | # | File | Trigger | Tools | Do nothing when |
 |---|---|---|---|---|
@@ -22,6 +22,7 @@ These files are the source of truth for dashboard copy. They do not enable anyth
 | 3 | [`03-spec-issue-drift.md`](03-spec-issue-drift.md) | PR merged to `main` + weekday `0 14 * * 1-5` | Issue comments, Memories | Spec index and issues already match |
 | 4 | [`04-autofix-review-comments.md`](04-autofix-review-comments.md) | Inline PR review comment | Comment on PR, push to existing branch | Design question, unclear ask, or style nit |
 | 5 | [`05-cursor-run-label.md`](05-cursor-run-label.md) | `cursor-run` label added on an issue | PR creation, Memories | Issue is blocked on Task 2, or not a spec-index issue |
+| 6 | [`06-adhd-linear-issue-update.md`](06-adhd-linear-issue-update.md) | Linear **Status changed** → Done | Linear MCP comment, Memories | New status is not Done, or that completion is already commented |
 
 Also enable Cursor-managed [Bugbot](https://cursor.com/docs/bugbot.md) on this repo (dashboard, not a prompt file). Skip a daily digest — volume is too low.
 

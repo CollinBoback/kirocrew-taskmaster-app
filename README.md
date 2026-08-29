@@ -43,6 +43,7 @@ Sibling app: `apps/work-cockpit/` owns day-level focus; Taskmaster owns single-t
 | `ui/` (React, dashboard page) | Three views from the mockup — **Focus** (isolation mode, command runner, embedded task chat), **Backlog**, **Console** — plus the slot engine that parses agent replies. Theme tokens (`var(--bg)` etc.) with the mockup's dark palette as fallbacks |
 | `agents/taskmaster.json` | Four jobs, prompt-separated: fenced-JSON breakdowns, run-one-step, run-remaining-steps, routine check-ins. Runs end with a machine-parseable `STEP RESULT [n]: done\|failed — summary` line; destructive commands refused |
 | `skills/taskmaster-method/` | Breakdown rules (3–7 verb-first steps ≤15 min), executable-step safety, the STEP RESULT contract, one-lesson-per-task memory-sync convention |
+| `skills/write-concisely/` | Strunk's *Elements of Style* writing rules for human-facing prose, vendored from [context-engineering-kit](https://github.com/NeoLabHQ/context-engineering-kit/blob/master/plugins/docs/skills/write-concisely/SKILL.md) (pinned commit + license in the file's provenance note) |
 
 Gateway integration map (all failure-tolerant — errors land in the Console view, Focus keeps working):
 
@@ -80,7 +81,7 @@ First-time verification: follow the step-by-step smoke-test run sheet in [`docs/
    ```
    Or `kirocrew app install C:/path/to/taskmaster-pro` + `kirocrew gateway restart`, or dashboard → App Store → Install from local path.
 3. "Taskmaster" appears in the dashboard sidebar (route `/taskmaster-pro`, bolt icon from `ui/icon.svg`).
-4. The daily `taskmaster-pro-selfheal` cron symlinks `skills/taskmaster-method` into `~/.kiro/crew/skills/` on its first run (the skill scanner only reads that flat namespace). To skip the wait, create the link/junction manually.
+4. The daily `taskmaster-pro-selfheal` cron symlinks each skill folder (`skills/taskmaster-method`, `skills/write-concisely`) into `~/.kiro/crew/skills/` on its first run (the skill scanner only reads that flat namespace). To skip the wait, create the links/junctions manually.
 
 `ui/dist/index.mjs` is **committed**, so no Node/npm is required on the work machine. Rebuild only when UI source changes: `cd ui && npm ci && npm run build`, then sanity-check with `node --check dist/index.mjs`. CI enforces this: it rebuilds on every push/PR and fails if the committed `ui/dist/index.mjs` doesn't match a fresh build.
 
@@ -107,7 +108,10 @@ through [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json); 
 enablement, and mode state remain user-scoped, with [`AGENTS.md`](AGENTS.md) as the instruction
 fallback. Claude Code registers the project marketplace after workspace trust; install
 `ponytail@taskmaster-ponytail` once from `/plugin`. Both plugin sources are locked to Ponytail
-`v4.9.0` commit `0a4dd63`.
+`v4.9.0` commit `0a4dd63`. For Kiro, the actual content is tracked in-repo at the same pin: the
+core rule is [`.kiro/steering/ponytail.md`](.kiro/steering/ponytail.md), and the five companion
+skills (review, audit, debt, gain, help) are vendored under
+[`.kiro/skills/`](.kiro/skills/) as `ponytail-*` skills.
 
 ## Doctrine
 
