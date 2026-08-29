@@ -23,6 +23,10 @@ routine._
 - What drives the High-complexity items: `___`
 - What's out of scope and why (e.g. externally-owned schema — not ours to migrate): `___`
 
+**Open questions that block a full estimate** (per-item dispositions live in the
+inventory's `In/Out/Deferred` column, not here — this is only what's still unresolved):
+- `___`
+
 ## 2. Dependencies
 
 _What has to happen, or be true, before migration work can start or finish. Both
@@ -77,6 +81,8 @@ the sequence continues, not just the first step)
 
 ## Reviewer checklist before sending
 
+- [ ] Every inventory row has an `In/Out/Deferred` disposition (checked in the inventory
+      copy, not just here) and §1's open-questions field is filled or explicitly empty
 - [ ] §3 names exactly one approach (not a comparison with no pick)
 - [ ] §3's phase table has real sequenced phases, owners, and a risk per phase (not blank)
 - [ ] §4 is a range with a stated breaking assumption (not false precision)

@@ -4,8 +4,10 @@ Copy this file to `pipeline-inventory-filled.md` (gitignored) before pasting rea
 object/job/feed names — the tracked template must stay blank.
 
 One row per object, job, or feed that could plausibly be in scope. Don't pre-filter while
-listing — the in/out call happens in `SCOPE-TEMPLATE.md` §1, not here. Speed first: name
-and a one-line description per row, then move to tagging.
+listing — name and a one-line description per row first, then move to tagging. The
+`In/Out/Deferred` disposition for each row is decided and recorded **here, per row**, once
+tagging starts; `SCOPE-TEMPLATE.md` §1 only summarizes the resulting counts and rationale,
+it isn't where the per-item call gets made.
 
 | # | Object/job/feed | One-line description | Complexity (L/M/H) | Hard dependencies | In/Out/Deferred |
 |---|---|---|---|---|---|

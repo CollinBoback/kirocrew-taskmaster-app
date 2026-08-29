@@ -2,8 +2,8 @@
 
 **Deliverable:** the assessment for Ryan and the SMEDW team — technical complexity and
 dependencies, a recommended migration approach, an estimate, and one concrete next action.
-Due per the commitment in `../comms/ryan-sedw-message.md`: **plan doc ready Mon Sep 8,
-delivered Wed Sep 9.**
+Due per the commitment in `../comms/ryan-sedw-message.md`: **plan doc ready Sep 8 (Tue),
+delivered Sep 9 (Wed).**
 
 **This is scope + plan, not the migration.** Don't let the work quietly expand into actually
 migrating anything — that's a different, later deliverable.
@@ -31,7 +31,7 @@ calendar if you need one).
 | 1 | List every object/job/feed in scope, one line each, in your filled copy of the inventory | Aug 29 | Every known pipeline has a row |
 | 2 | For each item: tag complexity (Low/Med/High) and list its hard dependencies | — | No blank complexity/dependency cells |
 | 3 | Roll the per-item detail up into your filled `SCOPE-TEMPLATE-filled.md` §1–2 (complexity narrative + dependency graph in prose) | Sep 3 (draft scope) | §1–2 read as a coherent narrative, not a table dump |
-| 4 | Decide in/out/deferred per item; list open questions that block a full estimate | Sep 3 | Every item has a disposition |
+| 4 | Fill each row's `In/Out/Deferred` column in your filled inventory copy; list open questions that block a full estimate in `SCOPE-TEMPLATE-filled.md`'s open-questions field | Sep 3 | Every inventory row has a disposition; open questions are written down, not just in your head |
 | 5 | Pick **one** migration approach from §3's options (or write a new one), say why, and fill the phase table (sequenced phases, owner, risk per phase) | Sep 8 (plan doc) | A single recommended approach is named, not a menu, with a filled phase table |
 | 6 | Turn the in-scope item count + complexity mix into a size estimate (range, not false precision) | Sep 8 | §4 has a number or range, with the assumption that breaks it |
 | 7 | Write the next action: the one thing that happens first, who does it, by when | Sep 8 | §5 names an owner and a date, not "TBD" |
