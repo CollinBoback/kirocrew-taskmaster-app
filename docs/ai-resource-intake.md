@@ -6,6 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
+| 3 | [github-issue-creator — Structured GitHub Issues from Messy Input](https://officialskills.sh/microsoft/skills/github-issue-creator) | officialskills.sh → GitHub (microsoft/skills) | Pending — recommended: Adapt |
 
 ---
 
@@ -70,3 +71,75 @@ A skill from `vercel-labs/skills` that teaches an agent to discover and install 
 ### Recommendation
 
 Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) with an instruction to record candidates here for a yes/no decision first.
+
+---
+
+## 3. github-issue-creator — Structured GitHub Issues from Messy Input
+
+- **URL:** https://officialskills.sh/microsoft/skills/github-issue-creator
+- **Canonical source:** https://github.com/microsoft/skills — `.github/skills/github-issue-creator/SKILL.md`
+- **Type:** Skill (agent skill, installable via `npx skills add https://github.com/microsoft/skills --skill github-issue-creator`)
+- **Category:** Productivity / issue workflow
+- **Linear:** COL-335 (AI Research project)
+- **Decision:** Pending — recommended disposition: **Adapt**
+
+### What it is
+
+A compact (~135-line) Microsoft skill that converts messy input — error logs, voice
+dictation, raw notes, screenshots — into a consistent GitHub-flavored markdown issue.
+It provides:
+
+- **A fixed issue template:** Summary, Environment, Reproduction Steps, Expected/Actual
+  Behavior, Error Details, Visual Evidence, Impact, Additional Context.
+- **A severity rubric:** Critical (service down / data loss / security), High (major
+  feature broken, no workaround), Medium (workaround exists), Low (cosmetic).
+- **Extraction guidelines:** pull facts out of casual language, infer missing context
+  from the conversation, be crisp.
+- **A sensitive-data rule:** placeholder anything sensitive (`[PROJECT_NAME]`,
+  `[USER_ID]`, etc.).
+- **An output-location rule:** write each issue as a markdown file under `/issues/` at
+  the repo root, named `YYYY-MM-DD-short-description.md`.
+
+Upstream ships test scenarios and a 460-line acceptance-criteria document
+(`tests/scenarios/github-issue-creator/`), which is a good quality signal relative to
+most marketplace skills.
+
+### Proposed value / use case
+
+- Directly relevant to this issue-heavy workflow (GitHub issue queue mirrored to
+  Linear): raw notes or dictated bug reports become well-formed, consistently structured
+  issues instead of one-line stubs like the "❌ INCORRECT" examples the skill itself
+  calls out.
+- The severity rubric and template give agents and humans a shared definition of a
+  complete issue, which complements `.kiro/specs/taskmaster-pro/issue-guide.md`.
+- The placeholder-sensitive-data rule aligns with this repo's hard boundary against
+  real employer/customer names and internal details.
+- Already triaged as **experiment — "test on a low-risk issue first"** in the Todoist
+  intake review (`docs/todoist-resource-intake-review.md`).
+
+### Caveats
+
+- **Output location conflicts with repo doctrine.** The skill commits issues as
+  markdown files under `/issues/` at the repo root. This repository's tracking rule is
+  `tasks.md` as source of truth with GitHub issues as the mirror (synced to Linear);
+  committed `/issues/*.md` files would create a third, unsynced tracking surface.
+  Any adoption must redirect output to a drafted issue body filed through GitHub/Linear
+  instead of committed files.
+- The template's Environment field and both worked examples are Azure-product specific
+  (Azure AI Foundry, Copilot Studio); cosmetic, but worth trimming if vendored.
+- Overlaps partially with issue-writing guidance agents already follow; value is the
+  consistent template and severity rubric, not new capability.
+
+### Recommendation
+
+**Adapt.** Keep the template, extraction guidelines, severity rubric, and
+sensitive-data placeholder rule; replace the `/issues/` directory output with "draft
+the issue body and file it via GitHub (auto-synced to Linear)." Do not vendor until the
+final yes/no here — per the find-skills precedent, unapproved vendored skills get
+removed.
+
+**Bounded follow-up if adopted (Q3 decision-gate requirement):** one low-risk pilot —
+take a single real messy input (a dictated note or pasted error), run the adapted skill
+to draft the issue, file it in GitHub, and judge whether the structured output beat
+writing it by hand. Adopt into `.kiro/skills/` only if the pilot output needs no
+manual restructuring.
