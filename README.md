@@ -107,7 +107,10 @@ through [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json); 
 enablement, and mode state remain user-scoped, with [`AGENTS.md`](AGENTS.md) as the instruction
 fallback. Claude Code registers the project marketplace after workspace trust; install
 `ponytail@taskmaster-ponytail` once from `/plugin`. Both plugin sources are locked to Ponytail
-`v4.9.0` commit `0a4dd63`.
+`v4.9.0` commit `0a4dd63`. For Kiro, the actual content is tracked in-repo at the same pin: the
+core rule is [`.kiro/steering/ponytail.md`](.kiro/steering/ponytail.md), and the five companion
+skills (review, audit, debt, gain, help) are vendored under
+[`.kiro/skills/`](.kiro/skills/) as `ponytail-*` skills.
 
 ## Doctrine
 
