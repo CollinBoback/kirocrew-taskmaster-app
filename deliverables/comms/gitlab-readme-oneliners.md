@@ -1,5 +1,12 @@
 # GitLab consolidation — conversation opener + fallback headers
 
+> **Superseded:** the conversation with Ryan happened. The current deliverable is the
+> comparison + recommendation in `gitlab-consolidation-recommendation.md`. The fallback
+> README headers below state that the repos overlap — a premise that doc treats as
+> unverified. Only paste them after the Step 0 premise check confirms the overlap with
+> both repos open; if the repos don't actually duplicate, the headers are false — use
+> the one-line scope statements from option 4 instead.
+
 **Goal tomorrow morning: a 10-minute conversation, not a merge.** You and a coworker built
 the same thing in parallel; which repo survives is a joint call, not unilaterally yours.
 The "due tomorrow" clock is self-imposed — if the conversation slips, apply the fallback
