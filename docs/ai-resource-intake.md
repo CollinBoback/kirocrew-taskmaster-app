@@ -6,7 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
-| 3 | [office-hours — Two-Mode Brainstorming / Design-Doc Skill](https://officialskills.sh/garrytan/skills/office-hours) | officialskills.sh → GitHub (garrytan/gstack) | Pending |
+| 3 | [office-hours — Two-Mode Brainstorming / Design-Doc Skill](https://officialskills.sh/garrytan/skills/office-hours) | officialskills.sh → GitHub (garrytan/gstack) | Defer |
 
 ---
 
@@ -80,7 +80,7 @@ Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) 
 - **Type:** Skill (Claude Code / agent skill, installable via `npx skills add https://github.com/garrytan/gstack --skill office-hours`)
 - **Category:** Product thinking / brainstorming
 - **Linear:** COL-333 (AI Research project)
-- **Decision:** Pending
+- **Decision:** Defer (owner confirmed 2026-08-29) — do not install; if the method is wanted later, extract the six-question diagnostic and alternatives format into a standalone lightweight skill
 
 ### What it is
 
