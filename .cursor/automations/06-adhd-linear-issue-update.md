@@ -51,8 +51,9 @@ it to Done). Payload: issue identifier, title, old status, new status, actor.
 
 1. The new status is a completed-type state (Done). Not In Progress, not In Review, not
    Canceled or Duplicate.
-2. Memories has no entry for this issue's completion — or it does, but a new PR merged
-   after that entry's date (a legitimate re-completion).
+2. Memories has no entry for this issue's completion — or it does, but a PR has since
+   merged for this issue that the entry does not list (a legitimate re-completion;
+   compare PR identity, never dates — dates cannot order same-day events).
 3. The issue belongs to the synced team, not a foreign team.
 
 ## Gather, in this order
@@ -96,10 +97,15 @@ and (b) what to do next. Delete anything that fails the test.
 
 - Comment only. Never change status, assignee, labels, cycle, or project — the
   GitHub↔Linear sync and Collin own those.
-- One comment per completion. After posting, record issue ID, status, and date in
-  Memories; that entry is the duplicate guard.
-- If Linear and the spec disagree on status, do not arbitrate here — automation 3 owns
-  drift. Keep this comment to what verifiably landed.
+- One comment per completion. After posting, record in Memories: issue ID, status,
+  timestamp, and the merged PR numbers (or commit SHAs) the comment covered. That entry
+  is the duplicate guard; a re-completion is recognized by a merged PR absent from the
+  entry, not by comparing dates.
+- If Linear and the spec disagree on status, do not arbitrate and do not change either
+  system — the spec is canonical. Surface it instead of dropping it: add one
+  matter-of-fact line quoting the spec's `Status:` line so the mismatch is visible.
+  (Automation 3 only reconciles spec ↔ GitHub issues; Linear-side drift has no other
+  watcher.) Keep the rest of the comment to what verifiably landed.
 - No employer names, internal servers, or proprietary data. Sample data stays the
   fictional Tableau→SQL migration task.
 - Never run `kirocrew`, install the app, or talk to a gateway.
