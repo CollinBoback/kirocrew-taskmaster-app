@@ -22,6 +22,10 @@ pull request assigned to the repo owner.
 | `comms/ryan-sedw-message.md` | Drafted commitment message + micro-schedule to the Sept 9 scope/plan date | Review → send |
 | `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Use tomorrow morning |
 | `comms/scmods-linear-note.md` | Rationale note for correcting stale ticket target dates | Paste when dates are fixed |
+| `sedw-scope/RUNBOOK.md` | Step-by-step run packet for the SEDW scope/dependencies/approach/estimate assessment | Ready to run |
+| `sedw-scope/pipeline-inventory-template.md` | Blank inventory of objects/jobs/feeds in scope, with complexity + dependency tagging | Paste real rows in work-side |
+| `sedw-scope/SCOPE-TEMPLATE.md` | Fill-in assessment doc: complexity, dependencies, one recommended approach, estimate, next action | Fill from adjudicated inventory |
+| `comms/sedw-assessment-share-message.md` | Drafted delivery message to Ryan + SMEDW team, built from the finished scope template | Review → send Wed Sep 9 |
 
 ## Workflow
 
