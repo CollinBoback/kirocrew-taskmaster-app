@@ -51,13 +51,15 @@ it to Done). Payload: issue identifier, title, old status, new status, actor.
 
 1. The new status is a completed-type state (Done). Not In Progress, not In Review, not
    Canceled or Duplicate.
-2. Memories has no entry for this issue's completion — or it does, but a PR has since
-   merged for this issue that the entry does not list (a legitimate re-completion;
-   compare PR identity, never dates — dates cannot order same-day events).
+2. Memories has no entry for this issue's completion — or it does, but the issue has
+   since gained a merged PR or linked commit that the entry does not list (a legitimate
+   re-completion; compare PR/commit identity, never dates — dates cannot order same-day
+   events).
 3. The issue belongs to the synced team, not a foreign team.
 4. The issue's own comments (read them before deciding) contain no completion comment
-   in this shape covering the same merged PRs — a Memories write can fail after a
-   successful post, so the posted comment itself is the second duplicate guard.
+   in this shape covering the same merged PRs and linked commits — a Memories write can
+   fail after a successful post, so the posted comment itself is the second duplicate
+   guard.
 
 ## Gather, in this order
 
