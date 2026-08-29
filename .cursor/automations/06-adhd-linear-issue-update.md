@@ -55,6 +55,9 @@ it to Done). Payload: issue identifier, title, old status, new status, actor.
    merged for this issue that the entry does not list (a legitimate re-completion;
    compare PR identity, never dates — dates cannot order same-day events).
 3. The issue belongs to the synced team, not a foreign team.
+4. The issue's own comments (read them before deciding) contain no completion comment
+   in this shape covering the same merged PRs — a Memories write can fail after a
+   successful post, so the posted comment itself is the second duplicate guard.
 
 ## Gather, in this order
 
@@ -79,9 +82,11 @@ One Linear comment, markdown, standing alone for a reader seeing only a notifica
 3. `**Next:**` — exactly ONE action, startable in under two minutes, naming a real
    artifact: an issue ID, a file, a spec anchor — never a vibe. Add a concrete time
    ballpark for the step it starts ("about 20 minutes", "an afternoon" — never "some
-   work"). Source it from the spec's first unblocked task that is `partially done —
-   paused` (use its Progress log "Pick up here" line verbatim) or `not started`, in
-   index order; for non-spec issues, the cycle or project's next unstarted issue.
+   work"). Source it in this order: the spec's first unblocked task that is
+   `in progress` (continue it — never redirect the reader away from work already
+   underway), then `partially done — paused` (use its Progress log "Pick up here" line
+   verbatim), then `not started`, in index order; for non-spec issues, the cycle or
+   project's next unstarted issue.
    Never point Next at the triggering issue's own task — if the spec still lists it as
    unfinished, that is drift, not next work. If nothing is genuinely queued, say the
    queue is clear in one line instead of inventing work.
