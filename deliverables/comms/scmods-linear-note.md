@@ -1,23 +1,30 @@
-# SCMODS — stale ticket date correction
+# SCMODS Alation Audit — project-level date correction
 
-**Context:** four Urgent tickets carry a target of `2026-08-07`; the real deadline is
-December. The stale date has been generating false urgency since it passed. Correct the
-dates, paste the note, then leave the workstream alone — it is *not* stalled; it's actively
-pointed at the in-flight datasets.
+**Context (supersedes the earlier ticket-level version of this note):** the five audit
+tickets (COL-64, COL-74, COL-75, COL-76, COL-77) were already corrected and show
+Medium / `2026-12-31`. The remaining false-urgency source is the **project** itself:
 
-**STOP — owner confirmation required before any ticket is edited:**
-1. Confirm the four tickets are the right ones (Claude will post the candidate list on the
-   tracking issue after read-only recon).
-2. Confirm the actual December target date (e.g. `2026-12-01` vs a specific day).
+| Field | Stale value | Corrected value |
+|---|---|---|
+| Target date | `2026-08-07` (past due) | `2026-12-31` |
+| Priority | Urgent | Medium |
+| Description | Embeds "Urgent and due July 17, 2026" | Correction note appended below |
 
-## Comment to paste on each corrected ticket
+**Confirmed on COL-322:** full path — new target `2026-12-31`, priority Urgent → Medium,
+and the note appended to the existing description (preserved, not replaced).
 
-> Correcting the target date on this ticket: the `2026-08-07` date was stale (set against an
-> earlier plan) and has been past-due since early August, which made this look blocked when
-> it isn't. The real deadline for this work is **December 2026**; target updated to
-> `2026-12-__`. No change to scope or priority of the underlying work.
+## Note to append to the project description
+
+> **Correction — previous dates superseded.** Both dates previously attached to this
+> project were stale: the "due July 17, 2026" commitment in the description above and the
+> `2026-08-07` target date were set against an earlier plan and had been generating false
+> urgency since they passed. The real deadline is **2026-12-31**, and the project target
+> now matches its tickets (COL-64/74/75/76/77, all Medium / 2026-12-31). Project priority
+> lowered Urgent → Medium for the same reason. No change to scope — this workstream is
+> active, not blocked.
 
 ## After the fix
 
-- All four tickets show the December target and the note.
-- No other edits — no re-scoping, no re-prioritizing, no new tickets. Done means done.
+- Verify the project **and** all five tickets show Medium / `2026-12-31`.
+- Close COL-322 with the verification timestamp.
+- No other edits — no re-scoping, no new tickets. Done means done.
