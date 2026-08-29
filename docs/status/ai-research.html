@@ -1,0 +1,143 @@
+<!doctype html>
+<!--
+  Pilot page for the project-status-page skill (.kiro/skills/project-status-page/).
+  Rendered from template.html; refresh per SKILL.md "Refreshing a page".
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Research — status</title>
+<style>
+  :root { --fg:#1a1a1a; --bg:#fdfdfd; --accent:#0a7d4a; --warn:#b45309; --red:#b91c1c; --muted:#666; --border:#ddd; --code-bg:#f5f5f5; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e4e4e4; --bg:#1a1a1a; --accent:#4ade80; --warn:#fbbf24; --red:#f87171; --muted:#999; --border:#333; --code-bg:#262626; }
+  }
+  * { box-sizing:border-box; }
+  body { font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--fg); background:var(--bg); max-width:980px; margin:1.5em auto; padding:0 1.5em 3em; }
+  h1,h2,h3,h4 { font-weight:600; margin-top:1.6em; line-height:1.3; }
+  h1 { font-size:1.7em; margin-bottom:.2em; }
+  h2 { font-size:1.35em; border-bottom:1px solid var(--border); padding-bottom:.2em; }
+  h3 { font-size:1.1em; }
+  a { color:var(--accent); }
+  code { background:var(--code-bg); padding:.15em .35em; border-radius:3px; font-size:.92em; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  table { border-collapse:collapse; width:100%; margin:.8em 0; font-size:.93em; }
+  th,td { border:1px solid var(--border); padding:.45em .7em; vertical-align:top; text-align:left; }
+  th { font-weight:600; background:var(--code-bg); }
+  ul { padding-left:1.4em; } li { margin:.25em 0; }
+  details { margin:.5em 0; } details > summary { cursor:pointer; font-weight:600; padding:.4em 0; }
+  hr { border:none; border-top:1px solid var(--border); margin:2em 0; }
+  .meta { color:var(--muted); font-size:.85em; }
+  .sub { color:var(--muted); font-size:.95em; margin-top:.3em; }
+  .status { background:color-mix(in srgb, var(--accent) 12%, var(--bg)); border:1px solid var(--accent); border-radius:8px; padding:.9em 1.2em; margin:1.2em 0; }
+  .status .badge { display:inline-block; background:var(--accent); color:var(--bg); padding:.1em .6em; border-radius:4px; font-size:.78em; font-weight:600; letter-spacing:.02em; }
+  .status p { margin:.5em 0 0; font-size:.92em; }
+  .next { border:1px solid var(--warn); border-left:4px solid var(--warn); border-radius:8px; padding:.8em 1.2em; margin:1.2em 0; background:color-mix(in srgb, var(--warn) 8%, var(--bg)); }
+  .next > summary { cursor:pointer; font-weight:600; font-size:1.02em; padding:0; }
+  .next > summary .meta { font-weight:400; }
+  .next ol { margin:.5em 0 .1em 1.3em; padding:0; }
+  .next ol li { margin:.3em 0; }
+  .next .who { font-weight:600; }
+  .pill { display:inline-block; font-size:.78em; padding:.1em .55em; border-radius:10px; background:var(--code-bg); color:var(--muted); margin-left:.4em; vertical-align:1px; }
+  .pill.done { background:var(--accent); color:var(--bg); }
+  .pill.now  { background:var(--warn);   color:var(--bg); }
+  .pill.next { background:var(--code-bg); color:var(--fg); border:1px solid var(--border); }
+  .pill.warn { background:var(--red);    color:var(--bg); }
+  .callout { border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:4px; padding:.7em 1em; margin:1em 0; font-size:.93em; background:color-mix(in srgb, var(--accent) 5%, var(--bg)); }
+  .tabbar { display:flex; flex-wrap:wrap; gap:.2em; border-bottom:2px solid var(--border); margin:1.2em 0 1.5em; }
+  .tabbar .tab { padding:.55em 1em; cursor:pointer; border:1px solid transparent; border-bottom:none; border-radius:6px 6px 0 0; font:inherit; font-weight:500; font-size:.95em; color:var(--muted); background:none; margin-bottom:-2px; }
+  .tabbar .tab:hover { color:var(--fg); }
+  .tabbar .tab.active { color:var(--fg); border-color:var(--border); border-bottom:2px solid var(--bg); background:var(--bg); font-weight:600; }
+  .pane { display:none; } .pane.active { display:block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AI Research</h1>
+  <div class="sub">Evaluate AI engineering and data-reconciliation approaches for potential adoption in future work.
+    &middot; <a href="https://linear.app/collinboback/">Linear project &rarr;</a>
+    &middot; <a href="../ai-resource-intake.md">Intake list &rarr;</a>
+  </div>
+</header>
+
+<div class="status">
+  <span class="badge">EVALUATION &middot; Q3 DECISION GATE</span>
+  <span class="meta" style="float:right">As of 2026-08-29 09:00 UTC</span>
+  <p>3 research areas &middot; 2 of 3 dispositions recorded &middot; gate: every area needs adopt / adapt / defer + a bounded follow-up</p>
+</div>
+
+<details class="next" open>
+  <summary>Next steps <span class="meta">&middot; 2 items</span></summary>
+  <ol>
+    <li><span class="who">Collin</span> — record the adopt / adapt / defer disposition for the AWS agents sample (COL-60) <span class="meta">— closes the last open Q3 gate item</span></li>
+    <li><span class="who">Collin</span> — review/merge the status-page-skill PR <span class="meta">— lands the COL-336 follow-up (adapted skill + this page)</span></li>
+  </ol>
+</details>
+
+<div class="tabbar">
+  <button class="tab active" data-pane="over">1 &middot; Overview</button>
+  <button class="tab" data-pane="work">2 &middot; Workstreams</button>
+</div>
+
+<main>
+
+  <!-- ─────────────────────────────────── TAB: OVERVIEW ─────────────────────── -->
+  <section class="pane active" id="over">
+    <div class="callout">Evaluate candidate AI engineering approaches (skills, plugins, samples) and, per the Q3 decision gate, record one clear disposition per area — adopt, adapt, or defer — with a bounded follow-up for anything adopted.</div>
+    <h2>Success criteria</h2>
+    <table>
+      <tr><th style="width:220px">Criterion</th><th>Statement</th><th style="width:280px">Check (how you'd know it's met)</th><th style="width:110px">Status</th></tr>
+      <tr><td>SQL reconciliation disposition</td><td>COL-199 has an adopt/adapt/defer call and, if adopted, a bounded workshop proposal</td><td>Skill usable in-repo; disposition recorded on the issue</td><td><span class="pill done">adopted</span></td></tr>
+      <tr><td>AWS agents sample disposition</td><td>COL-60 has success criteria defined and a disposition recorded</td><td>Disposition recorded on the issue</td><td><span class="pill next">not yet</span></td></tr>
+      <tr><td>project-artifact disposition</td><td>COL-336 has a disposition and, if adopted/adapted, a usable follow-up</td><td>Intake entry decided; adapted skill lands in repo</td><td><span class="pill done">adapt</span></td></tr>
+    </table>
+    <h2>Out of scope</h2>
+    <ul>
+      <li>Production deployment of any evaluated tool — evaluation and bounded pilots only; deployment to the work machine stays a manual, owner-driven step.</li>
+      <li>Real work data — every pilot uses synthetic, generic samples (this repo is public).</li>
+    </ul>
+  </section>
+
+  <!-- ─────────────────────────────────── TAB: WORKSTREAMS ──────────────────── -->
+  <section class="pane" id="work">
+    <h2>Status</h2>
+    <table>
+      <tr><th style="width:90px">ID</th><th>What</th><th style="width:100px">Owner</th><th style="width:110px">Depends on</th><th style="width:170px">Status</th></tr>
+      <tr><td>COL-199</td><td>SQL Server table reconciliation skill — schema drift, row/column mismatches, hash-first validation</td><td>Collin</td><td>&mdash;</td><td><span class="pill done">adopted</span></td></tr>
+      <tr><td>COL-60</td><td>AWS autonomous cloud coding agents sample — architecture patterns, fit with current agent workflow</td><td>Collin</td><td>&mdash;</td><td><span class="pill">unverified</span></td></tr>
+      <tr><td>COL-336</td><td>project-artifact plugin — living project status pages</td><td>Collin</td><td>&mdash;</td><td><span class="pill done">adapt</span></td></tr>
+    </table>
+    <p class="meta">Basis notes: COL-199 status inferred from the repo — the <code>sql-server-table-reconciliation</code> skill (SKILL.md + reconcile.py) is vendored on main under <code>.agents/skills/</code> and <code>.claude/skills/</code>; the Linear issue state itself was not reachable this render (Linear MCP unauthenticated), so treat issue-side state as stale, not confirmed. COL-60 is likewise unverified for the same reason — no repo evidence either way. COL-336 is first-hand: decision recorded 2026-08-29 in <a href="../ai-resource-intake.md">the intake list</a>.</p>
+    <hr>
+    <h2>COL-336 — project-artifact evaluation <span class="pill done">adapt</span></h2>
+    <h3>Done so far</h3>
+    <ul>
+      <li>Full plugin review (plugin.json, README, SKILL.md, swe.md, template.html) written up as intake entry 3.</li>
+      <li>Disposition <b>adapt</b> recorded: the publish step hard-depends on Claude Code's Artifact tool (claude.ai login), unavailable in Cursor/Kiro; the structure and conventions are portable.</li>
+      <li>Bounded follow-up delivered: adapted skill at <code>.kiro/skills/project-status-page/</code> (pinned upstream commit <code>4a3e656</code>, Apache-2.0) with publish swapped to committed HTML; this page is its pilot render.</li>
+    </ul>
+    <h3>How it was verified</h3>
+    <p>Intake entry merged to main (PR #112); this pilot page rendered from the adapted template and reviewed for overflow/clipping before commit.</p>
+  </section>
+
+</main>
+
+<script type="application/json" id="artifact-state">
+{"as_of": "2026-08-29 09:00 UTC", "workstreams": [
+  {"id": "COL-199", "status": "adopted (repo evidence; issue state unverified)", "owner": "Collin"},
+  {"id": "COL-60", "status": "unverified", "owner": "Collin"},
+  {"id": "COL-336", "status": "adapt", "owner": "Collin"}
+]}
+</script>
+
+<script>
+function goTab(id){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.pane === id));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === id));
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => goTab(t.dataset.pane)));
+</script>
+
+</body>
+</html>
