@@ -6,6 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
+| 3 | [office-hours — Two-Mode Brainstorming / Design-Doc Skill](https://officialskills.sh/garrytan/skills/office-hours) | officialskills.sh → GitHub (garrytan/gstack) | Pending |
 
 ---
 
@@ -70,3 +71,41 @@ A skill from `vercel-labs/skills` that teaches an agent to discover and install 
 ### Recommendation
 
 Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) with an instruction to record candidates here for a yes/no decision first.
+
+---
+
+## 3. office-hours — Two-Mode Brainstorming / Design-Doc Skill
+
+- **URL:** https://officialskills.sh/garrytan/skills/office-hours (directory listing) → https://github.com/garrytan/gstack/tree/main/office-hours (source)
+- **Type:** Skill (Claude Code / agent skill, installable via `npx skills add https://github.com/garrytan/gstack --skill office-hours`)
+- **Category:** Product thinking / brainstorming
+- **Linear:** COL-333 (AI Research project)
+- **Decision:** Pending
+
+### What it is
+
+A "YC office hours" simulation with two modes, ending in a saved design document (no code — the skill hard-gates against implementation):
+
+- **Startup mode:** six forcing questions testing demand reality, the status-quo workaround, customer specificity, minimum viable wedge, user observation, and future-fit.
+- **Builder mode:** a brainstorming partner for side projects, hackathons, learning, and open source.
+- Later phases add a premise challenge, an optional cross-model second opinion (Codex CLI or a Claude subagent), mandatory 2–3 alternatives with a recommendation, optional visual mockups, and a design doc plus "assignment" handoff.
+
+The full SKILL.md was fetched from the GitHub raw source and reviewed line by line (67.5 KB, 1,133 lines, plus three on-demand section files it requires reading at runtime).
+
+### Proposed value / use case
+
+- The six-question demand diagnostic and the "mandatory alternatives with one minimal-viable and one ideal-architecture option" pattern are genuinely good idea-vetting structure, usable when scoping new workshops or side projects.
+- The decision-brief format (ELI10, stakes, completeness scores, explicit recommendation) is a thoughtful pattern for agent-to-user questions.
+
+### Caveats
+
+- **Heavy runtime coupling.** Most of the file is gstack framework plumbing, not the office-hours method: it shells out to `~/.claude/skills/gstack/bin/*` binaries (skill-start, telemetry, question-preference hooks, learnings log, brain cache, developer profile), writes analytics/profile JSONL under `~/.gstack/`, and mentions an artifacts-sync "remote-mode". None of that runtime exists in this environment, and the sync/telemetry surface would need a privacy review before ever running on a work machine.
+- **Instruction-injection channel by design.** The preamble tells the agent to obey `GSTACK_INSTRUCTION_BEGIN/END` blocks emitted by a vendored shell script's output. It is session-ID-gated, but it is still a mechanism where executable output becomes new agent instructions.
+- **Self-invoking trigger.** The skill instructs agents to "proactively invoke this skill (do NOT answer directly)" whenever the user describes a product idea — conflicting with this repo's rule that deterministic behavior stays in code and the agent is used only for judgment or execution.
+- **Network installer.** Setup can download and run the bun install script (checksum-pinned, but still a remote-code path), and one section repeatedly promotes downloading a specific third-party AI browser ("Aside") by name. The hosting directory (officialskills.sh) is itself sponsor-supported, not an official registry.
+- **Provenance not verified.** The GitHub repo shows an anomalous 130k-stars / 0-forks profile, and no independent confirmation was found that the account is actually Garry Tan's. Treat authorship as unverified.
+- **Context cost.** ~67 KB always-loaded SKILL.md plus mandatory section reads is far above the footprint of anything in `skills/` today.
+
+### Recommendation
+
+Defer as-is; do not install (installation is also blocked here by the AGENTS.md no-install boundary). The reusable part is small and separable: if the method is wanted for future workshop scoping, extract just the six-question startup diagnostic and the mandatory-alternatives format into a standalone lightweight skill with no gstack runtime, no telemetry, no proactive self-invocation, and no external installers.
