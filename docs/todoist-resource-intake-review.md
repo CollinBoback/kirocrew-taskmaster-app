@@ -16,7 +16,7 @@ The links below intentionally preserve the exact captured URLs from issue #63, e
 
 ## Decision summary
 
-- **Total reviewed items**: 203
+- **Total reviewed items**: 205
 - **Most likely to keep close at hand:** upstream Kiro/Copilot references, review-loop skills, and issue/repo automation ideas.
 - **Most likely to revisit selectively:** plugin/marketplace directories, planning skills, and workflow-reading references.
 - **Mostly parked or removed:** personal/private links, jobs, inbox items, and domain-specific data/platform material outside current scope.
@@ -207,6 +207,7 @@ _Default lean: **adapt** — Good reference material; pull in concrete practices
 
 - [x] [Using custom instructions to unlock the power of Copilot code review](https://docs.github.com/en/copilot/tutorials/customize-code-review) — **adopt**: Directly actionable for improving review quality in this repo. — 🆕 **Added &lt;24h**
 - [x] [Awesome GitHub Copilot — Skills](https://awesome-copilot.github.com/skills/) — **adopt**: Strong discovery source for Copilot-compatible skills. — 🆕 **Added &lt;24h**
+- [x] [Awesome GitHub Copilot — Skills sorted by last updated](https://awesome-copilot.github.com/skills/?sort=lastUpdated) — **adopt**: Same discovery source as the main skills page, sorted view kept as a convenience breadcrumb. — 🆕 **Added &lt;24h**
 - [x] [GitHub Learn — repository checklist / repo merge](https://learn.github.com/well-architected/scenarios/migrations/repository-checklist) — **adapt**: Already useful in this repo, but should stay applied case-by-case. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [GitHub Actions Documentation — productivity quick links](https://learn.github.com/well-architected/productivity/quick-links) — **adapt**: Good reference material; pull in concrete practices rather than treating it as required reading. — 🆕 **Added &lt;24h**
 - [x] [Learning about new features and models — GitHub Docs](https://docs.github.com/en/copilot/concepts/learning-about-new-features-and-models) — **adopt**: Good recurring reference for keeping the toolbox current. — 🆕 **Added &lt;24h**
@@ -358,6 +359,7 @@ _Default lean: **experiment** — Discovery source for reusable agent skills; tr
 - [x] [Best skills for AI & Agents [2026]](https://skillselion.com/best/skills-for-ai-agents) — **experiment**: Discovery roundup; use it to find candidates, not as an authority. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Repo Intake And Plan Skill for Claude Code](https://skillselion.com/skills/lllllllama/rigorpilot-skills/repo-intake-and-plan) — **adopt**: Directly relevant to recurring repository-intake work. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Brainstorming](https://skillselion.com/category/docs-planning) — **discard**: Captured URL is a broad Skillselion docs/planning category page, not a durable single-skill permalink, so treat it as generic discovery only. — 🔴 **P1** · 🆕 **Added &lt;24h**
+- [x] [Doc Coauthoring](https://skillselion.com/category/docs-planning?page=2) — **discard**: Captured URL is page 2 of the same broad Skillselion docs/planning category, not a durable single-skill permalink. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Review Loop](https://skillselion.com/category/testing-review) — **adopt**: Captured URL is a broad testing/review category page rather than a stable single-skill permalink, but the review-loop theme is relevant enough to keep as an active reference. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [Antigravity Awesome Skills / Ponytail marketplace page](https://skillselion.com/marketplaces) — **experiment**: Captured URL is the marketplace index, so use it only as a breadcrumb to the underlying skill if needed. — 🔴 **P1** · 🆕 **Added &lt;24h**
 - [x] [improve-codebase-architecture](https://skillselion.com/leaderboard) — **adapt**: Captured URL is the Skillselion leaderboard rather than a stable skill permalink; keep only the architecture-improvement theme. — 🔴 **P1** · 🆕 **Added &lt;24h**
