@@ -11,6 +11,7 @@ data/
 .omc/
 .env
 .DS_Store
+__pycache__/
 # Personal planning docs — this repo is public; these must never be committed.
 GAMEPLAN*.md
 GRILL-LOG*.md
