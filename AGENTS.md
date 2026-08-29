@@ -55,6 +55,8 @@ use the standard library, use a native platform feature, use an installed depend
 line, or only then write the minimum correct implementation. Apply this after tracing the real
 flow, and never cut validation, data-loss handling, security, accessibility, or explicit
 requirements. The canonical project rule is [`.kiro/steering/ponytail.md`](.kiro/steering/ponytail.md).
+The plugin's five companion skills are vendored at the same `v4.9.0` pin under
+`.kiro/skills/ponytail-{review,audit,debt,gain,help}/SKILL.md`.
 
 ## Required verification
 

@@ -20,8 +20,9 @@ pull request assigned to the repo owner.
 | `otb-diagnosis/meeting-onepager.md` | Fill-in-the-blank presentation artifact (tally, headline, examples, talking points) | Fill from adjudicated tags |
 | `otb-diagnosis/alation-before-after-template.md` | Stretch goal: one before/after catalog definition | Only after runbook steps 1–7 |
 | `comms/ryan-sedw-message.md` | Drafted commitment message + micro-schedule to the Sept 9 scope/plan date | Review → send |
-| `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Use tomorrow morning |
-| `comms/scmods-linear-note.md` | Rationale note for correcting stale ticket target dates | Paste when dates are fixed |
+| `comms/gitlab-consolidation-recommendation.md` | `Kiro_BI` vs `Kiro` comparison worksheet + recommendation message to Ryan | Fill a `-filled` copy work-side (45 min) |
+| `comms/gitlab-readme-oneliners.md` | Consolidation conversation opener + fallback README headers | Superseded — headers only if Step 0 confirms overlap |
+| `comms/scmods-linear-note.md` | Correction note for the stale SCMODS project target/priority (tickets already fixed) | Append to project description per COL-322 |
 | `sedw-scope/RUNBOOK.md` | Step-by-step run packet for the SEDW scope/dependencies/approach/estimate assessment | Ready to run |
 | `sedw-scope/pipeline-inventory-template.md` | Blank inventory of objects/jobs/feeds in scope, with complexity + dependency tagging | Paste real rows in work-side |
 | `sedw-scope/SCOPE-TEMPLATE.md` | Fill-in assessment doc: complexity, dependencies, one recommended approach, estimate, next action | Fill from adjudicated inventory |

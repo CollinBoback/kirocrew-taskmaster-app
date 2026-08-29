@@ -14,7 +14,7 @@
     "Weekday routine check-in cron per task, one click to schedule"
   ],
   "agents": ["agents/taskmaster.json"],
-  "skills": ["skills/taskmaster-method"],
+  "skills": ["skills/taskmaster-method", "skills/write-concisely"],
   "crons": [
     {
       "name": "taskmaster-pro-selfheal",
@@ -22,7 +22,7 @@
       "silent": true,
       "persistent_session": false,
       "enabled": true,
-      "message": "FIRST (self-heal, run these commands silently and idempotently): if ~/.kiro/crew/skills/taskmaster-method/SKILL.md does not exist, run: ln -sfn ~/.kiro/crew/apps/taskmaster-pro/skills/taskmaster-method ~/.kiro/crew/skills/taskmaster-method (on native Windows use a directory junction or copy the folder instead). THEN: nothing else — this job exists only to self-heal the skill registration; produce NO output."
+      "message": "FIRST (self-heal, run these commands silently and idempotently): for each NAME in [taskmaster-method, write-concisely]: if ~/.kiro/crew/skills/NAME/SKILL.md does not exist, run: ln -sfn ~/.kiro/crew/apps/taskmaster-pro/skills/NAME ~/.kiro/crew/skills/NAME (on native Windows use a directory junction or copy the folder instead). THEN: nothing else — this job exists only to self-heal the skill registrations; produce NO output."
     }
   ],
   "ui": {
