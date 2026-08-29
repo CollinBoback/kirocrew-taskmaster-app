@@ -23,8 +23,10 @@ constraints every change in this repo must respect. Human-facing step-by-step li
   Later graduation path: git-URL install or a personal federated registry (see
   [kiro.dev/docs/crew/apps](https://kiro.dev/docs/crew/apps/), "Federated app model") —
   a deployment-config change only; nothing in the app needs restructuring for it.
-- The `taskmaster-method` skill registers via the daily `taskmaster-pro-selfheal` cron
-  (symlinks it into `~/.kiro/crew/skills/`), or a manual link/junction to skip the wait.
+- Skills under `skills/` register via the daily `taskmaster-pro-selfheal` cron
+  (symlinks each folder into `~/.kiro/crew/skills/`), or a manual link/junction to skip
+  the wait. Adding a skill folder means adding it to `app.json` `skills` AND to the
+  self-heal cron message.
 
 ## Hard constraints on work in this repo
 

@@ -6,7 +6,8 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
-| 3 | [github-issue-creator — Structured GitHub Issues from Messy Input](https://officialskills.sh/microsoft/skills/github-issue-creator) | officialskills.sh → GitHub (microsoft/skills) | Pending — recommended: Adapt |
+| 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | Pending |
+| 4 | [github-issue-creator — Structured GitHub Issues from Messy Input](https://officialskills.sh/microsoft/skills/github-issue-creator) | officialskills.sh → GitHub (microsoft/skills) | Adapt |
 
 ---
 
@@ -74,14 +75,48 @@ Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) 
 
 ---
 
-## 3. github-issue-creator — Structured GitHub Issues from Messy Input
+## 3. project-artifact — Living Project Status Page
+
+- **URL:** https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact
+- **Type:** Claude Code plugin (one skill + HTML template; no commands, agents, or hooks)
+- **Category:** Project tracking / status communication
+- **Decision:** Pending (Linear: COL-336, AI Research project)
+
+### What it is
+
+An official Anthropic plugin that generates and publishes a **living status page** for a multi-workstream project (a migration, launch, or research effort). Contents:
+
+- **`SKILL.md`** — the workflow: gather live state from the project's sources (repo/PRs via `gh`, tracker, docs), pick tabs from a fixed catalog (Overview + Workstreams always; Attention / Background / Plan / Risks / Decisions-FAQ only when they earn a tab), render one self-contained HTML file, publish via Claude Code's built-in `Artifact` tool to a default-private `claude.ai/code/artifact/<uuid>` page.
+- **Refresh-in-place design** — each render embeds a hidden `artifact-state` JSON block (`as_of` + one entry per workstream). A per-project `config.md` in the plugin data dir records sources and the minted URL, so "refresh the artifact" re-gathers live state, edits the previous render in place, redeploys to the **same URL**, and reports only the delta.
+- **`swe.md`** — software specialization for PR-driven projects: an X.Y PR-numbering convention that encodes dependency order (no DAG diagrams), exact `gh`/GraphQL queries for PR/CI/unresolved-review state, and a per-PR write-up fragment.
+- **`template.html`** — a clean, self-contained skeleton: light/dark via `prefers-color-scheme`, status banner, always-visible next-steps strip, status pills, JS and pure-CSS tab mechanisms, system fonts only, everything inlined (the Artifact CSP blocks all external hosts).
+
+### Proposed value / use case
+
+- The **structure is the value**, and it is portable: the tab catalog, status banner + next-steps strip, "deltas not re-narratives" refresh model, and the machine-readable state block are a well-thought-out template for any recurring status page — directly reusable for BI project status reporting or a workshop artifact, regardless of publish target.
+- The **freshness/trust rules** are best-practice and worth stealing on their own: as-of timestamps first, failed fetches mark data *stale, never invented*, inferred mappings stated with their basis, fetched text treated as untrusted data (prompt-injection flagging) *and* untrusted markup (entity-encoding, `\u003c` in JSON so a hostile branch name can't script-inject the published page).
+- `swe.md`'s live-state `gh` queries (including the GraphQL unresolved-thread count, which REST miscounts) are useful reference material independent of the plugin.
+
+### Caveats
+
+- **Hard dependency on Claude Code's built-in `Artifact` tool**, which requires a claude.ai login (beta, Team/Enterprise plans; unavailable on API-key/Bedrock/Vertex sessions and in headless runs). Cursor and Kiro agents do not have this tool, so the publish step — the plugin's core deliverable — does not work in this environment as shipped.
+- Per-project state lives in a machine-local plugin data dir (`${CLAUDE_PLUGIN_DATA}`), so configs don't follow the user across machines without manual copying.
+- Publishing is interactive-only by design; automation can build pages but not publish them.
+
+### Recommendation
+
+**Adapt, don't adopt as-is.** The plugin cannot be installed usefully here because the Artifact publish tool doesn't exist outside Claude Code with a claude.ai login. But the template and conventions transfer cleanly: if a status-page workflow is wanted, vendor `template.html` plus the SKILL's tab catalog, state-block/delta-refresh convention, and freshness/trust rules as a local skill, and swap the publish step for a target available here (committed HTML in the repo, GitHub Pages, or a Linear document). Bounded follow-up if adopted: one local skill + template producing a status page for a single pilot project.
+
+---
+
+## 4. github-issue-creator — Structured GitHub Issues from Messy Input
 
 - **URL:** https://officialskills.sh/microsoft/skills/github-issue-creator
 - **Canonical source:** https://github.com/microsoft/skills — `.github/skills/github-issue-creator/SKILL.md`
 - **Type:** Skill (agent skill, installable via `npx skills add https://github.com/microsoft/skills --skill github-issue-creator`)
 - **Category:** Productivity / issue workflow
 - **Linear:** COL-335 (AI Research project)
-- **Decision:** Pending — recommended disposition: **Adapt**
+- **Decision:** **Adapt** (approved 2026-08-29) — adapted skill vendored at `.kiro/skills/github-issue-creator/SKILL.md`
 
 ### What it is
 
@@ -130,16 +165,19 @@ most marketplace skills.
 - Overlaps partially with issue-writing guidance agents already follow; value is the
   consistent template and severity rubric, not new capability.
 
-### Recommendation
+### Decision record (2026-08-29)
 
-**Adapt.** Keep the template, extraction guidelines, severity rubric, and
-sensitive-data placeholder rule; replace the `/issues/` directory output with "draft
-the issue body and file it via GitHub (auto-synced to Linear)." Do not vendor until the
-final yes/no here — per the find-skills precedent, unapproved vendored skills get
-removed.
+**Adapt — approved.** Kept the template, extraction guidelines, severity rubric, and
+sensitive-data placeholder rule. Two adaptations, per the caveats above:
 
-**Bounded follow-up if adopted (Q3 decision-gate requirement):** one low-risk pilot —
-take a single real messy input (a dictated note or pasted error), run the adapted skill
-to draft the issue, file it in GitHub, and judge whether the structured output beat
-writing it by hand. Adopt into `.kiro/skills/` only if the pilot output needs no
-manual restructuring.
+1. **Output location:** the upstream `/issues/` committed-markdown rule is replaced
+   with "draft the issue body and file it as a GitHub issue (auto-synced to Linear)";
+   issue files are never committed to the repo.
+2. **Examples:** the Azure-product examples are replaced with synthetic, generic ones
+   per this repo's sample-data boundary.
+
+The adapted skill is vendored at `.kiro/skills/github-issue-creator/SKILL.md`.
+**Bounded follow-up (Q3 decision-gate requirement):** one low-risk pilot — take a
+single real messy input (a dictated note or pasted error), run the adapted skill to
+draft the issue, file it in GitHub, and judge whether the structured output beat
+writing it by hand. Keep or trim the skill based on that pilot.

@@ -9,7 +9,7 @@ When reviewing changes in this repository, prioritize the checks below. Report o
 
 ## What this repo is
 
-A backend-less KiroCrew Crew app: React UI (`ui/`), one agent definition (`agents/taskmaster.json`), one skill (`skills/taskmaster-method/`), and a manifest (`app.json`). All state persists as a single JSON document via the gateway config API. The agent is invoked only through per-task chat slots.
+A backend-less KiroCrew Crew app: React UI (`ui/`), one agent definition (`agents/taskmaster.json`), skills under `skills/` (`taskmaster-method`, `write-concisely`), and a manifest (`app.json`). All state persists as a single JSON document via the gateway config API. The agent is invoked only through per-task chat slots.
 
 ## High-priority review checks
 
