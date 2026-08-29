@@ -6,6 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
+| 3 | [linear — Manage Linear issues via MCP](https://officialskills.sh/openai/skills/linear) | officialskills.sh (openai/skills) | Pending |
 
 ---
 
@@ -70,3 +71,37 @@ A skill from `vercel-labs/skills` that teaches an agent to discover and install 
 ### Recommendation
 
 Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) with an instruction to record candidates here for a yes/no decision first.
+
+---
+
+## 3. linear — Manage Linear issues via MCP
+
+- **URL:** https://officialskills.sh/openai/skills/linear (source: https://github.com/openai/skills/tree/main/skills/.curated/linear)
+- **Type:** Skill (Codex agent skill, installable via `npx skills add https://github.com/openai/skills --skill linear`)
+- **Category:** Productivity / project management
+- **Decision:** Pending
+
+### What it is
+
+A curated OpenAI Codex skill that wraps the official Linear MCP server (`https://mcp.linear.app/mcp`). Contents:
+
+- **Step 0 (setup):** Codex-specific MCP configuration — `codex mcp add linear`, enabling `rmcp_client` in `config.toml`, `codex mcp login` OAuth, and a Windows/WSL fallback config.
+- **Steps 1–4 (workflow):** clarify goal and scope → pick a workflow and confirm identifiers (issue ID, project ID, team key) → execute MCP calls in batches, reads before writes, explain grouping logic before bulk changes → summarize results and propose next actions.
+- **Tool inventory:** the Linear MCP tool surface (issue CRUD, projects/teams/users, documents, comments, cycles).
+- **Nine practical workflows:** sprint planning, bug triage, documentation audit, workload balancing, release planning, cross-project dependencies, status updates, smart labeling, retrospectives.
+- **Tips and troubleshooting:** batching to respect rate limits, OAuth/auth recovery, tool-calling error handling.
+
+### Proposed value / use case
+
+- The read-before-write ordering, identifier confirmation before tool calls, and "explain grouping logic before bulk changes" rules are sensible guardrails for any agent doing batch Linear operations.
+- The nine-workflow catalog is a decent prompt menu for recurring Linear chores (triage, sprint prep, labeling passes).
+
+### Caveats
+
+- Mostly redundant here: the Cursor environment already has the Linear MCP connected natively, and agents can already read/create/update issues without this skill. The main unique content is Codex setup instructions that don't transfer.
+- Step 0 is entirely Codex-specific (`codex mcp`, `config.toml`, `rmcp_client`, restart-Codex instruction) and would be dead weight or confusing in Cursor/Kiro.
+- The skill encourages batch create/update/assign operations with no explicit approval gate; any adaptation should add a confirm-before-bulk-write step, consistent with how destructive actions are gated elsewhere in this repo.
+
+### Recommendation
+
+Skip ingestion as-is (defer). Native Linear MCP access already covers the capability, and the setup half of the skill is Codex-only. If a Linear-workflow rule is ever wanted, extract only the Steps 1–4 guardrails and the workflow catalog into a short local rule rather than vendoring this skill.
