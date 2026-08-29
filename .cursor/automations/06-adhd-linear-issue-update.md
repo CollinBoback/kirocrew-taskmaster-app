@@ -78,9 +78,12 @@ One Linear comment, markdown, standing alone for a reader seeing only a notifica
 3. `**Next:**` — exactly ONE action, startable in under two minutes, naming a real
    artifact: an issue ID, a file, a spec anchor — never a vibe. Add a concrete time
    ballpark for the step it starts ("about 20 minutes", "an afternoon" — never "some
-   work"). Source it from the spec's first unblocked `not started` task; for non-spec
-   issues, the cycle or project's next unstarted issue; if nothing is genuinely queued,
-   say the queue is clear in one line instead of inventing work.
+   work"). Source it from the spec's first unblocked task that is `partially done —
+   paused` (use its Progress log "Pick up here" line verbatim) or `not started`, in
+   index order; for non-spec issues, the cycle or project's next unstarted issue.
+   Never point Next at the triggering issue's own task — if the spec still lists it as
+   unfinished, that is drift, not next work. If nothing is genuinely queued, say the
+   queue is clear in one line instead of inventing work.
 4. `**Blocked:**` — only if the next step is genuinely blocked: cause plus the one
    unblock action, matter-of-fact. No "unfortunately", no "uh oh".
 5. Nothing else. No preamble, no recap, no closers ("let me know…"), no tangents. A
