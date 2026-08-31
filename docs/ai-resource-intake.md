@@ -6,7 +6,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 |---|-------|--------|----------|
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
-| 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | Pending |
+| 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | **Adapt** (2026-08-29) |
 | 4 | [linear — Manage Linear issues via MCP](https://officialskills.sh/openai/skills/linear) | officialskills.sh (openai/skills) | Pending |
 
 ---
@@ -80,7 +80,7 @@ Hold until decided. If adopted, trim or replace the auto-install step (`-g -y`) 
 - **URL:** https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact
 - **Type:** Claude Code plugin (one skill + HTML template; no commands, agents, or hooks)
 - **Category:** Project tracking / status communication
-- **Decision:** Pending (Linear: COL-336, AI Research project)
+- **Decision:** **Adapt** — decided 2026-08-29 (Linear: COL-336, AI Research project). Vendored as [`.kiro/skills/project-status-page/`](../.kiro/skills/project-status-page/SKILL.md) (pinned upstream commit `4a3e656`, Apache-2.0) with the publish step swapped from the claude.ai Artifact tool to committed HTML under `docs/status/`. Pilot page: [`docs/status/ai-research.html`](status/ai-research.html).
 
 ### What it is
 
