@@ -47,8 +47,11 @@ The advanced self-hosted instructions live at: <https://linear.app/docs/gitlab#s
 This repo already syncs one-to-one with Linear via the GitHub integration. Adding GitLab means:
 
 - Issues you work in GitLab (MRs, branches) will move through the same Linear board without any manual status updates — identical to the current GitHub experience.
-- No duplicate tracking systems: Linear remains the single source of truth for task state whether the code lands in GitHub or GitLab.
-- The `.kiro/specs/taskmaster-pro/tasks.md` status index (canonical for this project) is unaffected — it is driven by GitHub issue state, not MR platform.
+- No duplicate operational boards: Linear remains the workflow-state surface whether the
+  code lands in GitHub or GitLab.
+- The `.kiro/specs/taskmaster-pro/tasks.md` status index remains canonical for Taskmaster
+  Pro. If Linear and that file disagree, the in-repository spec wins and the mirror is
+  corrected; neither GitHub nor GitLab merge-request state silently rewrites it.
 
 ---
 
