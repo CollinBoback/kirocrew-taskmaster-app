@@ -1,5 +1,11 @@
-import { constants, accessSync, readFileSync, realpathSync } from "node:fs";
-import { delimiter, dirname, isAbsolute, relative, resolve } from "node:path";
+import {
+  constants,
+  accessSync,
+  readFileSync,
+  realpathSync,
+  statSync,
+} from "node:fs";
+import { delimiter, dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
@@ -91,6 +97,12 @@ function validateConfig(config) {
     ) {
       fail(`CLI capability ${capability.id} needs at least one command`);
     }
+    if (
+      capability.kind === "cli" &&
+      capability.commands.some((command) => !/^[a-z0-9._+-]+$/i.test(command))
+    ) {
+      fail(`CLI capability ${capability.id} contains a non-bare command`);
+    }
     capabilityIds.add(capability.id);
   }
 
@@ -118,9 +130,17 @@ function validateConfig(config) {
       fail(`default host adapter has no path for ${route.skillId}`);
     }
     const skillPath = resolve(REPO_ROOT, configuredSkillPath);
-    const skillRelativePath = relative(realpathSync(REPO_ROOT), realpathSync(skillPath));
-    if (skillRelativePath.startsWith("..") || isAbsolute(skillRelativePath)) {
+    const resolvedSkillPath = realpathSync(skillPath);
+    const skillRelativePath = relative(realpathSync(REPO_ROOT), resolvedSkillPath);
+    if (
+      skillRelativePath === ".." ||
+      skillRelativePath.startsWith(`..${sep}`) ||
+      isAbsolute(skillRelativePath)
+    ) {
       fail(`adapter path for ${route.skillId} escapes the repository`);
+    }
+    if (!statSync(resolvedSkillPath).isFile()) {
+      fail(`adapter path for ${route.skillId} is not a file`);
     }
     accessSync(skillPath, constants.R_OK);
     routeIds.add(route.id);
@@ -226,10 +246,22 @@ function routeByDescription(task, config) {
 }
 
 function runBenchmark(config, benchmark) {
-  if (benchmark.schemaVersion !== 1 || !Array.isArray(benchmark.cases)) {
+  if (
+    benchmark.schemaVersion !== 1 ||
+    !Array.isArray(benchmark.cases) ||
+    benchmark.cases.length === 0
+  ) {
     fail("benchmark.json has an unsupported shape");
   }
   const knownRoutes = new Set(config.routes.map((route) => route.id));
+  for (const routeId of knownRoutes) {
+    if (!benchmark.cases.some((benchmarkCase) => benchmarkCase.expect === routeId)) {
+      fail(`benchmark has no positive case for ${routeId}`);
+    }
+  }
+  if (!benchmark.cases.some((benchmarkCase) => benchmarkCase.expect === null)) {
+    fail("benchmark must include at least one abstention case");
+  }
   const results = benchmark.cases.map((benchmarkCase) => {
     if (benchmarkCase.expect !== null && !knownRoutes.has(benchmarkCase.expect)) {
       fail(`benchmark references unknown route ${benchmarkCase.expect}`);
@@ -325,7 +357,7 @@ function commandPath(command) {
       const candidate = resolve(directory, `${command}${extension}`);
       try {
         accessSync(candidate, process.platform === "win32" ? constants.F_OK : constants.X_OK);
-        return candidate;
+        if (statSync(candidate).isFile()) return candidate;
       } catch {
         // Try the next PATH entry.
       }
@@ -340,13 +372,16 @@ function indexCapabilities(config, discoveredMcpNames) {
     platform: process.platform,
     capabilities: config.capabilities.map((capability) => {
       if (capability.kind === "mcp") {
+        const reported = discoveredMcpNames.has(capability.id);
         return {
           id: capability.id,
           kind: capability.kind,
-          status: discoveredMcpNames.has(capability.id) ? "available" : "unknown",
+          status: reported ? "adapter-reported" : "unknown",
           path: null,
-          reason: discoveredMcpNames.has(capability.id)
-            ? "Reported by the client adapter."
+          authentication: "unknown",
+          authorization: "unknown",
+          reason: reported
+            ? "Reported by the client adapter; readiness was not independently verified."
             : "MCP discovery requires a client adapter; no client config was assumed.",
         };
       }
@@ -354,9 +389,13 @@ function indexCapabilities(config, discoveredMcpNames) {
       return {
         id: capability.id,
         kind: capability.kind,
-        status: path ? "available" : "missing",
+        status: path ? "detected" : "missing",
         path,
-        reason: path ? "Found on PATH." : "No configured command was found on PATH.",
+        authentication: "unknown",
+        authorization: "unknown",
+        reason: path
+          ? "A regular executable file was found on PATH; readiness was not verified."
+          : "No configured command was found on PATH.",
       };
     }),
   };
@@ -373,7 +412,8 @@ function printHelp() {
   console.log(`Usage:
   node experiments/skill-router/router.mjs route "<task>"
   node experiments/skill-router/router.mjs benchmark
-  node experiments/skill-router/router.mjs tool-index [--mcp name,name]`);
+  node experiments/skill-router/router.mjs tool-index [--mcp name,name]
+  node experiments/skill-router/router.mjs self-check`);
 }
 
 function main() {
@@ -402,6 +442,19 @@ function main() {
         JSON.stringify(indexCapabilities(config, mcpNamesFromArgs(args)), null, 2),
       );
       break;
+    case "self-check": {
+      const benchmark = runBenchmark(config, loadJson(BENCHMARK_PATH));
+      const capabilityIndex = indexCapabilities(config, new Set());
+      const nodeCapability = capabilityIndex.capabilities.find(({ id }) => id === "node");
+      if (benchmark.structured.failures.length > 0) {
+        fail("structured routing benchmark failed");
+      }
+      if (nodeCapability?.status !== "detected") {
+        fail("Node capability was not detected as a regular executable on PATH");
+      }
+      console.log(JSON.stringify({ benchmark, capabilityIndex }, null, 2));
+      break;
+    }
     case "--help":
     case "-h":
     case undefined:

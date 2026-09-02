@@ -48,6 +48,7 @@ The five routed skills are:
 From the repository root:
 
 ```bash
+node experiments/skill-router/router.mjs self-check
 node experiments/skill-router/router.mjs benchmark
 node experiments/skill-router/router.mjs route "Tune a slow SQL query using its execution plan"
 node experiments/skill-router/router.mjs tool-index
@@ -59,9 +60,10 @@ An adapter may supply MCP names it discovered through its own supported tool API
 node experiments/skill-router/router.mjs tool-index --mcp linear
 ```
 
-Without adapter input, MCP capability state is `unknown`, not `missing`. The core does
-not inspect Claude, Codex, Cursor, or Kiro config files and does not equate an installed
-CLI with an authenticated MCP integration.
+Without adapter input, MCP capability state is `unknown`, not `missing`. Adapter input is
+reported as `adapter-reported`, not `available`; authentication and authorization remain
+unknown. CLI discovery similarly reports `detected`, not ready. The core does not inspect
+Claude, Codex, Cursor, or Kiro config files.
 
 ## Safety and auditability
 
@@ -75,8 +77,11 @@ The portable gates are narrower than the upstream security-specific
   tool.
 - Tool availability is not authorization. Taskmaster's existing approval and
   destructive-action rules remain authoritative.
-- Route config references must resolve to readable files inside this repository.
+- Route config references must resolve to regular files inside this repository after
+  symlinks are resolved.
 - Priority must contain every route exactly once, preventing silent configuration drift.
+- The benchmark must include every route and at least one abstention; CI also executes
+  capability discovery on Windows and Linux.
 
 The upstream [Evidence → Finding → Path](https://github.com/zhaoxuya520/reverse-skill/blob/71acc8e3115f76bad7a914c36466c1086232288c/skills/ops/evidence-finding-path.md)
 and [append-only timeline/work-item](https://github.com/zhaoxuya520/reverse-skill/blob/71acc8e3115f76bad7a914c36466c1086232288c/skills/ops/timeline-workitem.md)
