@@ -1,7 +1,7 @@
 # DeepSeek Harness architecture evaluation
 
-**Linear:** [COL-356](https://linear.app/collinboback/issue/COL-356)  
-**Evaluated:** 2026-09-02  
+**Linear:** [COL-356](https://linear.app/collinboback/issue/COL-356)
+**Evaluated:** 2026-09-02
 **Upstream snapshot:** [`deepseek-ai/deepseek-harness@49a606b`](https://github.com/deepseek-ai/deepseek-harness/tree/49a606bc5b5934603f22a26957a07dc799ab0291) (`0.1.2-alpha.5`)
 
 ## Decision
