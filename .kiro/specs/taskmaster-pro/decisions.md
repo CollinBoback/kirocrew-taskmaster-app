@@ -4,6 +4,22 @@ A running record of product and technical decisions: what we considered, what we
 
 ---
 
+## 2026-09 · Pi agent harness patterns
+
+**Decision:** Do not add [Pi](https://github.com/earendil-works/pi) as a Taskmaster runtime
+dependency. Adapt the working `Agent` lifecycle vocabulary and the proposed durable
+`AgentHarness` telemetry and operation-identity contracts only when run visibility or
+reload-safe settlement becomes a prioritized product task.
+
+**Reasoning:** KiroCrew already owns providers, credentials, tool execution, approvals, and
+the durable per-task chat transcript. Embedding Pi would duplicate those layers, Pi
+explicitly provides no built-in filesystem, process, network, or credential isolation, and
+the inspected durable `AgentHarness` is still an unimplemented scaffold. The smallest
+source-trace experiment and detailed pattern map are recorded in
+[`docs/pi-agent-harness-evaluation.md`](../../../docs/pi-agent-harness-evaluation.md).
+
+---
+
 ## 2026-08 · Hallmark integration
 
 **Decision:** Do not integrate [Hallmark](https://github.com/Nutlope/hallmark) into the Taskmaster Pro runtime.
