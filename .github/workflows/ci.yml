@@ -42,3 +42,23 @@ jobs:
       - name: Verify artifact in sync
         run: git diff --exit-code ui/dist/index.mjs
         working-directory: ${{ github.workspace }} # must run from repo root for the path to resolve
+
+  skill-router:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Skill routing regression
+        run: node experiments/skill-router/router.mjs benchmark

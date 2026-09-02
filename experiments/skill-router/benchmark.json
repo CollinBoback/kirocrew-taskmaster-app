@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "task": "Compare source and target SQL Server tables for missing rows",
+      "expect": "sql-reconciliation"
+    },
+    {
+      "task": "Verify an ETL migration by detecting each row mismatch",
+      "expect": "sql-reconciliation"
+    },
+    {
+      "task": "Find schema drift between staging and production tables.",
+      "expect": "sql-reconciliation"
+    },
+    {
+      "task": "Build a reconciliation report for two SQL Server instances",
+      "expect": "sql-reconciliation"
+    },
+    {
+      "task": "Check source and target tables before sharing the migration result",
+      "expect": "sql-reconciliation"
+    },
+    {
+      "task": "Validate analysis accuracy and decide whether it is ready to share",
+      "expect": "validate-analysis"
+    },
+    {
+      "task": "Check the report methodology, denominator choices, and caveats",
+      "expect": "validate-analysis"
+    },
+    {
+      "task": "Review a chart for misleading axes and an unsupported conclusion",
+      "expect": "validate-analysis"
+    },
+    {
+      "task": "Recompute headline metrics to verify the analysis",
+      "expect": "validate-analysis"
+    },
+    {
+      "task": "Review whether a dashboard's claims are supported by correct denominators",
+      "expect": "validate-analysis"
+    },
+    {
+      "task": "Create a living status page for a multi-workstream project.",
+      "expect": "project-status"
+    },
+    {
+      "task": "Refresh the project status page and report only deltas",
+      "expect": "project-status"
+    },
+    {
+      "task": "Build a tabbed HTML overview with risks and next steps",
+      "expect": "project-status"
+    },
+    {
+      "task": "Summarize project workstreams in a shareable status view",
+      "expect": "project-status"
+    },
+    {
+      "task": "Create a status dashboard for a multi-workstream project",
+      "expect": "project-status"
+    },
+    {
+      "task": "Design an executive KPI dashboard for MRR, churn, and LTV",
+      "expect": "kpi-dashboard"
+    },
+    {
+      "task": "Choose metrics and visuals for an operations dashboard",
+      "expect": "kpi-dashboard"
+    },
+    {
+      "task": "Fix a dashboard with contradictory KPI calculations",
+      "expect": "kpi-dashboard"
+    },
+    {
+      "task": "Lay out a cohort retention dashboard",
+      "expect": "kpi-dashboard"
+    },
+    {
+      "task": "Design a dashboard that tracks MRR by customer segment",
+      "expect": "kpi-dashboard"
+    },
+    {
+      "task": "Tune a slow SQL query using its execution plan.",
+      "expect": "sql-optimization"
+    },
+    {
+      "task": "Recommend indexes to reduce query latency",
+      "expect": "sql-optimization"
+    },
+    {
+      "task": "Optimize keyset pagination and batch operations",
+      "expect": "sql-optimization"
+    },
+    {
+      "task": "Analyze database performance across PostgreSQL and SQL Server",
+      "expect": "sql-optimization"
+    },
+    {
+      "task": "Apply a query tuning and indexing strategy to a slow report",
+      "expect": "sql-optimization"
+    },
+    {
+      "task": "Write a poem about a lighthouse",
+      "expect": null
+    },
+    {
+      "task": "Summarize this pull request",
+      "expect": null
+    },
+    {
+      "task": "Set up a recurring team meeting",
+      "expect": null
+    },
+    {
+      "task": "Build a backend API for notifications",
+      "expect": null
+    },
+    {
+      "task": "Translate this document to French",
+      "expect": null
+    },
+    {
+      "task": "Tune a slow querystring parser",
+      "expect": null
+    },
+    {
+      "task": "Draft copy for a status pageant",
+      "expect": null
+    },
+    {
+      "task": "Carve a schema driftwood sculpture",
+      "expect": null
+    },
+    {
+      "task": "Refresh it",
+      "expect": null
+    },
+    {
+      "task": "Validate a KPI dashboard methodology and denominator before sharing",
+      "expect": "validate-analysis",
+      "expectAlternatives": ["kpi-dashboard"]
+    },
+    {
+      "task": "Create a multi-workstream status page with an executive KPI dashboard",
+      "expect": "project-status",
+      "expectAlternatives": ["kpi-dashboard"]
+    },
+    {
+      "task": "Tune a slow SQL query as part of a table reconciliation",
+      "expect": "sql-reconciliation",
+      "expectAlternatives": ["sql-optimization"]
+    },
+    {
+      "task": "Build a status page to validate analysis findings",
+      "expect": null,
+      "expectAlternatives": ["validate-analysis", "project-status"]
+    }
+  ]
+}
