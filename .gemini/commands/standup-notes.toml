@@ -1,0 +1,15 @@
+# Project-level Gemini CLI command: /standup-notes
+# Single source of truth lives in .agents/workflows/standup-notes.md
+# (also used by Antigravity as the /standup-notes workflow).
+# After editing, run /commands reload in Gemini CLI.
+
+description = "Generate a daily standup note from git history, tickets, and notes, then present it for review."
+
+prompt = """
+Follow this workflow exactly:
+
+@{.agents/workflows/standup-notes.md}
+
+User-provided context (optional focus areas, tickets, or target platform):
+{{args}}
+"""
