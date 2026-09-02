@@ -1,5 +1,7 @@
 ui/node_modules/
 ui/dev-dist/
+# Generated graphify knowledge graph — rebuild locally with `/graphify .`
+graphify-out/
 # Local install artifacts Crew writes into the installed app dir
 # (per the official kirocrew-app-dev skill) — never commit these.
 .app_secret
