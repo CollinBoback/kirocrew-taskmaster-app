@@ -1,5 +1,24 @@
 {
   "extraKnownMarketplaces": {
+    "taskmaster-avoid-ai-writing": {
+      "source": {
+        "source": "settings",
+        "name": "taskmaster-avoid-ai-writing",
+        "plugins": [
+          {
+            "name": "avoid-ai-writing",
+            "source": {
+              "source": "git-subdir",
+              "url": "https://github.com/wshobson/agents.git",
+              "path": "plugins/avoid-ai-writing",
+              "ref": "main",
+              "sha": "a30778f8c4e6b0a87567941b7cca4f534bf642b6"
+            }
+          }
+        ]
+      },
+      "autoUpdate": false
+    },
     "taskmaster-ponytail": {
       "source": {
         "source": "settings",
@@ -20,6 +39,7 @@
     }
   },
   "enabledPlugins": {
+    "avoid-ai-writing@taskmaster-avoid-ai-writing": true,
     "ponytail@taskmaster-ponytail": true
   }
 }

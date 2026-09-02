@@ -17,6 +17,21 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "avoid-ai-writing",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/wshobson/agents.git",
+        "path": "plugins/avoid-ai-writing",
+        "ref": "main",
+        "sha": "a30778f8c4e6b0a87567941b7cca4f534bf642b6"
+      },
+      "policy": {
+        "installation": "INSTALLED_BY_DEFAULT",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Documentation"
     }
   ]
 }
