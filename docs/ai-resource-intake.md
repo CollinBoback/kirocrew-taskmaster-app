@@ -129,6 +129,7 @@ A community-created collection of GitHub Copilot customizations, browsable at [a
 
 - **SQL Server / data work:** `sql-server-table-reconciliation` (already vendored), `sql-code-review` and `sql-optimization` (universal, cover SQL Server), `ms-sql-dba` agent + instructions, `sql-sp-generation` instructions, `ssma-console`, `security-review`.
 - **AWS (COL-60 context):** `aws-cloud-expert`, `aws-principal-architect`, `aws-serverless-architect`, `aws-incident-triage` agents, Terraform-AWS planning/implement agents — reference material for architecture-pattern review, not adoption candidates by themselves.
+- **Full skill-level ranking:** all 416 catalog skills are tiered by ROI/relevance in [`awesome-copilot-skill-ranking.md`](awesome-copilot-skill-ranking.md) (COL-353 follow-up).
 
 ### Caveats
 
