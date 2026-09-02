@@ -101,7 +101,7 @@ With a real gateway, use hot reload instead: `kirocrew app dev taskmaster-pro`.
 4. From `ui/`, run `npm run typecheck`, `npm test`, and `npm run build`; then run `node --check ui/dist/index.mjs` from the repository root and include the rebuilt bundle with any UI source change.
 5. Update the canonical task status or record partial progress using the [tracking convention](.kiro/steering/task-tracking.md).
 
-### Ponytail project adapters
+### Project plugins
 
 Cursor and Kiro load the tracked Ponytail rules automatically. Codex discovers the pinned plugin
 through [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json); its cache,
@@ -112,6 +112,11 @@ fallback. Claude Code registers the project marketplace after workspace trust; i
 core rule is [`.kiro/steering/ponytail.md`](.kiro/steering/ponytail.md), and the five companion
 skills (review, audit, debt, gain, help) are vendored under
 [`.kiro/skills/`](.kiro/skills/) as `ponytail-*` skills.
+
+Codex and Claude Code also register the markdown-only `avoid-ai-writing` plugin at upstream
+commit `a30778f`. Codex marks it installed by default for this repository; Claude Code users
+install `avoid-ai-writing@taskmaster-avoid-ai-writing` once from `/plugin` after workspace trust.
+The plugin needs no authentication, and its cache and enablement remain user-scoped.
 
 ## Doctrine
 
