@@ -36,17 +36,22 @@ is the only working mechanism, the same one `ChatEmbed` uses.
 
 State involved:
 
-- `pending: PendingWork | null` — one app-wide in-flight request, tagged `kind: 'step' | 'draft' | 'all'`.
-- `pendingRef` — so async closures never act on a superseded pending.
+- `pending: Record<string, PendingWork>` — at most one in-flight request per task,
+  tagged `kind: 'step' | 'draft' | 'all'`.
+- `pendingRef[taskId]` — so async closures accept only the exact request object still
+  owned by that task and never act on a superseded pending.
+- `sendLockRef[taskId]` — closes the gap before React commits pending state, preventing
+  two launches against one task without blocking another task.
 - `seenRef[slot]` — a per-slot watermark of how many messages have already been parsed.
   Baselined *before* the first send so pre-existing transcript history, including old
   STEP RESULT lines, is never re-parsed.
-- `sawReplyRef` — whether any agent reply arrived, used to distinguish "turn ended without
-  the expected marker" from "nothing has happened yet".
+- `sawReplyRef[taskId]` — whether an agent reply arrived for that task's request, used to
+  distinguish "turn ended without the expected marker" from "nothing has happened yet".
 
-Each poll tick trims the last message when `running` is true (it is still streaming),
-slices `[seen, visible)`, advances the watermark, and hands the fresh messages to
-`processAgentMessages`. Settlement differs by kind: `step` settles on its first marker,
+One interval sweeps `pendingRef` and polls active task slots concurrently. For each exact
+request, the pure slot engine trims the last message when `running` is true (it is still
+streaming), slices `[seen, visible)`, advances the watermark, and returns actions for
+`App.tsx` to apply. Settlement differs by kind: `step` settles on its first marker,
 `draft` on its first parseable fenced-JSON block, and `all` never settles early — it
 collects markers until the turn ends. Anything still pending after 15 minutes is dropped
 with a warning.
@@ -55,8 +60,8 @@ with a warning.
 end. That `SyntaxError` is expected and swallowed; only real transport errors clear the
 pending.
 
-Every one of those rules is a behavioural invariant, and none of them is currently covered
-by a test, because they are closures over refs inside a component.
+The slot decision rules are covered in `model.test.ts`. Per-task orchestration and the
+React/network effects remain in `App.tsx`.
 
 ## Gateway integration
 
