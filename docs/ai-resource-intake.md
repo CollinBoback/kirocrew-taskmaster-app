@@ -8,6 +8,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
 | 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | **Adapt** (2026-08-29) |
 | 4 | [archify — Verifiable Architecture/Workflow Diagrams](https://github.com/tt-a1i/archify) | GitHub (tt-a1i/archify) | **Adopt** (2026-09-02) |
+| 5 | [How to evaluate LLMs before production](https://github.blog/ai-and-ml/llms/how-to-evaluate-llms-before-production/) | GitHub Blog (secret-scanning team) | Pending |
 
 ---
 
@@ -135,3 +136,43 @@ An agent skill that turns a system description (or repository evidence, or paste
 ### Placement
 
 Workspace scope in `.agents/skills/` is the one location Antigravity, Codex CLI, and opencode all read, so a single copy covers "implement in AGV" plus the existing Codex toolbox with no duplication into `.kiro/skills/` or `.claude/skills/`. Making it available to Antigravity in *other* workspaces is a user-owned global install: `npx skills add tt-a1i/archify -g --agent antigravity` (lands in `~/.gemini/antigravity/skills/`).
+
+---
+
+## 5. How to evaluate LLMs before production
+
+- **URL:** https://github.blog/ai-and-ml/llms/how-to-evaluate-llms-before-production/
+- **Type:** Article (GitHub Blog, 2026-08-25; lessons from evaluating an LLM false-positive filter for GitHub secret scanning)
+- **Category:** LLM evaluation methodology
+- **Decision:** Pending (Linear: COL-352, Supplier OTB Launch project)
+
+### What it is
+
+A practitioner write-up of how GitHub's secret-scanning team evaluated an LLM system *offline, before production* — the pre-production complement to the live-signal cycle already vendored as [`continuous-prompt-evaluation`](../.kiro/skills/continuous-prompt-evaluation/SKILL.md). Its eight practices:
+
+1. **Start with the product decision, not the model.** Organize metrics into three levels: *primary outcome* (what improves for the user), *safety constraint* (a floor an experiment may not cross — for them, recall), *operational guardrails* (latency, cost, reliability). A big precision win that violates the recall floor is a "don't advance", not an improvement.
+2. **Treat offline evaluation like integration testing.** Rerun it on every meaningful prompt/model/input/pipeline change; record prompt, model, dataset version, and config per run so runs compare against a known baseline. Change one major variable at a time; version prompts like code, with rollback.
+3. **Keep offline evaluation close to production** — preserve ambiguity, distractors, and input formatting. Their example: the model reasons about a nearby credential-*looking* variable instead of the flagged candidate, a failure clean single-candidate datasets never surface.
+4. **Treat production labels as signals, not ground truth.** A "resolved" alert can mean rotated, risk-accepted, or unblocked — not "false positive". Ask how the label was created before trusting it; manually review important subsets.
+5. **Use synthetic/open datasets to fill coverage gaps**, never as a stand-in for production-like data.
+6. **Use error analysis to find what aggregate metrics hide.** Classify each failure by source — *model, prompt, input, pipeline, dataset, or label* — because each source implies a different fix.
+7. **Use LLM-as-judge for triage, not truth**: auto-handle clear cases, route low-confidence/high-impact cases to humans, sample high-confidence cases for systematic errors, track judge/system/human disagreement, version the judge prompt like any other component.
+8. Result: 95% offline false-positive reduction within the recall guardrail — presented as evidence to justify *online* experimentation, not proof of production behavior.
+
+Closes with a pre-production checklist (product goals, data/labels, evaluation rigor, error analysis).
+
+### Proposed value / use case
+
+- **Direct methodological backing for the OTB diagnosis kit.** The [rubric's](../deliverables/otb-diagnosis/rubric.md) three-lever tagging *is* this article's practice 6 (error-source classification: one cheapest-fix source per failure, evidence from response text only, ambiguous stays ambiguous), and the [runbook's](../deliverables/otb-diagnosis/RUNBOOK.md) blind-Claude-pass-plus-owner-adjudication is practice 7 (judge as triage, human as final call). Useful as the citable external precedent when pitching the method in review sessions.
+- **The "next cycle" pitch, written out.** The one-pager promises "score these systematically instead of by judgment" for the next pass; this article is that method for the offline side: a run-tracking table (prompt version × model × metrics), one-variable-at-a-time changes, and the primary/safety/guardrail metric split. For the OTB chatbot, the natural mapping is answer accuracy as primary outcome and "never fabricate a number a view can't support" as the safety constraint.
+- **Fills the pre-production gap** in the vendored `continuous-prompt-evaluation` skill, which starts from live traffic and cohorts. This article covers the stage before there is traffic: offline datasets, label skepticism, synthetic coverage. Together they span the full lifecycle.
+
+### Caveats
+
+- It is an article, not an installable skill — there is nothing to vendor verbatim. Ingestion means folding its additions (three-level metric hierarchy, run-tracking table, label-provenance questions, error-source taxonomy) into the existing skill or a new offline-eval card, which is authoring work, not copying.
+- The worked example (secret scanning) is a binary classifier with crisp precision/recall; the OTB chatbot is open-ended SQL/NL answering, so the metric hierarchy transfers but the specific metrics need defining before the method is runnable.
+- Overlaps with the existing skill on judge discipline (evidence-based, neutral-on-ambiguity, same rubric across cohorts) — an adapted version should reference, not restate, those sections.
+
+### Recommendation
+
+**Adapt, not adopt-verbatim.** Cheapest useful form: extend [`continuous-prompt-evaluation`](../.kiro/skills/continuous-prompt-evaluation/SKILL.md) with a short "Stage 0 — offline evaluation before traffic" section carrying the three-level metric hierarchy, the run-tracking table, the label-provenance questions, and the model/prompt/input/pipeline/dataset/label error taxonomy, each traced to this article. Defer until the OTB next-cycle scoring pass is actually scheduled — the article is already fully summarized here for the pitch itself.
