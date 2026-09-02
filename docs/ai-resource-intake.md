@@ -7,6 +7,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
 | 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | **Adapt** (2026-08-29) |
+| 4 | [Awesome GitHub Copilot — community catalog](https://github.com/github/awesome-copilot) | GitHub (github/awesome-copilot) | Pending |
 
 ---
 
@@ -105,3 +106,37 @@ An official Anthropic plugin that generates and publishes a **living status page
 ### Recommendation
 
 **Adapt, don't adopt as-is.** The plugin cannot be installed usefully here because the Artifact publish tool doesn't exist outside Claude Code with a claude.ai login. But the template and conventions transfer cleanly: if a status-page workflow is wanted, vendor `template.html` plus the SKILL's tab catalog, state-block/delta-refresh convention, and freshness/trust rules as a local skill, and swap the publish step for a target available here (committed HTML in the repo, GitHub Pages, or a Linear document). Bounded follow-up if adopted: one local skill + template producing a status page for a single pilot project.
+
+---
+
+## 4. Awesome GitHub Copilot — community catalog of agents, instructions, skills, and plugins
+
+- **URL:** https://github.com/github/awesome-copilot
+- **Type:** Catalog / plugin marketplace (not a single asset) — MIT-licensed, GitHub-official repo of community-contributed customizations
+- **Category:** Agent tooling / skill sourcing
+- **Decision:** Pending — research from COL-353 (AI Research project). Recommendation below: adapt as a pinned source catalog.
+
+### What it is
+
+A community-created collection of GitHub Copilot customizations, browsable at [awesome-copilot.github.com](https://awesome-copilot.github.com) with a machine-readable [`llms.txt`](https://awesome-copilot.github.com/llms.txt) inventory. As of 2026-09-02 the catalog lists **222 agents**, **192 instructions** (file-pattern coding standards), and **416 skills** (standard `SKILL.md` folders with bundled assets), plus curated plugin bundles, a cookbook of Copilot API recipes, and a Learning Hub. The native install path is the Copilot CLI plugin marketplace (`copilot plugin install <name>@awesome-copilot`).
+
+### Relationship to existing work
+
+- This repository **already vendors one of its skills**: [`.claude/skills/sql-server-table-reconciliation/`](../.claude/skills/sql-server-table-reconciliation/SKILL.md) is pinned to awesome-copilot commit `4742f26` with a provenance note documenting known gaps in the bundled script. That skill is the subject of the COL-199 review, so this catalog is the upstream for research already in flight.
+- Skills use the standard `SKILL.md` format, so individual skills port to Cursor/Kiro/Claude agents without any Copilot dependency. Agents (`.agent.md`) and instructions (`.instructions.md`) are Copilot/VS Code conventions but are plain markdown and adapt easily to rules or skills.
+
+### Relevant inventory (spot-checked via llms.txt)
+
+- **SQL Server / data work:** `sql-server-table-reconciliation` (already vendored), `sql-code-review` and `sql-optimization` (universal, cover SQL Server), `ms-sql-dba` agent + instructions, `sql-sp-generation` instructions, `ssma-console`, `security-review`.
+- **AWS (COL-60 context):** `aws-cloud-expert`, `aws-principal-architect`, `aws-serverless-architect`, `aws-incident-triage` agents, Terraform-AWS planning/implement agents — reference material for architecture-pattern review, not adoption candidates by themselves.
+
+### Caveats
+
+- **Community-sourced, third-party content.** The repo's own README warns to inspect any agent before installing. Quality and safety vary per asset; each one carries prompt-injection and supply-chain risk and must be vetted individually.
+- The plugin-marketplace install path targets Copilot CLI / VS Code, not Cursor or Kiro; registering the marketplace or bulk-installing plugins does not fit this environment and would bypass per-asset review.
+- `main` moves constantly (300+ contributors), so any use must pin a commit — the same reason the reconciliation skill carries a `4742f26` provenance pin.
+- Nothing from the catalog gets installed on the work machine; anything adopted is vendored into this repo and crosses over only by Collin's hand, per the deployment boundary.
+
+### Recommendation
+
+**Adapt — use as a pinned source catalog, never as an installed marketplace.** The catalog is too large and too uneven to adopt wholesale, and its native install path doesn't match this environment. But as a *sourcing* channel it has already proven useful: the vendor-at-a-pin-with-provenance pattern used for `sql-server-table-reconciliation` is exactly the right consumption model. Bounded follow-up: (1) COL-199 completes the pilot evaluation of the first cherry-picked skill; (2) if that review lands adopt/adapt, shortlist `sql-code-review` and `sql-optimization` as the next two intake entries, evaluated one at a time through this list; (3) treat the AWS agents as background reading when defining COL-60's success criteria, not as adoption candidates.
