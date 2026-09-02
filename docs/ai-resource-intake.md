@@ -7,6 +7,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
 | 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | **Adapt** (2026-08-29) |
+| 4 | [archify — Verifiable Architecture/Workflow Diagrams](https://github.com/tt-a1i/archify) | GitHub (tt-a1i/archify) | **Adopt** (2026-09-02) |
 
 ---
 
@@ -105,3 +106,32 @@ An official Anthropic plugin that generates and publishes a **living status page
 ### Recommendation
 
 **Adapt, don't adopt as-is.** The plugin cannot be installed usefully here because the Artifact publish tool doesn't exist outside Claude Code with a claude.ai login. But the template and conventions transfer cleanly: if a status-page workflow is wanted, vendor `template.html` plus the SKILL's tab catalog, state-block/delta-refresh convention, and freshness/trust rules as a local skill, and swap the publish step for a target available here (committed HTML in the repo, GitHub Pages, or a Linear document). Bounded follow-up if adopted: one local skill + template producing a status page for a single pilot project.
+
+---
+
+## 4. archify — Verifiable Architecture/Workflow Diagrams
+
+- **URL:** https://github.com/tt-a1i/archify
+- **Type:** Agent skill with a bundled zero-dependency Node.js renderer (`npx skills add tt-a1i/archify`)
+- **Category:** Diagramming / communication artifacts
+- **Decision:** **Adopt** — decided 2026-09-02 (Linear: COL-347, "Implement in AGV"). Vendored at tag `v2.16.0` (commit `c826e6c`, MIT) as [`.agents/skills/archify/`](../.agents/skills/archify/SKILL.md). First triaged **experiment** in the [Todoist intake review](todoist-resource-intake-review.md).
+
+### What it is
+
+An agent skill that turns a system description (or repository evidence, or pasted Mermaid) into a polished, self-contained interactive HTML diagram. The agent authors typed JSON IR for one of five diagram types — architecture, workflow, sequence, data flow, lifecycle — and the bundled renderer (`bin/archify.mjs`, Node ≥18, no npm dependencies at runtime) deterministically compiles and validates it: schema, layout, route, and label-clearance checks must all pass before `deliver` atomically replaces the output. Failures return machine-readable diagnostics with supported fixes instead of a retry guess. Output is one HTML file with dark/light themes, search/trace/story interactions, and PNG/SVG/WebM export.
+
+### Proposed value / use case
+
+- Directly useful for BI work: data-lineage/ETL maps, architecture overviews for docs and reviews, and share-card images for READMEs and status pages — produced in chat with a validation receipt instead of hand-drawn Mermaid.
+- The validate-before-deliver contract fits this repo's determinism doctrine: the agent supplies judgment (topology, emphasis), deterministic code checks the artifact.
+- Complements the vendored `project-status-page` skill (a delivered diagram can be inlined into a status page).
+
+### Caveats
+
+- Heavier than the usual vendored skill: the install unit is a ~2.5 MB runtime (74 files), not a lone SKILL.md. Vendored trimmed — upstream's `test/` directory and pre-rendered `examples/*.html` showcases are dropped; the `examples/*.json` sources the authoring path requires are retained, and `doctor` passes all checks after the trim.
+- The skill's optional update-awareness step GETs a static manifest from `tt-a1i.github.io`. It never auto-updates, but on restricted machines set `ARCHIFY_UPDATE_CHECK_DISABLED=1` (noted in the vendored provenance).
+- Upstream `main` tracks a dev version (`2.17.0-dev.1`); the vendored copy pins the latest stable tag. Updates are a deliberate re-vendor, never automatic.
+
+### Placement
+
+Workspace scope in `.agents/skills/` is the one location Antigravity, Codex CLI, and opencode all read, so a single copy covers "implement in AGV" plus the existing Codex toolbox with no duplication into `.kiro/skills/` or `.claude/skills/`. Making it available to Antigravity in *other* workspaces is a user-owned global install: `npx skills add tt-a1i/archify -g --agent antigravity` (lands in `~/.gemini/antigravity/skills/`).
