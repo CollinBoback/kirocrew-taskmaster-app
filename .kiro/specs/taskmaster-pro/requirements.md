@@ -79,11 +79,12 @@ deduplicating by lowercased title. Met, except that its output cannot be correct
 An in-flight agent request disables every action button and can only end by settling or by
 the 15-minute timeout. There is no cancel affordance, so a hung run locks the UI.
 
-### R11 — Concurrency across tasks (**not met**)
+### R11 — Concurrency across tasks (met)
 
-`pending` is a single app-wide slot. While any task has a request in flight, agent actions
-on *every* task are refused. A multi-task backlog cannot draft steps for one task while
-another runs.
+Pending work and send locks are keyed by task ID. While one task has a request in flight,
+another task can draft or run steps through its independent chat slot; the busy task still
+refuses a conflicting second action. One polling interval sweeps all active tasks and
+keeps settlement, timeout, and cancellation scoped to each task's exact request.
 
 ### R12 — Keyboard accessibility (**not met**)
 

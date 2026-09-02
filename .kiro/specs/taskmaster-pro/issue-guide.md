@@ -5,7 +5,7 @@ This is a readability companion for the GitHub issue queue. It does **not** repl
 2–6 status and progress. GitHub issues remain the work-queue mirror.
 
 Reviewed against `main` on 2026-08-25 and, where relevant, against the public KiroCrew
-source/guidance.
+source/guidance. Task #16 was refreshed against merged PR #36 on 2026-09-02.
 
 ## Priority key
 
@@ -22,7 +22,7 @@ source/guidance.
 |---|---|---:|---|---:|
 | #13 | Make the agent-result decision logic testable before changing it | P0 | AI-ready; first | 97% |
 | #15 | Let the user stop waiting on a hung agent run safely | P1 | AI-ready after #13 | 98% |
-| #16 | Let different tasks run agent work independently | P1 | AI-ready after #13 | 99% |
+| #16 | Independent agent runs per task are merged | P4 | Closed by PR #36 | 100% |
 | #14 | Let users correct, remove, and reorder micro-steps | P1 | AI-ready; safest after #13 in a single-agent queue | 96% |
 | #17 | Make step selection usable from the keyboard | P2 | AI-ready; independent | 92% |
 | #19 | Prove the install/runtime flow on the real work machine | P2 | Collin manually, before release confidence is claimed | 100% |
@@ -228,32 +228,29 @@ not mistaken for the next request's result.
 
 ### In plain English
 
-The app already gives each task its own chat slot, but one global `pending` object means
-one task's agent run blocks agent actions on every other task.
+The app gives each task its own chat slot and now tracks pending work by task ID. One
+task's agent run no longer blocks agent actions on every other task.
+
+### Resolution
+
+PR [#36](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/36) keyed pending
+state and launch locks by task ID. The polling interval sweeps all active task requests and
+fetches their slots concurrently. Same-task conflicts remain blocked, and the exact-request
+guards keep late results scoped to their owner.
 
 ### Current code to recognize
 
-`sendToTaskSlot`, `runCommand`, `draftSteps`, and `runRemaining` all reject work when
-`pendingRef.current` is set. The poll effect also tracks only one pending request at a
-time.
-
-### Agent change
-
-Store pending work by task id (or use an equivalent per-task structure), and poll each
-active request safely. The UI should only disable agent actions for the task that is
-already busy.
+`pending`, `pendingRef`, `sendLockRef`, and `sawReplyRef` are records keyed by task ID.
+`sendToTaskSlot` checks only the target task, and the polling effect maps over
+`Object.values(pendingRef.current)`.
 
 ### Done when
 
-- Task A can be running while Task B starts its own independent agent action.
-- A single task still cannot accidentally launch conflicting work against itself.
-- Results are applied only to the task/slot that owns them.
-- Timeout/cancel/settlement behavior works independently per task.
+- Done on `main`; issue #16 is closed.
 
 ### Priority / sequence
 
-**P1. Do after #13.** Prefer #15 first so cancellation semantics are settled before
-multiplying pending requests.
+**P4 — queue cleanup complete.** The change landed after #13 and #15.
 
 ---
 
@@ -384,7 +381,7 @@ Use this decision rule:
 
 For one AI agent working serially, use:
 
-**#13 → #15 → #16 → #14 → #17**
+**#13 → #15 → #14 → #17**; #16 is already complete.
 
 Then Collin runs **#19** manually. Keep **#8** out of the implementation batch until its
 real-gateway development workflow is explicitly chosen and verified. #11, #12, and #22

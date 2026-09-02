@@ -22,7 +22,7 @@ lives in `.kiro/steering/task-tracking.md`. Update this table in the same commit
 | 2 — Extract the slot engine and test it | done — extraction in `main`; safety follow-up merged 2026-08-25 ([#25](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/25)) | [#13](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/13) | Before tasks 4 and 5 |
 | 3 — Steps: edit, delete, reorder | done — merged 2026-08-26 ([#57](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/57)) | [#14](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/14) | Second priority |
 | 4 — Cancel an in-flight agent run | done — merged 2026-08-25 ([#31](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/31)) | [#15](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/15) | After task 2 |
-| 5 — Per-task `pending` | not started | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
+| 5 — Per-task `pending` | done — merged 2026-08-25 ([#36](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/36)) | [#16](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16) | After task 2 |
 | 6 — Keyboard access to the step queue | done — merged 2026-08-25 ([#47](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/47)) | [#17](https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/17) | Independent |
 
 ---
@@ -190,26 +190,18 @@ abandoned turn eventually writes.
 
 ## Task 5 — Make `pending` per task instead of app-wide
 
-Status: not started
+Status: done — merged 2026-08-25 via PR [#36](https://github.com/CollinBoback/kirocrew-taskmaster-app/pull/36) (merge commit `a597ff0`)
 Issue: https://github.com/CollinBoback/kirocrew-taskmaster-app/issues/16
 
-**Why:** `sendToTaskSlot`, `runCommand`, `draftSteps`, and `runRemaining` all begin with
-`if (pendingRef.current) return`. One in-flight request anywhere blocks agent actions on
-every task. Slots are already per task and independent, so the restriction is incidental to
-the implementation rather than a property of the design. With a real backlog you cannot
-draft steps for one task while another is running.
+**Resolution:** `pending`, `pendingRef`, `sendLockRef`, and `sawReplyRef` are keyed by
+task ID. A task still blocks a conflicting second action against itself, while another task
+can start independently. One polling interval sweeps all active work and fetches each
+task's slot concurrently; settlement, timeout, cancellation, and stale-request guards are
+applied to the exact pending object owned by that task.
 
-**Do:** Key pending by task id. The Focus view already computes `taskPending` by comparing
-`pending.taskId`, so most of the rendering logic is written for this shape.
-
-**Watch for:** The poll effect keys on `pending?.sentAt` and drives a single interval. It
-needs to become per task, or one interval that sweeps all pending work.
-
-**Sequencing:** Do this *after* task 2. Doing it first means hand-editing the concurrency
-rules in untested closure code; doing it after means changing a pure function with tests
-around it.
-
-**Size:** Medium.
+The implementation landed after Task 2, includes the rebuilt `ui/dist/index.mjs`, and
+closed issue #16. This status correction was recorded after a 2026-09-02 workflow
+evaluation found that the code and issue had advanced while the canonical backlog had not.
 
 ---
 
