@@ -150,16 +150,17 @@ A Web-profile implementation that preserves the current Focus experience would n
 
 This would make the boundary explicit and make step state replayable. It would not remove
 the KiroCrew polling or `STEP RESULT` parser unless KiroCrew supplied structured events.
-A Web-profile implementation would also duplicate the Focus UI surface. Headless or SDK
-profiles avoid that UI duplication, but they still add a Node process, Harness profile,
-RPC boundary, and state lifecycle around the existing KiroCrew runtime; they can omit the
-client bundle and renderer because Taskmaster remains the only UI.
+A Web-profile implementation would also duplicate the Focus UI surface. A headless
+integration can omit the client bundle, renderer, and server, but Taskmaster would need to
+launch and supervise a one-shot Node process and translate its output back into KiroCrew
+state. An SDK integration can also keep Taskmaster as the only UI, but adds the Harness
+SDK profile's Node process and JSON-RPC boundary.
 
 ### Comparison
 
 | Dimension | Current Taskmaster/KiroCrew | Harness-shaped version | Result |
 |---|---|---|---|
-| Complexity | Three existing contract surfaces; pure poll evaluator has focused tests | Web: service, provider, durable events, RPC, client bundle, renderer, bundle; headless/SDK: omit client pieces but keep the second runtime | Current path is materially smaller |
+| Complexity | Three existing contract surfaces; pure poll evaluator has focused tests | Web: second UI and server; headless: one-shot process bridge; SDK: JSON-RPC runtime; every option adds a Harness profile and provider | Current path is materially smaller |
 | Coupling | Coupled to KiroCrew chat-slot REST, `taskmaster` agent, and `STEP RESULT` | Consumer/provider coupling improves, but KiroCrew transport remains and Harness APIs are added | No net reduction until a second provider exists |
 | Observability | Embedded transcript, per-step output, Console logs, pending state; polling is indirect | Durable typed events, replay, runtime plugin tree, failed-plugin diagnostics | Harness model is better, but the current evidence is adequate |
 | UX | One focused button, one visible micro-step, inline approvals, automatic settlement | Web duplicates the surface; headless/SDK preserve Focus but provide no user-facing gain | Current UX better serves Taskmaster's mandate |
@@ -175,7 +176,8 @@ another process.
 | Option | Decision | Why |
 |---|---|---|
 | Run the Web profile as an additional tool | No | Duplicates agent runtime, browser UI, credentials, and operational state without filling a Taskmaster gap |
-| Run a headless or SDK sidecar | No | Avoids a second UI but still adds a Node service, RPC, credentials, state, and failure modes around KiroCrew |
+| Invoke the headless profile | No | Avoids a server and second UI, but adds a one-shot Node process bridge and a second agent execution path |
+| Run the SDK profile | No | Avoids a second UI, but adds a Node JSON-RPC runtime, credentials, state, and failure modes around KiroCrew |
 | Port selected DeepSeek plugins or its plugin runtime | No | Plugins target Cordis/Harness contracts and are not portable to the KiroCrew host |
 | Use the architecture as design inspiration | **Yes** | Capability seams, reversible effects, manifest discovery, and durable event projections are useful without adding a runtime |
 

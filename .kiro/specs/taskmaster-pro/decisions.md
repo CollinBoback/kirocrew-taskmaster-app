@@ -14,7 +14,8 @@ design inspiration only; do not add it as a runtime or port its plugins.
 | Option | Summary |
 |---|---|
 | Run the Web profile | Add a second agent runtime and local Web UI beside KiroCrew. |
-| Run a headless or SDK sidecar | Keep Taskmaster's UI but add a Node process, RPC, and state lifecycle. |
+| Invoke the headless profile | Keep Taskmaster's UI but bridge to a one-shot Node runner with no server. |
+| Run the SDK profile | Keep Taskmaster's UI but add a Node JSON-RPC runtime and state lifecycle. |
 | Port plugins or plugin infrastructure | Adapt Cordis/Harness packages or recreate their contracts in KiroCrew. |
 | Reuse architecture patterns | Apply selected ideas only when an actual extension seam appears. |
 
