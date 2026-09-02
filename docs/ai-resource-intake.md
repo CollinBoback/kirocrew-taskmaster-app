@@ -7,6 +7,7 @@ Running list of AI agents, skills, ideas, and info under evaluation for formal i
 | 1 | [Clean Code — Pragmatic AI Coding Standards](https://www.aitmpl.com/component/skill/development/clean-code) | aitmpl.com (claude-code-templates) | Pending |
 | 2 | [find-skills — Skill Discovery and Installation](https://github.com/vercel-labs/skills/blob/main/skills/find-skills/SKILL.md) | GitHub (vercel-labs/skills) | Pending |
 | 3 | [project-artifact — Living Project Status Page](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/project-artifact) | GitHub (anthropics/claude-plugins-official) | **Adapt** (2026-08-29) |
+| 4 | [Awesome GitHub Copilot — Community Customization Catalog](https://github.com/github/awesome-copilot) | GitHub (github/awesome-copilot) | **Reference only** (2026-09-02) |
 
 ---
 
@@ -105,3 +106,35 @@ An official Anthropic plugin that generates and publishes a **living status page
 ### Recommendation
 
 **Adapt, don't adopt as-is.** The plugin cannot be installed usefully here because the Artifact publish tool doesn't exist outside Claude Code with a claude.ai login. But the template and conventions transfer cleanly: if a status-page workflow is wanted, vendor `template.html` plus the SKILL's tab catalog, state-block/delta-refresh convention, and freshness/trust rules as a local skill, and swap the publish step for a target available here (committed HTML in the repo, GitHub Pages, or a Linear document). Bounded follow-up if adopted: one local skill + template producing a status page for a single pilot project.
+
+---
+
+## 4. Awesome GitHub Copilot — Community Customization Catalog
+
+- **URL:** https://github.com/github/awesome-copilot
+- **Type:** Community catalog of Copilot agents, instructions, skills, plugins, and learning material
+- **Category:** AI development tooling / discovery
+- **Decision:** **Reference only** — decided 2026-09-02 (Linear: COL-353, AI Research project)
+
+### What it is
+
+An MIT-licensed GitHub community repository for customizing GitHub Copilot. Its website provides full-text search and filters, while [`llms.txt`](https://awesome-copilot.github.com/llms.txt) exposes a machine-readable catalog. The collection spans coding standards, specialized agents, reusable skills, plugins, and Copilot learning material. GitHub explicitly warns that submissions come from third-party developers and should be inspected before installation.
+
+### Proposed value / use case
+
+- Use the catalog as a discovery source when a concrete capability is missing; it is more useful as an index than as something to install wholesale.
+- [`sql-server-table-reconciliation`](https://github.com/github/awesome-copilot/tree/main/skills/sql-server-table-reconciliation) is already [vendored locally](../.claude/skills/sql-server-table-reconciliation/SKILL.md) at a pinned commit with documented implementation gaps, validating the selective-review approach.
+- [`doublecheck`](https://github.com/github/awesome-copilot/tree/main/skills/doublecheck) offers a practical claim-verification workflow for research, but overlaps existing source-checking behavior and adds web-search overhead.
+- The Power BI DAX and model-review skills are mostly generic prompt checklists. Prefer runtime-aware tooling that can inspect the active model; the catalog's [`powerbi-modeling`](https://github.com/github/awesome-copilot/tree/main/skills/powerbi-modeling) requires a separate Power BI Modeling MCP server.
+- [`harness-engineering`](https://github.com/github/awesome-copilot/tree/main/skills/harness-engineering) and [`agent-governance`](https://github.com/github/awesome-copilot/tree/main/skills/agent-governance) contain useful review ideas, but largely duplicate this repository's `AGENTS.md`, steering rules, CI checks, and command-approval boundaries.
+
+### Caveats
+
+- Most resources target Copilot-specific paths and tools such as `.github/skills/`, `#fetch`, Copilot plugins, and Copilot MCP integrations; they are not drop-in Cursor or Kiro assets.
+- Quality, dependencies, and operational safety vary across community submissions. Star count and inclusion in the catalog are not substitutes for source review.
+- Bulk adoption would duplicate the large skill set already available in Cursor and increase instruction conflicts and supply-chain surface.
+- Some attractive entries require external services, credentials, paid plans, or MCP servers that are not present in this environment.
+
+### Recommendation
+
+Keep the repository bookmarked as a research index; do not install its marketplace or copy the catalog into this project. Evaluate candidates one at a time through this intake list, pin the exact upstream commit and license, document known gaps, adapt tool-specific instructions, and retain only candidates that fill a verified local capability gap.
