@@ -4,6 +4,34 @@ A running record of product and technical decisions: what we considered, what we
 
 ---
 
+## 2026-09 · Client-neutral skill router
+
+**Decision:** Keep the structured skill router as a contributor-side experiment; do not add
+it to the Taskmaster runtime without observed, replayable skill-selection failures.
+
+**Options weighed:**
+
+| Option | Summary |
+|---|---|
+| Add a runtime MASTER-ROUTING layer now | Route every task through deterministic configuration before opening a skill. |
+| Keep a regression harness outside the runtime | Test structured routing and capability discovery against benign local skills without changing product behavior. |
+| Take no action | Continue relying only on client skill metadata with no replayable routing check. |
+
+**Chosen:** Contributor-side regression harness.
+
+**Reasoning:**
+
+- The [`COL-359` experiment](../../../experiments/skill-router/README.md) passed 38/38
+  hand-authored route, overlap, boundary, and abstention cases; a deterministic
+  description-overlap proxy passed 29/38.
+- The proxy is not Kiro's model, so these results do not prove a production routing gap.
+- Configuration validation, detection-only capability indexing, and a cross-platform
+  benchmark are useful now without introducing a second runtime router.
+- A runtime layer becomes justified when real misroutes can be added to the replay corpus
+  and the structured candidate fixes them without regressions.
+
+---
+
 ## 2026-08 · Hallmark integration
 
 **Decision:** Do not integrate [Hallmark](https://github.com/Nutlope/hallmark) into the Taskmaster Pro runtime.

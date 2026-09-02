@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "minimumScore": 3,
+  "defaultHost": "kiro",
+  "adapters": {
+    "kiro": {
+      "skills": {
+        "sql-server-table-reconciliation": ".kiro/skills/sql-server-table-reconciliation/SKILL.md",
+        "validate-data": ".kiro/skills/validate-data/SKILL.md",
+        "project-status-page": ".kiro/skills/project-status-page/SKILL.md",
+        "kpi-dashboard-design": ".kiro/skills/kpi-dashboard-design/SKILL.md",
+        "sql-optimization": ".kiro/skills/sql-optimization/SKILL.md"
+      }
+    }
+  },
+  "priority": [
+    "sql-reconciliation",
+    "validate-analysis",
+    "project-status",
+    "kpi-dashboard",
+    "sql-optimization"
+  ],
+  "capabilities": [
+    {
+      "id": "node",
+      "kind": "cli",
+      "commands": ["node"]
+    },
+    {
+      "id": "python",
+      "kind": "cli",
+      "commands": ["python3", "python"]
+    },
+    {
+      "id": "github",
+      "kind": "cli",
+      "commands": ["gh"]
+    },
+    {
+      "id": "linear",
+      "kind": "mcp"
+    }
+  ],
+  "routes": [
+    {
+      "id": "sql-reconciliation",
+      "skillId": "sql-server-table-reconciliation",
+      "matches": [
+        { "term": "table reconciliation", "weight": 5 },
+        { "term": "reconciliation report", "weight": 4 },
+        { "term": "source and target", "weight": 3 },
+        { "term": "compare tables", "weight": 4 },
+        { "term": "row mismatch", "weight": 4 },
+        { "term": "missing rows", "weight": 4 },
+        { "term": "schema drift", "weight": 4 },
+        { "term": "migration validation", "weight": 3 },
+        { "term": "etl migration", "weight": 3 },
+        { "term": "sql server instances", "weight": 3 }
+      ],
+      "capabilities": ["python"]
+    },
+    {
+      "id": "validate-analysis",
+      "skillId": "validate-data",
+      "matches": [
+        { "term": "validate analysis", "weight": 5 },
+        { "term": "ready to share", "weight": 4 },
+        { "term": "methodology", "weight": 3 },
+        { "term": "denominator", "weight": 3 },
+        { "term": "unsupported conclusion", "weight": 4 },
+        { "term": "misleading axes", "weight": 4 },
+        { "term": "recompute", "weight": 2 },
+        { "term": "verify the analysis", "weight": 4 },
+        { "term": "claims are supported", "weight": 4 },
+        { "term": "caveats", "weight": 2 }
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "project-status",
+      "skillId": "project-status-page",
+      "matches": [
+        { "term": "status page", "weight": 5 },
+        { "term": "multi-workstream", "weight": 5 },
+        { "term": "project workstreams", "weight": 4 },
+        { "term": "tabbed html", "weight": 4 },
+        { "term": "report only deltas", "weight": 4 },
+        { "term": "living status", "weight": 4 },
+        { "term": "shareable status", "weight": 4 },
+        { "term": "refresh", "weight": 1 },
+        { "term": "risks and next steps", "weight": 2 }
+      ],
+      "capabilities": ["github", "linear"]
+    },
+    {
+      "id": "kpi-dashboard",
+      "skillId": "kpi-dashboard-design",
+      "matches": [
+        { "term": "kpi dashboard", "weight": 5 },
+        { "term": "executive dashboard", "weight": 4 },
+        { "term": "operations dashboard", "weight": 4 },
+        { "term": "retention dashboard", "weight": 4 },
+        { "term": "mrr", "weight": 3 },
+        { "term": "churn", "weight": 2 },
+        { "term": "ltv", "weight": 2 },
+        { "term": "cohort retention", "weight": 3 },
+        { "term": "choose metrics", "weight": 3 },
+        { "term": "contradictory kpi", "weight": 4 }
+      ],
+      "capabilities": []
+    },
+    {
+      "id": "sql-optimization",
+      "skillId": "sql-optimization",
+      "matches": [
+        { "term": "slow sql", "weight": 4 },
+        { "term": "slow query", "weight": 4 },
+        { "term": "execution plan", "weight": 4 },
+        { "term": "query latency", "weight": 3 },
+        { "term": "recommend indexes", "weight": 4 },
+        { "term": "indexing strategy", "weight": 3 },
+        { "term": "keyset pagination", "weight": 4 },
+        { "term": "batch operations", "weight": 3 },
+        { "term": "database performance", "weight": 4 },
+        { "term": "query tuning", "weight": 4 }
+      ],
+      "capabilities": []
+    }
+  ]
+}
