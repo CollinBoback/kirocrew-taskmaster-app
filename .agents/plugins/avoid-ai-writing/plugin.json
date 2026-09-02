@@ -1,0 +1,10 @@
+{
+  "name": "avoid-ai-writing",
+  "version": "1.0.0",
+  "description": "Audit and rewrite prose that reads as machine-generated, with detect-only, rewrite, and edit-in-place modes.",
+  "source": {
+    "url": "https://github.com/wshobson/agents.git",
+    "path": "plugins/avoid-ai-writing",
+    "sha": "a30778f8c4e6b0a87567941b7cca4f534bf642b6"
+  }
+}
